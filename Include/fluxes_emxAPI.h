@@ -1,0 +1,35 @@
+//
+// Academic License - for use in teaching, academic research, and meeting
+// course requirements at degree granting institutions only.  Not for
+// government, commercial, or other organizational use.
+// File: fluxes_emxAPI.h
+//
+// MATLAB Coder version            : 4.0
+// C/C++ source code generated on  : 05-Jun-2019 10:52:30
+//
+#ifndef FLUXES_EMXAPI_H
+#define FLUXES_EMXAPI_H
+
+// Include Files
+#include <stddef.h>
+#include <stdlib.h>
+#include "rtwtypes.h"
+#include "fluxes_types.h"
+
+// Function Declarations
+extern emxArray_real_T *emxCreateND_real_T(int b_numDimensions, int *b_size);
+extern emxArray_real_T *emxCreateWrapperND_real_T(double *b_data, int
+  b_numDimensions, int *b_size);
+extern emxArray_real_T *emxCreateWrapper_real_T(double *b_data, int rows, int
+  cols);
+extern emxArray_real_T *emxCreate_real_T(int rows, int cols);
+extern void emxDestroyArray_real_T(emxArray_real_T *emxArray);
+extern void emxInitArray_real_T(emxArray_real_T **pEmxArray, int b_numDimensions);
+
+#endif
+
+//
+// File trailer for fluxes_emxAPI.h
+//
+// [EOF]
+//
