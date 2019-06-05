@@ -9,9 +9,10 @@
 //
 
 // Include Files
-#include "solver.h"
+//#include "//solver.h"
 //#include "rt_nonfinite.h"
 #include "fluxes_emxutil.h"
+#include<math.h>
 // Function Definitions
 
 //
@@ -97,7 +98,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 			vr = UP[3529 + 42 * k] / (hr + hextra);
 		}
 
-		solver(hr, hr, -ur, ur, vr, vr, 0.0, 1.0, hextra, dv0, &zbc);
+		////solver(hr, hr, -ur, ur, vr, vr, 0.0, 1.0, hextra, dv0, &zbc);
 		loop_ub = F->size[2];
 		i0 = r0->size[0];
 		r0->size[0] = loop_ub;
@@ -136,7 +137,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 			vl = UP[3528 + 42 * k] / (hl + hextra);
 		}
 
-		solver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
+		//solver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
 		loop_ub = F->size[2];
 		i0 = r0->size[0];
 		r0->size[0] = loop_ub;
@@ -224,7 +225,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 				vr = UP[3528 + (j + 42 * k)] / (hr + hextra) - 0.5 * dvx[j + 42 * k];
 			}
 
-			solver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
+			//solver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
 			loop_ub = F->size[2];
 			i0 = r0->size[0];
 			r0->size[0] = loop_ub;
@@ -268,7 +269,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 				}
 			}
 
-			solver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
+			//solver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
 			loop_ub = F->size[2];
 			i0 = r0->size[0];
 			r0->size[0] = loop_ub;
@@ -336,7 +337,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 			vr = UP[3550 + 42 * k] / (hr + hextra);
 		}
 
-		solver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
+		//solver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
 		loop_ub = F->size[2];
 		i0 = r0->size[0];
 		r0->size[0] = loop_ub;
@@ -374,7 +375,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 			vl = UP[((int)(n - 1.0) + 42 * k) + 3527] / (hl + hextra);
 		}
 
-		solver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
+		//solver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
 		loop_ub = F->size[2];
 		i0 = r0->size[0];
 		r0->size[0] = loop_ub;
@@ -414,7 +415,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 			vl = UP[3528 + j] / (hr + hextra);
 		}
 
-		solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+		//solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 		loop_ub = G->size[2];
 		i0 = r0->size[0];
 		r0->size[0] = loop_ub;
@@ -451,7 +452,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 			vl = UP[3528 + j] / (hl + hextra);
 		}
 
-		solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+		//solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 		loop_ub = G->size[2];
 		i0 = r0->size[0];
 		r0->size[0] = loop_ub;
@@ -539,7 +540,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 				vr = UP[3528 + (j + 42 * k)] / (hr + hextra) - 0.5 * dvy[j + 42 * k];
 			}
 
-			solver(hl, hr, ul, ur, vl, vr, 1.0, 0.0, hextra, dv0, &zbc);
+			//solver(hl, hr, ul, ur, vl, vr, 1.0, 0.0, hextra, dv0, &zbc);
 			loop_ub = G->size[2];
 			i0 = r0->size[0];
 			r0->size[0] = loop_ub;
@@ -572,7 +573,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 
 			ul = UP[(j + 42 * k) + 1784] / (hl + hextra);
 			vl = UP[(j + 42 * k) + 3548] / (hl + hextra);
-			solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+			//solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 			loop_ub = G->size[2];
 			i0 = r0->size[0];
 			r0->size[0] = loop_ub;
@@ -612,7 +613,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 			}
 		}
 
-		solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+		//solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 		loop_ub = G->size[2];
 		i0 = r0->size[0];
 		r0->size[0] = loop_ub;
@@ -654,7 +655,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 			}
 		}
 
-		solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+		//solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 		loop_ub = G->size[2];
 		i0 = r0->size[0];
 		r0->size[0] = loop_ub;
@@ -689,7 +690,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 				hextra);
 			vl = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 3548] / (hl +
 				hextra);
-			solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+			//solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 			loop_ub = G->size[2];
 			i0 = r0->size[0];
 			r0->size[0] = loop_ub;
@@ -721,7 +722,7 @@ void fluxes(const double UP[5292], double n, const double dwsex[1764], const
 
 		ul = UP[1764 + (j + 42 * ((int)(n - 1.0) - 1))] / (hl + hextra);
 		vl = UP[3528 + (j + 42 * ((int)(n - 1.0) - 1))] / (hl + hextra);
-		solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+		//solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 		loop_ub = G->size[2];
 		i0 = r0->size[0];
 		r0->size[0] = loop_ub;

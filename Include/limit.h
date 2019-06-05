@@ -57,7 +57,7 @@ void limit(double df1x, double df2x, double df1y, double df2y, double* f1,
 		varargin_1[0] = 2.0 * a;
 		varargin_1[1] = 2.0 * b;
 		varargin_1[2] = 0.5 * (a + b);
-		if (!rtIsNaN(varargin_1[0])) {
+		if (varargin_1[0] != NAN) {
 			idx = 1;
 		}
 		else {
@@ -65,7 +65,7 @@ void limit(double df1x, double df2x, double df1y, double df2y, double* f1,
 			k = 2;
 			exitg1 = false;
 			while ((!exitg1) && (k < 4)) {
-				if (!rtIsNaN(varargin_1[k - 1])) {
+				if (varargin_1[k - 1] != NAN) {
 					idx = k;
 					exitg1 = true;
 				}
@@ -114,7 +114,7 @@ void limit(double df1x, double df2x, double df1y, double df2y, double* f1,
 		varargin_1[0] = 2.0 * a;
 		varargin_1[1] = 2.0 * b;
 		varargin_1[2] = 0.5 * (a + b);
-		if (!rtIsNaN(varargin_1[0])) {
+		if (varargin_1[0] !=NAN) {
 			idx = 1;
 		}
 		else {
@@ -122,7 +122,7 @@ void limit(double df1x, double df2x, double df1y, double df2y, double* f1,
 			k = 2;
 			exitg1 = false;
 			while ((!exitg1) && (k < 4)) {
-				if (!rtIsNaN(varargin_1[k - 1])) {
+				if (varargin_1[k - 1] != NAN) {
 					idx = k;
 					exitg1 = true;
 				}

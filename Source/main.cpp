@@ -1,11 +1,15 @@
 #include<iostream>
-#include "Include/corrector.h"
-#include "Include/limit.h"
-#include "Include/limiter.h"
-#include "Include/predictor.h"
-#include "Include/slope.h"
-#include "Include/solver.h"
-#include "Include/fluxes.h"
+#include<fstream>
+#include<ostream>
+#include "../Include/corrector.h"
+#include "../Include/limit.h"
+#include "../Include/limiter.h"
+#include "../Include/predictor.h"
+#include "../Include/slope.h"
+#include "../Include/solver.h"
+#include "../Include/fluxes.h"
+using namespace std;
+
 int main(void)
 {
 	int i0;
@@ -21,28 +25,28 @@ int main(void)
 	static double u[1764];
 	static double v[1764];
 	int simtime;
-	static double dzcx[1764];
-	static double dzcy[1764];
-	double dwsex[1764];
-	double dwsey[1764];
-	double dux[1764];
-	double duy[1764];
-	double dvx[1764];
-	double dvy[1764];
-	double sox[1764];
-	double soy[1764];
-	double sfx[100];
-	double sfy[100];
+	emxArray_real_T *dzcx;
+	emxArray_real_T *dzcy;
+	emxArray_real_T *dwsex;
+	emxArray_real_T *dwsey;
+	emxArray_real_T *dux;
+	emxArray_real_T *duy;
+	emxArray_real_T *dvx;
+	emxArray_real_T *dvy;
+	//double sox[1764];
+	//double soy[1764];
+	//double sfx[100];
+	//double sfy[100];
 	static int iv1[2] = { 10, 10 };
 
-	double wsep[1764];
-	double up[1764];
-	double vp[1764];
-	signed char fileid;
+	//double wsep[1764];
+	//double up[1764];
+	//double vp[1764];
+	//signed char fileid;
 	static double unusedExpr[5292];
-
+	int n = 42;
 	//
-	grav = 9.806;
+	double grav = 9.806;
 
 	//  ManN=0.00;
 	//  minimum depth of water (threshold for dry bed)(1cm)
@@ -142,33 +146,33 @@ int main(void)
 	//  Bed slope along X and Y
 	//  writes the outputs for the sensors
 	//  hnorm=zeros(size(num));     hsens_1=zeros(m,3); hsens_2=zeros(m,3); hsens_3=zeros(m,3); 
-	cfopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor1.txt",
+/*	fopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor1.txt",
 		"wb");
-	cfopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor2.txt",
+	fopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor2.txt",
 		"wb");
-	cfopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor3.txt",
-		"wb");
+	fopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor3.txt",
+		"wb");*/
 
 	//  ******************************************************************************************************************************************          
 	//  tcntr=0;
 	for (j = 0; j < 20000; j++) {
 		simtime = 1 + j;
-		limiter(zc, dzcx, dzcy);
-		limiter(wse, dwsex, dwsey);
-		limiter(u, dux, duy);
-		limiter(v, dvx, dvy);
+		limiter(n,zc, dzcx, dzcy);
+		limiter(n,wse, dwsex, dwsey);
+		limiter(n,u, dux, duy);
+		limiter(n,v, dvx, dvy);
 
 		//  Slope calculation
-		slope(h, u, v, dzcx, dzcy, sox, soy, sfx, sfy);
+		//slope(h, u, v, dzcx, dzcy, sox, soy, sfx, sfy);
 
 		//  predictor step (estimate the values at half timestep)
-		predictor(wse, h, u, v, dwsex, dwsey, dux, duy, dvx, dvy, dzcx, dzcy, zc,
-			sox, sfx, iv1, soy, sfy, iv1, wsep, up, vp);
+		//predictor(wse, h, u, v, dwsex, dwsey, dux, duy, dvx, dvy, dzcx, dzcy, zc,
+			//sox, sfx, iv1, soy, sfy, iv1, wsep, up, vp);
 
 		//    Compute fluxes at the interfaces
-		// [F, G, amax] = fluxes(UP,n,dwsex,dwsey,dux,duy,dvx,dvy,hextra,zc);
+		// fluxes(UP,n,dwsex,dwsey,dux,duy,dvx,dvy,hextra,zc);
 		//  Estimate the flux vectors on the next time step
-		corrector(U, sox, sfx, iv1, soy, sfy, iv1, grav, unusedExpr);
+		//corrector(U, sox, sfx, iv1, soy, sfy, iv1, grav, unusedExpr);
 
 		//  U(:,:,:)=Unew(:,:,:);
 		//  h(:,:)= Unew(:,:,1);                    % computed water depth (water level)      
@@ -189,72 +193,44 @@ int main(void)
 	//    dt= cr*cellsize/amax;
 	//   cr=amax*dt/cellsize;
 	//  Writes the output at each counters seconds
-	if (b_mod((double)simtime * 0.05) == 0.0) {
-		fileid = cfopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hOut_",
-			"wb");
+	
+	/*if (mod((double)simtime * 0.05) == 0.0) {
+		//fileid.open("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hOut_","w");
 
 		//    fprintf(fid1,'%.2f\r\n',h(:,:));
 		//   dlmwrite(outfile,x,'delimiter','\t','precision',12)
-		b_fclose((double)fileid);
+		//fileid.close();
 
 		//  % %   outputs the 2D-water depth plot
 		//  ctrs=sprintf('L%s',ctrs);
 		// saveas(gca,output);
 	}
 
-	if (c_mod((double)simtime * 0.05) == 0.0) {
-		fileid = cfopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor1.txt",
-			"ab");
-		b_fclose((double)fileid);
+	if (mod((double)simtime * 0.05) == 0.0) {
+		//fileid1.open("C:/Users/raj/source/repos/Flood2d/Output/hsensor1.txt","w");
+		fileid1.close();
 
 		// dlmwrite(outfile2,hsens_1,'-append','newline','pc','delimiter','\t','precision',12) 
 		// ctrs2=num2str(ctrs2);
 	}
 
-	if (c_mod((double)simtime * 0.05) == 0.0) {
-		fileid = cfopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor2.txt",
-			"ab");
+	if (mod((double)simtime * 0.05) == 0.0) {
+		//fileid2.open("C:\Users\raj\source\repos\Flood2dOutput\hsensor2.txt","w");
 
 		// dlmwrite(outfile3,hsens_2,'-append','newline','pc','delimiter','\t','precision',12) 
-		b_fclose((double)fileid);
+		fileid2.close();
 
 		//  ctrs3=num2str(ctrs3);
 	}
 
-	if (c_mod((double)simtime * 0.05) == 0.0) {
-		fileid = cfopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor3.txt",
-			"ab");
+	if (mod((double)simtime * 0.05) == 0.0) {
+		//fileid3.open("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor3.txt","w");
 
 		// dlmwrite(outfile4,hsens_3,'-append','newline','pc','delimiter','\t','precision',12) 
-		b_fclose((double)fileid);
+		fileid3.close();
 
 		// ctrs4=num2str(ctrs4);
-	}
+	}*/
 
-	//
-	//      k=tstep*dt;
-	//      if k==7.50,
-	//         break;
-	//      end
-	//      fprintf('Time Step = %d, Courant counter tcntr = %g \n',dt,tcntr)
-	//    fprintf('Courant value = %d, Time Step = %g \n',cr,t)
-	//      if (mod(tstep,ntplot) == 0),
-	//          surf(xc,yc,h')
-	//          meshgrid(cellsize/2:cellsize:L, cellsize/2:cellsize:L, 5:0.5:10);
-	//          xlabel('xc (m)'); ylabel('yc (m)'); zlabel('h (m)')
-	//          title(['Flood wave propagation downstreams of the Labscale dam at ',num2str(t,'%02g'),' seconds ',date]); 
-	//  % %         view(-150,150)
-	//          view(0,90)
-	//          hcolr=colorbar;
-	//          q2=get(hcolr,'Title'); titlesg='Water Depth'; set(q2,'string',titlesg); 
-	//          pause(0.1)
-	//      end
-}
-
-//
-// File trailer for fvm2d.cpp
-//
-// [EOF]
-//
 	return 0;
 }

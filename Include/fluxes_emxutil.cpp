@@ -44,7 +44,7 @@ void emxEnsureCapacity_int32_T(emxArray_int32_T *emxArray, int oldNumel)
 
     while (i < newNumel) {
       if (i > 1073741823) {
-        i = MAX_int32_T;
+		  i = INT_MAX;
       } else {
         i <<= 1;
       }
@@ -91,7 +91,7 @@ void emxEnsureCapacity_real_T(emxArray_real_T *emxArray, int oldNumel)
 
     while (i < newNumel) {
       if (i > 1073741823) {
-        i = MAX_int32_T;
+        i = INT_MAX;
       } else {
         i <<= 1;
       }

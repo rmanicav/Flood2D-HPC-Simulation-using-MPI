@@ -23,7 +23,7 @@ struct emxArray_int32_T
   int *size;
   int allocatedSize;
   int numDimensions;
-  boolean_T canFreeData;
+  bool canFreeData;
 };
 
 #endif                                 //struct_emxArray_int32_T
@@ -37,7 +37,7 @@ struct emxArray_real_T
   int *size;
   int allocatedSize;
   int numDimensions;
-  boolean_T canFreeData;
+  bool canFreeData;
 };
 
 #endif                                 //struct_emxArray_real_T
