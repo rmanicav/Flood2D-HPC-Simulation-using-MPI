@@ -13,7 +13,6 @@
 // Include Files
 #include <stddef.h>
 #include <stdlib.h>
-#include "rtwtypes.h"
 #include "fluxes_types.h"
 
 // Function Declarations

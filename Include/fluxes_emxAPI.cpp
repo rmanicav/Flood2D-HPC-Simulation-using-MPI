@@ -10,7 +10,6 @@
 
 // Include Files
 #include <stdlib.h>
-#include "rt_nonfinite.h"
 #include "fluxes.h"
 #include "fluxes_emxAPI.h"
 #include "fluxes_emxutil.h"

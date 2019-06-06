@@ -11,7 +11,6 @@
 // Include Files
 #include <stdlib.h>
 #include <string.h>
-#include "rt_nonfinite.h"
 #include "fluxes.h"
 #include "fluxes_emxutil.h"
 

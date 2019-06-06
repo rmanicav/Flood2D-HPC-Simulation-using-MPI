@@ -10,8 +10,7 @@
 #ifndef FLUXES_TYPES_H
 #define FLUXES_TYPES_H
 
-// Include Files
-#include "rtwtypes.h"
+
 
 // Type Definitions
 #ifndef struct_emxArray_int32_T

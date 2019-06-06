@@ -143,17 +143,18 @@ int main(void)
 		}
 	}
 
+	fstream fileid,fileid1,fileid2;
+	const char* path = "C:/Users/raj/source/repos/Flood2dOutput/hsensor1.txt";
+	const char* path1 = "C:/Users/raj/source/repos/Flood2dOutput/hsensor2.txt";
+	const char* path2 = "C:/Users/raj/source/repos/Flood2dOutput/hsensor3.txt";
 	//  Bed slope along X and Y
 	//  writes the outputs for the sensors
-	//  hnorm=zeros(size(num));     hsens_1=zeros(m,3); hsens_2=zeros(m,3); hsens_3=zeros(m,3); 
-/*	fopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor1.txt",
-		"wb");
-	fopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor2.txt",
-		"wb");
-	fopen("C:\\Users\\raj\\source\\repos\\Flood2dOutput\\hsensor3.txt",
-		"wb");*/
+	//  hnorm=zeros(size(num));     hsens_1=zeros(m,3); hsens_2=zeros(m,3); hsens_3=zeros(m,3);; 
+	fileid.open(path,ios::out);
+	fileid1.open(path, ios::out);
+	fileid2.open(path, ios::out);
 
-	//  ******************************************************************************************************************************************          
+        
 	//  tcntr=0;
 	for (j = 0; j < 20000; j++) {
 		simtime = 1 + j;
