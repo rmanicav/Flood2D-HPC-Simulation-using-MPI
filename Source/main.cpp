@@ -8,26 +8,94 @@
 #include "fluxes.cpp"
 using namespace std;
 
+void readFromFile()
+{
+	int iv0[31];
+	int iv1[2];
+	double gravity;
+	double manN;
+	double hextra, epsilon, cellSize, L, nt, ntPlot,dt,initWSE,hWL;
+	int initV;
+	/*const signed char iv0[31] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+	  13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 34, 35, 36, 37, 38, 39, 40, 41 };*
+	  static int iv1[2] = { 10, 10 };*/
+	ifstream infile;
+	int count;
+	infile.open("iv.txt");
+	infile >> gravity;
+	cout << "----------------------------------\n";
+	cout << "Gravity is " << gravity << endl;
+	infile >> manN;
+	cout << "Manning is " << manN << endl;
+	infile >> hextra;
+	cout << "hextra is " << hextra << endl;
+	infile >> epsilon;
+	cout << "epsilon is " << epsilon << endl;
+	infile >> cellSize;
+	cout << "Cell size is " << cellSize << endl;
+	infile >> L;
+	cout << "Box size is " << L << endl;
+	infile >> nt;
+	cout << "Number of time steps is " << nt << endl;
+	infile >> ntPlot;
+	cout << "Plotting interval is " << ntPlot<< endl;
+	infile >> dt;
+	cout << "Time steps is " << dt << endl;
+	cout << "----------------------------------\n\n";
+	
+	
+	infile >> count;
+	cout << "----iv0------\n";
+	for (int i = 0; i < count; i++)
+	{
+		infile >> iv0[i];
+		cout << iv0[i] << "\t";
+	}
+	cout << "\n-------------------------------\n\n";
+	cout << endl;
+	infile >> count;
+	cout << "----iv1------\n";
+	for (int i = 0; i < count; i++)
+	{
+		infile >> iv1[i];
+		cout << iv1[i] << "\t";
+	}
+	cout << "\n-------------------------------\n\n";
+	cout << "\n-------------------------------\n\n";
+	cout << endl;
+	infile >> initV;
+	cout << "Init value is " << initV << endl;
+	infile >> initWSE;
+	cout << "Initial value of WSE is " << initWSE << endl;
+	infile >> hWL;
+	cout << "Higher water level is  " << hWL << endl;
+	cout << "\n-------------------------------\n\n";
+
+
+}
+
 int main(void)
 {
+	readFromFile();
 	int i0;
 	int j;
 	double zc[1764];
 	int k;
 	double wse[1764];
-	const signed char iv0[31] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-	  13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 34, 35, 36, 37, 38, 39, 40, 41 };
+
+
+	signed char iv0[31];
+
 
 	double U[5292];
 	double h[1764];
 	double u[1764];
 	double v[1764];
 	int simtime;
-	//emxArray_real_T *dzcx;
 	double dzcx[1764];
 	double dzcy[1764];
 	double dwsex[1764];
-	double dwsey[1764]; 
+	double dwsey[1764];
 	double dux[1764];
 	double duy[1764];
 	double dvx[1764];
@@ -41,13 +109,15 @@ int main(void)
 	double wsep[1764];
 	double up[1764];
 	double vp[1764];
+	double F[7246],G[7246];
+	//emxArray_real_T* F;
 	//signed char fileid;
 	static double unusedExpr[5292];
 	int n = 42;
 	//
 	double grav = 9.806;
 	double ManN = 0.001;
-	
+
 	double hextra = 0.1;
 	double epsilon = 0.1;// minimum depth of water(threshold for dry bed)(1cm)
 	int	cellsize = 5;// Cell size(dx = dy)m
@@ -96,9 +166,9 @@ int main(void)
 			}
 		}
 	}
-
-	//  Set up initial conditions
-	//  wse=1.01*ones(n,n);                           % Initial water surface elevation  
+	
+	// Set up initial conditions
+	//  wse=1.01*ones(n,n);                           % Initial water surface elevation
 	for (i0 = 0; i0 < 1764; i0++) {
 		wse[i0] = 6.0;
 	}
@@ -108,6 +178,7 @@ int main(void)
 			wse[j + 42 * i0] = 11.0;
 		}
 	}
+	
 
 	//  0.5*n = 20 or higher water level
 	for (i0 = 0; i0 < 31; i0++) {
@@ -133,7 +204,7 @@ int main(void)
 
 	// Intialize the arrays
 	std::memset(&U[0], 0, 5292U * sizeof(double));
-
+	
 	//  fluxes in the $x$ direction
 	//  fluxes in the $y$ direction
 	//  friction slope Sf
@@ -155,36 +226,41 @@ int main(void)
 	const char* path2 = "C:/Users/raj/source/repos/Flood2dOutput/hsensor3.txt";
 	//  Bed slope along X and Y
 	//  writes the outputs for the sensors
-	//  hnorm=zeros(size(num));     hsens_1=zeros(m,3); hsens_2=zeros(m,3); hsens_3=zeros(m,3);; 
+	//  hnorm=zeros(size(num));     hsens_1=zeros(m,3); hsens_2=zeros(m,3); hsens_3=zeros(m,3);;
 	fileid.open(path,ios::out);
 	fileid1.open(path, ios::out);
 	fileid2.open(path, ios::out);
 
-        
+	limiter l;
+	slope s;
+	predictor p;
+	fluxes f;
+	corrector c;
 	//  tcntr=0;
 	for (j = 0; j < 20000; j++) {
 		simtime = 1 + j;
-
-		flimiter(n,zc, dzcx, dzcy);
-		flimiter(n,wse, dwsex, dwsey);
-		flimiter(n,u, dux, duy);
-		flimiter(n,v, dvx, dvy);
+	
+		l.flimiter(n,zc, dzcx, dzcy);
+		l.flimiter(n,wse, dwsex, dwsey);
+		l.flimiter(n,u, dux, duy);
+		l.flimiter(n,v, dvx, dvy);
 
 		//  Slope calculation
-		fslope(h, u, v, ManN, hextra, dzcx, dzcy, cellsize, n, sox, soy, sfx, sfy);
-		
+		s.fslope(h, u, v, ManN, hextra, dzcx, dzcy, cellsize, n, sox, soy, sfx, sfy);
+
 
 		//  predictor step (estimate the values at half timestep)
-		fpredictor(nf,wse,h,u,v,dwsex,dwsey,dux,duy,dvx,dvy,dt2,dzcx,dzcy,epsilon,zc,sox,sfx,dt,soy,sfy,wsep,up,vp);
-		
+		p.fpredictor(nf,wse,h,u,v,dwsex,dwsey,dux,duy,dvx,dvy,dt2,dzcx,dzcy,epsilon,zc,sox,sfx,dt,soy,sfy,wsep,up,vp);
+
 
 		//    Compute fluxes at the interfaces
-		// ffluxes(UP,n,dwsex,dwsey,dux,duy,dvx,dvy,hextra,zc);
+	//	f.ffluxes(up,n,dwsex,dwsey,dux,duy,dvx,dvy,hextra,zc,F,G,amax);
 		//  Estimate the flux vectors on the next time step
-		//fcorrector(U, sox, sfx, iv1, soy, sfy, iv1, grav, unusedExpr);
+		c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
+		
 
 		//  U(:,:,:)=Unew(:,:,:);
-		//  h(:,:)= Unew(:,:,1);                    % computed water depth (water level)      
+		//  h(:,:)= Unew(:,:,1);                    % computed water depth (water level)
 		//  if Unew(:,:,1)< epsilon
 		std::memset(&u[0], 0, 1764U * sizeof(double));
 		std::memset(&v[0], 0, 1764U * sizeof(double));
@@ -194,7 +270,7 @@ int main(void)
 		// v(:,:)= Unew(:,:,3)./(Unew(:,:,1)+hextra);
 	}
 
-	// wse = Unew(:,:,1)+zc;                  % compute the new free surface height 
+	// wse = Unew(:,:,1)+zc;                  % compute the new free surface height
 	// if wse < 0
 	//    wse = 0;
 	// end
@@ -219,14 +295,14 @@ int main(void)
 		//fileid.open("C:/Users/raj/source/repos/Flood2d/Output/hsensor1.txt","w");
 		fileid.close();
 
-		// dlmwrite(outfile2,hsens_1,'-append','newline','pc','delimiter','\t','precision',12) 
+		// dlmwrite(outfile2,hsens_1,'-append','newline','pc','delimiter','\t','precision',12)
 		// ctrs2=num2str(ctrs2);
 	}
 	double ctrs3= simtime * dt;
 	if (fmod(ctrs3, 0.5) == 0) {
 		//fileid2.open("C:\Users\raj\source\repos\Flood2dOutput\hsensor2.txt","w");
 
-		// dlmwrite(outfile3,hsens_2,'-append','newline','pc','delimiter','\t','precision',12) 
+		// dlmwrite(outfile3,hsens_2,'-append','newline','pc','delimiter','\t','precision',12)
 		fileid1.close();
 
 		//  ctrs3=num2str(ctrs3);
@@ -236,7 +312,7 @@ int main(void)
 	if (fmod(ctrs4, 0.5)) {
 		//fileid2.open("C:\Users\raj\source\repos\Flood2dOutput\hsensor2.txt","w");
 
-		// dlmwrite(outfile3,hsens_2,'-append','newline','pc','delimiter','\t','precision',12) 
+		// dlmwrite(outfile3,hsens_2,'-append','newline','pc','delimiter','\t','precision',12)
 		fileid2.close();
 
 		//  ctrs3=num2str(ctrs3);
