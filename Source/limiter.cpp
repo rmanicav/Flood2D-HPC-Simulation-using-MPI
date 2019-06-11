@@ -36,7 +36,6 @@ public:
 		int b_k;
 		bool exitg1;
 
-		//emxEnsureCapacity_real_T(df1, k);
 		loop_ub = (int)n * (int)n;
 		for (k = 0; k < loop_ub; k++) {
 			df1[k] = 0.0;

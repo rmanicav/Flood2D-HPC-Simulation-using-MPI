@@ -107,6 +107,7 @@ int main(void)
 	static int iv1[2] = { 10, 10 };
 
 	double wsep[1764];
+	double UP[1764];
 	double up[1764];
 	double vp[1764];
 	double F[7246],G[7246];
@@ -237,7 +238,7 @@ int main(void)
 	fluxes f;
 	corrector c;
 	//  tcntr=0;
-	for (j = 0; j < 20000; j++) {
+	for (j = 0; j < 1; j++) {
 		simtime = 1 + j;
 	
 		l.flimiter(n,zc, dzcx, dzcy);
@@ -254,7 +255,8 @@ int main(void)
 
 
 		//    Compute fluxes at the interfaces
-	//	f.ffluxes(up,n,dwsex,dwsey,dux,duy,dvx,dvy,hextra,zc,F,G,amax);
+		f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
+	
 		//  Estimate the flux vectors on the next time step
 		c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
 		
@@ -262,8 +264,8 @@ int main(void)
 		//  U(:,:,:)=Unew(:,:,:);
 		//  h(:,:)= Unew(:,:,1);                    % computed water depth (water level)
 		//  if Unew(:,:,1)< epsilon
-		std::memset(&u[0], 0, 1764U * sizeof(double));
-		std::memset(&v[0], 0, 1764U * sizeof(double));
+		//std::memset(&u[0], 0, 1764U * sizeof(double));
+	//	std::memset(&v[0], 0, 1764U * sizeof(double));
 
 		// else
 		// u(:,:)= Unew(:,:,2)./(Unew(:,:,1)+hextra);
@@ -275,13 +277,14 @@ int main(void)
 	//    wse = 0;
 	// end
 	   //t=t+dt;
-	   dt= cr*cellsize/amax;
-	   cr=amax*dt/cellsize;
+	  // dt= cr*cellsize/amax;
+	  // cr=amax*dt/cellsize;
 	//  Writes the output at each counters seconds
+	/*
 	   double ctrs = simtime * dt;
 	   ofstream hfile;
 	if (fmod(ctrs,ntplot) == 0.0) {
-		hfile.open("C:/Users/raj/source/repos/Flood2dOutput/hOut_",ios::out);
+		hfile.open("C:/Users/raj/source/repos/Flood2d/Output/hOut_",ios::out);
 		//    fprintf(fid1,'%.2f\r\n',h(:,:));
 		//   dlmwrite(outfile,x,'delimiter','\t','precision',12)
 		hfile.close();
@@ -316,7 +319,7 @@ int main(void)
 		fileid2.close();
 
 		//  ctrs3=num2str(ctrs3);
-	}
+	}*/
 
 	return 0;
 }
