@@ -14,11 +14,10 @@ public:
 	//                double df2[1764]
 	// Return Type  : void
 	//
-	void flimiter(double n, double** f, double** df1,
+	void flimiter(int n, double** f, double** df1,
 		double** df2)
 	{
-		int k;
-		
+			
 		double df1x;
 		double df2x;
 		double df1y;
@@ -29,16 +28,6 @@ public:
 		int idx;
 		int b_k;
 		bool exitg1;
-		/*f = (double**)malloc(sizeof(double*) * (int)n);
-		df1 = (double**)malloc(sizeof(double*) * (int)n);
-		df2 = (double**)malloc(sizeof(double*) * (int)n);
-		for (int i = 0; i < n; i++)
-		{
-
-			f[i] = (double*)malloc(sizeof(double) * (int)n);
-			df1[i] = (double*)malloc(sizeof(double) * (int)n);
-			df2[i] = (double*)malloc(sizeof(double) * (int)n);
-		}*/
 		
 		//zero array
 		for (int i = 0; i < n; i++) {
@@ -48,7 +37,7 @@ public:
 				df2[i][j] = 0.0;
 			}
 		}
-
+		
 		for (int j = 0; j < n; j++)
 		{
 			df1[1][j] = 0.0;
@@ -56,23 +45,24 @@ public:
 			df1[1][j] = 0.0;
 			df2[j][1] = 0.0;
 		}
-
+		
 		for (int j = 0; j < n; j++)
 		{
-			df1[(int) n][j] = 0.0;
-			df2[j][(int) n] = 0.0;
-			df1[(int) n][j] = 0.0;
-			df2[j][(int) n] = 0.0;
+			df1[n][j] = 0.0;
+			df2[j][n] = 0.0;
+			df1[n][j] = 0.0;
+			df2[j][n] = 0.0;
 		}
-
-		for (int j = 1; j < n; k++) {
-			for (int k = 1; k < n; k++)
+		
+		for (int j = 1; j < n; j++) {
+			for (int k = 1; k < n ; k++)
 			{
 				df1x = f[j + 1][k] - f[j][k];
 				df2x = f[j][k] - f[j -1][k];
 				df1y = f[j][k + 1] - f[j][k];
 				df2y = f[j][k] - f[j][k - 1];
-
+	
+				
 				//  Superbee limiterv  (df1x,df2x,df1m,df1y,df2y,df2m)
 				if (df1x * df2x < 0.0) {
 					df2x = 0.0;

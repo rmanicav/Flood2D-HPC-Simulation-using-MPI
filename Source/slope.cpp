@@ -5,10 +5,7 @@
 class slope
 {
 public:
-	slope()
-	{
-
-	}
+	
 
 	// Function Definitions
 
@@ -122,36 +119,35 @@ public:
 	//                double sfy[100]
 	// Return Type  : void
 	//
-	void fslope(const double h[1764], const double u[1764], const double v[1764],
-		double ManN, double hextra, const double dzcx[1764], const double
-		dzcy[1764], double cellsize, double n, double sox[1764], double soy
-		[1764], double sfx[100], double sfy[100])
+	void fslope(double** h, double** u, double** v,
+		double ManN, double hextra, double** dzcx, double**
+		dzcy, int cellsize, int n, double** sox, double** soy
+		, double **sfx, double** sfy)
 	{
-		int j;
-		int k;
-		for (j = 0; j < 1764; j++) {
-			sox[j] = dzcx[j] / cellsize;
-			soy[j] = dzcy[j] / cellsize;
-		}
 
-		memset(&sfx[0], 0, 100U * sizeof(double));
-		memset(&sfy[0], 0, 100U * sizeof(double));
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < 1764; j++) {
+				sox[i][j] = dzcx[i][j] / cellsize;
+				soy[i][j] = dzcy[i][j] / cellsize;
+			}
+		}
+		
 
 		//  Intermediate frction slope values
-		for (j = 0; j < (int)n; j++) {
-			for (k = 0; k < (int)n; k++) {
-				if (h[j + 42 * k] < 1.0) {
-					sfx[j + 10 * k] = 0.0;
-					sfy[j + 10 * k] = 0.0;
+		for (int j = 0; j < (int)n; j++) {
+			for (int k = 0; k < (int)n; k++) {
+				if (h[j][k] < 1.0) {
+					sfx[j][k] = 0.0;
+					sfy[j][k] = 0.0;
 				}
-				else {
+				/*else {
 					sfx[j + 10 * k] = u[j + 42 * k] * (ManN * ManN) * rt_hypotd_snf(u[j + 42
 						* k], v[j + 42 * k]) / rt_powd_snf(h[j + 42 * k] + hextra,
 							1.3333333333333333);
 					sfy[j + 10 * k] = v[j + 42 * k] * (ManN * ManN) * rt_hypotd_snf(u[j + 42
 						* k], v[j + 42 * k]) / rt_powd_snf(h[j + 42 * k] + hextra,
 							1.3333333333333333);
-				}
+				}*/
 			}
 		}
 	}

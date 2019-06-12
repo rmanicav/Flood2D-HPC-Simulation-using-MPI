@@ -2,6 +2,7 @@
 #include<fstream>
 #include<ostream>
 #include<algorithm>
+
 #include "corrector.cpp"
 #include "limiter.cpp"
 #include "predictor.cpp"
@@ -159,24 +160,18 @@ int main(void)
 	floodData fd;
 	readFromFile(fd);
 	int iv0[31];
-	double U[5292];
-	double h[1764];
-	double **u;
-	double **v;
+	;
+	
+	
 	int simtime;
 	
-	double sox[1764];
-	double soy[1764];
-	double sfx[100];
-	double sfy[100];
+	
 	int iv1[2];
 	
 	//int iv1[2] = { 10, 10 };
-	double wsep[1764];
+	
 	double UP[1764];
-	double up[1764];
-	double vp[1764];
-	double F[7246],G[7246];
+	
 	
 	static double unusedExpr[5292];
 	int n;
@@ -282,35 +277,66 @@ int main(void)
 	predictor p;
 	fluxes f;
 	corrector c;
-	double** dzcx = allocateMemory(n);
+	double** dzcx =allocateMemory(n);
+	clearArray(dzcx, n);
 	double** dzcy = allocateMemory(n);
+	clearArray(dzcy, n);
 	double** dwsex = allocateMemory(n);
+	clearArray(dwsex, n);
 	double** dwsey = allocateMemory(n);
+	clearArray(dwsey, n);
 	double** dux = allocateMemory(n);
+	clearArray(dux, n);
 	double** duy = allocateMemory(n);
+	clearArray(duy, n);
 	double** dvx = allocateMemory(n);
+	clearArray(dvx, n);
 	double** dvy = allocateMemory(n);
+	clearArray(dvy, n);
+	double** u  =allocateMemory(n);
+	clearArray(u, n);
+	double** v =allocateMemory(n);
+	clearArray(v, n);
+	double **sox = allocateMemory(n);
+	clearArray(sox, n);
+	double **soy = allocateMemory(n);
+	clearArray(soy, n);
+	double **sfx = allocateMemory(n);
+	clearArray(sfx, n);
+	double **sfy = allocateMemory(n);
+	clearArray(sfy, n);
+	double** h = allocateMemory(n);
+	clearArray(h, n);
 	for (int j = 0; j < 1; j++) {
 		simtime = 1 + j;
 
 		l.flimiter(n,zc, dzcx, dzcy);
-		//l.flimiter(n,wse, dwsex, dwsey);
-		//l.flimiter(n,u, dux, duy);
-		//l.flimiter(n,v, dvx, dvy);
+	    l.flimiter(n,wse, dwsex, dwsey);
+	    l.flimiter(n,u, dux, duy);
+	    l.flimiter(n,v, dvx, dvy);
 
 		//  Slope calculation
-	//	s.fslope(h, u, v, ManN, hextra, dzcx, dzcy, cellsize, n, sox, soy, sfx, sfy);
+	  s.fslope(h, u, v, ManN, hextra, dzcx, dzcy, cellsize, n, sox, soy, sfx, sfy);
 
+	  double **wsep =allocateMemory(n);
+	  clearArray(wsep,n);
+	  double **up = allocateMemory(n);
+	  clearArray(up, n);
+	  double **vp = allocateMemory(n);
+	  clearArray(vp, n);
 
 		//  predictor step (estimate the values at half timestep)
-	//	p.fpredictor(nf,wse,h,u,v,dwsex,dwsey,dux,duy,dvx,dvy,dt2,dzcx,dzcy,epsilon,zc,sox,sfx,dt,soy,sfy,wsep,up,vp);
+	   p.fpredictor(n,fd.gravity,nf,wse,h,u,v,dwsex,dwsey,dux,duy,dvx,dvy,dt2,dzcx,dzcy,epsilon,zc,sox,sfx,dt,soy,sfy,wsep,up,vp);
 
 
 		//    Compute fluxes at the interfaces
 		//f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
 
+	   double **U =allocateMemory(n); 
+	   double **F = allocateMemory(n); 
+	   double **G =allocateMemory(n);
 		//  Estimate the flux vectors on the next time step
-		//c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
+		c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
 
 
 		//  U(:,:,:)=Unew(:,:,:);
@@ -328,7 +354,8 @@ int main(void)
 	// if wse < 0
 	//    wse = 0;
 	// end*/
-	
+
+	//simulate(simtime, dt, ntplot);
 
 	
 	return 0;
