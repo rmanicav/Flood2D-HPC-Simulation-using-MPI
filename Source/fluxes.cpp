@@ -5,141 +5,78 @@ class fluxes
 {
 
 public:
-		// Function Definitions
+	// Function Definitions
 
-	//
-	// Compute fluxes in X-direction
-	// Arguments    : const double UP[5292]
-	//                double n
-	//                const double dwsex[1764]
-	//                const double dwsey[1764]
-	//                const double dux[1764]
-	//                const double duy[1764]
-	//                const double dvx[1764]
-	//                const double dvy[1764]
-	//                double hextra
-	//                const double zc[1764]
-	//                emxArray_real_T *F
-	//                emxArray_real_T *G
-	//                double amax
-	// Return Type  : void
-	//
-	void ffluxes(const double UP[5292], double n, const double dwsex[1764], const
-		double dwsey[1764], const double dux[1764], const double duy[1764],
-		const double dvx[1764], const double dvy[1764], double hextra, const
-		double zc[1764], double F[5292],double G[5292],double amax)
+//
+// Compute fluxes in X-direction
+// Arguments    : const double UP[5292]
+//                double n
+//                const double dwsex[1764]
+//                const double dwsey[1764]
+//                const double dux[1764]
+//                const double duy[1764]
+//                const double dvx[1764]
+//                const double dvy[1764]
+//                double hextra
+//                const double zc[1764]
+//                emxArray_real_T *F
+//                emxArray_real_T *G
+//                double amax
+// Return Type  : void
+//
+	void ffluxes(double*** UP, int n, double** dwsex,
+		double** dwsey, double** dux, double** duy,
+		double** dvx, double** dvy, double hextra,
+		double** zc, double*** F, double*** G, double  amax)
 	{
-		solver s;
 		double hr;
 		double hl;
-		int i0;
-		int loop_ub;
 		double ul;
 		double vl;
-		int k;
-		int r0[5292];
+		double r0[42][42][42];
 		double ur;
-		int j;
 		double vr;
 		double dv0[3];
 		double zbc;
 		amax = 0.0;
 		hr = 0.0;
 		hl = 0.0;
-		
-		loop_ub = 5292;
-		for (i0 = 0; i0 < loop_ub; i0++) {
-			F[i0] = 0.0;
+
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++) {
+				for (int k = 0; k < n; k++) {
+					F[i][j][k] = 0.0;
+					G[i][j][k] = 0.0;
+				}
+			}
 		}
-		for (i0 = 0; i0 < loop_ub; i0++) {
-			G[i0] = 0.0;
-		}
+
 		ul = 0.0;
 		//  added
 		vl = 0.0;
-		
+
 		//  added
 		//  Enforce wall boundary on left side of box (west)
-		k = 1;
-	
-		while (k - 1 <= (int)((n - 1.0) + -1.0) - 1) {
-			hr = UP[1 + 42 * k] - zc[1 + 42 * k];
-			if (hr < 0.0) {
-				hr = 0.0;
-			}
-
-			if (hr == 0.0) {
-				ur = 0.0;
-				vr = 0.0;
-			}
-			else {
-				ur = UP[1765 + 42 * k] / (hr + hextra);
-				vr = UP[3529 + 42 * k] / (hr + hextra);
-			}
-			
-			s.fsolver(hr, hr, ur, ur, vr, vr, 0.0, 1.0, hextra, dv0, &zbc);
-			loop_ub =5292;//F->size[2];
-				
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0[i0] = i0;
-			}
-
-			////
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-				F[i0] = dv0[i0];
-			}
-			
-			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
-			}
-			else {
-				amax = zbc;
-			}
-
-			k++;
-		}
-		
+		//boundaryWest(hr, hl, ul, vl, r0, ur, vr, dv0, zbc, amax, UP, hextra, zc, F, G, n);
 		//  Enforce wall boundary on second rows along the X-axis
-		for (k = 1; k - 1 < (int)((n - 1.0) + -1.0); k++) {
-			hl = UP[1 + 42 * k] - zc[1 + 42 * k];
-			if (hl < 0.0) {
-				hl = 0.0;
-			}
-
-			if (hl == 0.0) {
-				ul = 0.0;
-				vl = 0.0;
-			}
-			else {
-				ul = UP[1764 + 42 * k] / (hl + hextra);
-				vl = UP[3528 + 42 * k] / (hl + hextra);
-			}
-
-			s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
-			loop_ub =5292;//F-size[2]
-			
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0[i0] = i0;
-			}
-
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				//F->data[(F->size[0] * k + F->size[0] * F->size[1] * r0[i0]) + 1] =
-					//dv0[i0];
-				F[i0] = dv0[i0];
-			}
-
-			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
-			}
-			else {
-				amax = zbc;
-			}
-		}
-		
+		//boundaryX(hr, hl, ul, vl, r0, ur, vr, dv0, zbc, amax, UP, hextra, zc, F, G, n)
+	
 		// Compute the fluxe in the X-direction on the domain
-		for (j = 2; j - 2 < (int)((n - 1.0) + -2.0); j++) {
+	
+		//compute 21 22
+
+				//  % For the 23rd row
+  // Compute the fluxe in the X-direction on the domain
+
+		
+	}
+	void xDirectionFlux()
+	{
+		/*for (j = 2; j - 2 < (int)((n - 1.0) + -2.0); j++) {
 			for (k = 0; k < (int)n; k++) {
 				if ((zc[((int)((3.0 + (double)(j - 2)) - 1.0) + 42 * k) - 1] > zc[j + 42 *
-					k]) || isnan(zc[j + 42 * k])) {
+					k]) || rtIsNaN(zc[j + 42 * k])) {
 					zbc = zc[((int)((3.0 + (double)(j - 2)) - 1.0) + 42 * k) - 1];
 				}
 				else {
@@ -201,27 +138,32 @@ public:
 					vr = UP[3528 + (j + 42 * k)] / (hr + hextra) - 0.5 * dvx[j + 42 * k];
 				}
 
-				s.fsolver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
-				loop_ub =5292;// F->size[2];
+				solver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
+				loop_ub = F->size[2];
+				i0 = r0->size[0];
+				r0->size[0] = loop_ub;
+				emxEnsureCapacity_int32_T(r0, i0);
 				for (i0 = 0; i0 < loop_ub; i0++) {
-					r0[i0] = i0;
+					r0->data[i0] = i0;
 				}
 
+				loop_ub = r0->size[0];
 				for (i0 = 0; i0 < loop_ub; i0++) {
-					F[i0] =dv0[i0];
+					F->data[(j + F->size[0] * k) + F->size[0] * F->size[1] * r0->data[i0]] =
 						dv0[i0];
 				}
 
-				if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+				if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
 				}
 				else {
-					amax = zbc;
+					*amax = zbc;
 				}
 			}
-		}
-
-		//  From 20th to 21st and 22nd rows
-		for (j = 0; j < 2; j++) {
+		}*/
+	}
+	void middleX()
+	{
+	/*	for (j = 0; j < 2; j++) {
 			for (k = 0; k < (int)(n - 1.0); k++) {
 				zbc = zc[(j + 42 * k) + 19];
 				if (UP[(j + 42 * k) + 19] - zbc > 0.0) {
@@ -241,31 +183,33 @@ public:
 					}
 				}
 
-				////fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
-				loop_ub =5292;// F->size[2];
-				
-				//emxEnsureCapacity_int32_T(r0, i0);
+				solver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
+				loop_ub = F->size[2];
+				i0 = r0->size[0];
+				r0->size[0] = loop_ub;
+				emxEnsureCapacity_int32_T(r0, i0);
 				for (i0 = 0; i0 < loop_ub; i0++) {
-					r0[i0] = i0;
-				}
-				
-				for (i0 = 0; i0 < loop_ub; i0++) {
-					//F->data[((j + F->size[0] * k) + F->size[0] * F->size[1] * r0[i0])
-						//+ 20] = dv0[i0];
-					F[i0] = dv0[i0];
+					r0->data[i0] = i0;
 				}
 
-				if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+				loop_ub = r0->size[0];
+				for (i0 = 0; i0 < loop_ub; i0++) {
+					F->data[((j + F->size[0] * k) + F->size[0] * F->size[1] * r0->data[i0])
+						+ 20] = dv0[i0];
+				}
+
+				if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
 				}
 				else {
-					amax = zbc;
+					*amax = zbc;
 				}
 			}
-		}
+		}*/
+	}
+	void twentythird()
+	{
 
-		//  % For the 23rd row
-		// Compute the fluxe in the X-direction on the domain
-		for (k = 0; k < (int)n; k++) {
+		/*for (k = 0; k < (int)n; k++) {
 			zbc = zc[22 + 42 * k];
 			if (UP[22 + 42 * k] - zbc > 0.0) {
 				hl = UP[22 + 42 * k] - zbc;
@@ -308,141 +252,35 @@ public:
 				vr = UP[3550 + 42 * k] / (hr + hextra);
 			}
 
-			//fsolver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
-			loop_ub =5292;//F-size[2]
+			solver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
+			loop_ub = F->size[2];
+			i0 = r0->size[0];
+			r0->size[0] = loop_ub;
 			
 			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0[i0] = i0;
-			}
-					
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				F[i0] =dv0[i0];
+				r0->data[i0] = i0;
 			}
 
-			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+			loop_ub = r0->size[0];
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				F->data[(F->size[0] * k + F->size[0] * F->size[1] * r0->data[i0]) + 22] =
+					dv0[i0];
+			}
+
+			if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
 			}
 			else {
-				amax = zbc;
+				*amax = zbc;
 			}
-		}
-
-		//  Enforce wall boundary on right side of box (East)
-		for (k = 0; k < (int)n; k++) {
-			hl = UP[((int)(n - 1.0) + 42 * k) - 1] - zc[((int)(n - 1.0) + 42 * k) - 1];
-			if (hl < 0.0) {
-				hl = 0.0;
-			}
-
-			if (hl == 0.0) {
-				ul = 0.0;
-				vl = 0.0;
-			}
-			else {
-				ul = UP[((int)(n - 1.0) + 42 * k) + 1763] / (hl + hextra);
-				vl = UP[((int)(n - 1.0) + 42 * k) + 3527] / (hl + hextra);
-			}
-
-			s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
-			loop_ub =5292;//F-size[2]
-						
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0[i0] = i0;
-			}
-
-			
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				//F->data[(((int)n + F->size[0] * k) + F->size[0] * F->size[1] * r0[i0])
-					//- 1] = dv0[i0];
-				F[i0] = dv0[i0];
-			}
-
-			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
-			}
-			else {
-				amax = zbc;
-			}
-		}
-		
-		//
-		// Compute fluxes in y-direction
-		//  Enforce wall boundary on bottom of box (South)
-		for (j = 1; j - 1 < (int)((n - 1.0) + -1.0); j++) {
-			hl = UP[42 + j] - zc[42 + j];
-			if (hl < 0.0) {
-				hl = 0.0;
-			}
-
-			if (hl == 0.0) {
-				ul = 0.0;
-				vl = 0.0;
-			}
-			else {
-				ul = UP[1764 + j] / (hr + hextra);
-				vl = UP[3528 + j] / (hr + hextra);
-			}
-
-			s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-			loop_ub =5292;
-			
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0[i0] = i0;
-			}
-
-			//
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				//G->data[j + G->size[0] * G->size[1] * r0[i0]] = dv0[i0];
-				G[i0] = dv0[i0];
-			}
-
-			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
-			}
-			else {
-				amax = zbc;
-			}
-		}
-
-		// Enforce wall boundary on second column along Y
-		for (j = 1; j - 1 < (int)((n - 1.0) + -1.0); j++) {
-			hl = UP[42 + j] - zc[42 + j];
-			if (hl < 0.0) {
-				hl = 0.0;
-			}
-
-			if (hl == 0.0) {
-				ul = 0.0;
-				vl = 0.0;
-			}
-			else {
-				ul = UP[1764 + j] / (hl + hextra);
-				vl = UP[3528 + j] / (hl + hextra);
-			}
-
-			s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-			loop_ub =5292;
-			
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0[i0] = i0;
-			}
-
-			//
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				//G->data[(j + G->size[0]) + G->size[0] * G->size[1] * r0[i0]] =
-					//dv0[i0];
-				G[i0] = dv0[i0];
-			}
-
-			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
-			}
-			else {
-				amax = zbc;
-			}
-		}
-
+		}*/
+	}
+	void yDirectionFlux()
+	{
 		//  Compute fluxes along Y
-		for (k = 2; k - 2 < (int)((n - 1.0) + -2.0); k++) {
+		/*for (k = 2; k - 2 < (int)((n - 1.0) + -2.0); k++) {
 			for (j = 0; j < (int)n; j++) {
 				if ((zc[j + 42 * ((int)((3.0 + (double)(k - 2)) - 1.0) - 1)] > zc[j + 42 *
-					k]) || isnan(zc[j + 42 * k])) {
+					k]) || rtIsNaN(zc[j + 42 * k])) {
 					zbc = zc[j + 42 * ((int)((3.0 + (double)(k - 2)) - 1.0) - 1)];
 				}
 				else {
@@ -504,106 +342,333 @@ public:
 					vr = UP[3528 + (j + 42 * k)] / (hr + hextra) - 0.5 * dvy[j + 42 * k];
 				}
 
-				//fsolver(hl, hr, ul, ur, vl, vr, 1.0, 0.0, hextra, dv0, &zbc);
-				loop_ub =5292;//G->size[2];
-				//
-				//
-				//emxEnsureCapacity_int32_T(r0, i0);
+				solver(hl, hr, ul, ur, vl, vr, 1.0, 0.0, hextra, dv0, &zbc);
+				loop_ub = G->size[2];
+				i0 = r0->size[0];
+				r0->size[0] = loop_ub;
+				emxEnsureCapacity_int32_T(r0, i0);
 				for (i0 = 0; i0 < loop_ub; i0++) {
-					r0[i0] = i0;
+					r0->data[i0] = i0;
 				}
 
-				//
+				loop_ub = r0->size[0];
 				for (i0 = 0; i0 < loop_ub; i0++) {
-					//G->data[(j + G->size[0] * k) + G->size[0] * G->size[1] * r0[i0]] =
-						//dv0[i0];
-					G[i0] = dv0[0];
+					G->data[(j + G->size[0] * k) + G->size[0] * G->size[1] * r0->data[i0]] =
+						dv0[i0];
 				}
 
-				if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+				if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
 				}
 				else {
-					amax = zbc;
+					*amax = zbc;
 				}
 			}
-		}
-
-		//  for the 23rd rows /downstream of the dam
-		for (k = 0; k < 22; k++) {
-			for (j = 0; j < 2; j++) {
-				hl = UP[(j + 42 * k) + 20] - zc[(j + 42 * k) + 20];
-				if (hl < 0.0) {
-					hl = 0.0;
-				}
-
-				ul = UP[(j + 42 * k) + 1784] / (hl + hextra);
-				vl = UP[(j + 42 * k) + 3548] / (hl + hextra);
-				//fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-				loop_ub =5292;
-				//
-				//
-				//emxEnsureCapacity_int32_T(r0, i0);
-				for (i0 = 0; i0 < loop_ub; i0++) {
-					r0[i0] = i0;
-				}
-
-				//
-				for (i0 = 0; i0 < loop_ub; i0++) {
-					//G->data[((j + G->size[0] * (k + 1)) + G->size[0] * G->size[1] * r0->
-						//data[i0]) + 20] = dv0[i0];
-					G[i0] = dv0[0];
-				}
-
-				if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
-				}
-				else {
-					amax = zbc;
-				}
+		}*/
+	}
+	void secondColumnY()
+	{
+		// Enforce wall boundary on second column along Y
+		/*for (j = 1; j - 1 < (int)((n - 1.0) + -1.0); j++) {
+			hl = UP[42 + j] - zc[42 + j];
+			if (hl < 0.0) {
+				hl = 0.0;
 			}
-		}
 
-		//  At the 24th cell at the corner of the dam opening
-		for (j = 0; j < 2; j++) {
-			zbc = zc[j + 986];
-			if (UP[j + 986] - zbc > 0.0) {
-				hl = UP[j + 986] - zbc;
-				if (hl < 0.0) {
-					hl = 0.0;
-				}
+			if (hl == 0.0) {
+				ul = 0.0;
+				vl = 0.0;
 			}
 			else {
-				if (UP[j + 986] - zbc <= 0.0) {
-					hl = 0.0;
-					ul = 0.0;
-					vl = 0.0;
+				ul = UP[1764 + j] / (hl + hextra);
+				vl = UP[3528 + j] / (hl + hextra);
+			}
+
+			solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+			loop_ub = G->size[2];
+			i0 = r0->size[0];
+			r0->size[0] = loop_ub;
+			emxEnsureCapacity_int32_T(r0, i0);
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				r0->data[i0] = i0;
+			}
+
+			loop_ub = r0->size[0];
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				G->data[(j + G->size[0]) + G->size[0] * G->size[1] * r0->data[i0]] =
+					dv0[i0];
+			}
+
+			if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
+			}
+			else {
+				*amax = zbc;
+			}
+		}*/
+	}
+	void boundaryEast()
+	{
+		//  Enforce wall boundary on right side of box (East)
+		/*for (k = 0; k < (int)n; k++) {
+			hl = UP[((int)(n - 1.0) + 42 * k) - 1] - zc[((int)(n - 1.0) + 42 * k) - 1];
+			if (hl < 0.0) {
+				hl = 0.0;
+			}
+
+			if (hl == 0.0) {
+				ul = 0.0;
+				vl = 0.0;
+			}
+			else {
+				ul = UP[((int)(n - 1.0) + 42 * k) + 1763] / (hl + hextra);
+				vl = UP[((int)(n - 1.0) + 42 * k) + 3527] / (hl + hextra);
+			}
+
+			solver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
+			loop_ub = F->size[2];
+			i0 = r0->size[0];
+			r0->size[0] = loop_ub;
+			emxEnsureCapacity_int32_T(r0, i0);
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				r0->data[i0] = i0;
+			}
+
+			loop_ub = r0->size[0];
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				F->data[(((int)n + F->size[0] * k) + F->size[0] * F->size[1] * r0->data[i0])
+					- 1] = dv0[i0];
+			}
+
+			if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
+			}
+			else {
+				*amax = zbc;
+			}
+		}*/
+
+	}
+	void boundarySouthY()
+	{
+		//
+  // Compute fluxes in y-direction
+  //  Enforce wall boundary on bottom of box (South)
+		/*for (j = 1; j - 1 < (int)((n - 1.0) + -1.0); j++) {
+			hl = UP[42 + j] - zc[42 + j];
+			if (hl < 0.0) {
+				hl = 0.0;
+			}
+
+			if (hl == 0.0) {
+				ul = 0.0;
+				vl = 0.0;
+			}
+			else {
+				ul = UP[1764 + j] / (hr + hextra);
+				vl = UP[3528 + j] / (hr + hextra);
+			}
+
+			solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+			loop_ub = G->size[2];
+			i0 = r0->size[0];
+			r0->size[0] = loop_ub;
+			emxEnsureCapacity_int32_T(r0, i0);
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				r0->data[i0] = i0;
+			}
+
+			loop_ub = r0->size[0];
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				G->data[j + G->size[0] * G->size[1] * r0->data[i0]] = dv0[i0];
+			}
+
+			if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
+			}
+			else {
+				*amax = zbc;
+			}
+		}*/
+
+
+	}
+	double boundaryX(double hr, double hl, double ul, double vl, double r0[42][42][42], double ur, double vr,
+		double dv0[3], double zbc, double amax, double*** UP, double hextra, double** zc, double*** F, double*** G, int n)
+	{
+		solver s;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < n; k++)
+				{
+					hr = UP[i][j][0] - zc[j][0];
+					if (hr < 0.0) {
+						hr = 0.0;
+					}
+
+					if (hr == 0.0) {
+						ur = 0.0;
+						vr = 0.0;
+					}
+					else {
+						ur = UP[j][k][1] / (hr + hextra);
+						vr = UP[j][k][2] / (hr + hextra);
+					}
+					s.fsolver(hr, hr, ur, ur, vr, vr, 0.0, 1.0, hextra, dv0, &zbc);
+
+					for (int i = 0; i < n; i++) {
+						for (int j = 0; j < n; j++)
+						{
+							for (int k = 0; k < n; k++)
+							{
+								r0[i][j][k] = i;
+							}
+						}
+					}
+				}
+				////
+				for (int i = 0; i < n; i++) {
+					for (int j = 0; j < n; j++)
+					{
+						//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
+						F[i][j][0] = dv0[i];
+					}
 				}
 			}
-
-			//fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-			loop_ub =5292;
-			//
-			//
-			//emxEnsureCapacity_int32_T(r0, i0);
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0[i0] = i0;
-			}
-
-			//
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				//G->data[((j + G->size[0] * 23) + G->size[0] * G->size[1] * r0[i0]) +
-					//20] = dv0[i0];
-				G[i0] = dv0[0];
-			}
-
 			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 			}
 			else {
 				amax = zbc;
 			}
 		}
+		
+	}
+	double boundaryWest(double hr,	double hl,	double ul,	double vl,	double r0[42][42][42],	double ur,	double vr,
+	double dv0[3],	double zbc,	double amax, double*** UP, double hextra,double** zc, double*** F, double*** G, int n
+	)
+	{
+		solver s;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < n; k++)
+				{
+					hr = UP[i][j][0] - zc[j][0];
+					if (hr < 0.0) {
+						hr = 0.0;
+					}
 
+					if (hr == 0.0) {
+						ur = 0.0;
+						vr = 0.0;
+					}
+					else {
+						ur = UP[j][k][1] / (hr + hextra);
+						vr = UP[j][k][2] / (hr + hextra);
+					}
+					s.fsolver(hr, hr, ur, ur, vr, vr, 0.0, 1.0, hextra, dv0, &zbc);
+
+					for (int i = 0; i < n; i++) {
+						for (int j = 0; j < n; j++)
+						{
+							for (int k = 0; k < n; k++)
+							{
+								r0[i][j][k] = i;
+							}
+						}
+					}
+				}
+				////
+				for (int i = 0; i < n; i++) {
+					for (int j = 0; j < n; j++)
+					{
+						//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
+						F[i][j][0] = dv0[i];
+					}
+				}
+			}
+			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+			}
+			else {
+				amax = zbc;
+			}
+		}
+		
+	}
+	void boundaryNorth()
+	{
+		// Enforce wall boundary on top of box (north)
+		/*for (j = 0; j < (int)n; j++) {
+			hl = UP[j + 42 * ((int)(n - 1.0) - 1)] - zc[j + 42 * ((int)(n - 1.0) - 1)];
+			if (hl < 0.0) {
+				hl = 0.0;
+			}
+
+			ul = UP[1764 + (j + 42 * ((int)(n - 1.0) - 1))] / (hl + hextra);
+			vl = UP[3528 + (j + 42 * ((int)(n - 1.0) - 1))] / (hl + hextra);
+			solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+			loop_ub = G->size[2];
+			i0 = r0->size[0];
+			r0->size[0] = loop_ub;
+			emxEnsureCapacity_int32_T(r0, i0);
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				r0->data[i0] = i0;
+			}
+
+			loop_ub = r0->size[0];
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				G->data[(j + G->size[0] * ((int)n - 1)) + G->size[0] * G->size[1] *
+					r0->data[i0]] = dv0[i0];
+			}
+
+			if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
+			}
+			else {
+				*amax = zbc;
+			}
+		}*/
+	}
+	void leftDamn()
+	{
+		//  for the left part of the dam
+		/*for (k = 0; k < (int)((n - 1.0) + -35.0); k++) {
+			for (j = 0; j < 2; j++) {
+				hl = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 20] - zc[(j +
+					42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 20];
+				if (hl < 0.0) {
+					hl = 0.0;
+				}
+
+				ul = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 1784] / (hl +
+					hextra);
+				vl = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 3548] / (hl +
+					hextra);
+				solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+				loop_ub = G->size[2];
+				i0 = r0->size[0];
+				r0->size[0] = loop_ub;
+				emxEnsureCapacity_int32_T(r0, i0);
+				for (i0 = 0; i0 < loop_ub; i0++) {
+					r0->data[i0] = i0;
+				}
+
+				loop_ub = r0->size[0];
+				for (i0 = 0; i0 < loop_ub; i0++) {
+					G->data[((j + G->size[0] * (k + 35)) + G->size[0] * G->size[1] *
+						r0->data[i0]) + 20] = dv0[i0];
+				}
+
+				if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
+				}
+				else {
+					*amax = zbc;
+				}
+			}
+		}*/
+	}
+	void thirtythreeLeftDam()
+	{
 		//  At the 35th cell at the left wing of the dam opening
-		for (j = 0; j < 2; j++) {
+		/*for (j = 0; j < 2; j++) {
 			zbc = zc[j + 1406];
 			if (UP[j + 1406] - zbc > 0.0) {
 				hl = UP[j + 1406] - zbc;
@@ -622,101 +687,109 @@ public:
 				}
 			}
 
-			//fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-			loop_ub =5292;
-			//
-			//
-			//emxEnsureCapacity_int32_T(r0, i0);
+			solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+			loop_ub = G->size[2];
+			i0 = r0->size[0];
+			r0->size[0] = loop_ub;
+			emxEnsureCapacity_int32_T(r0, i0);
 			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0[i0] = i0;
+				r0->data[i0] = i0;
 			}
 
-			//
+			loop_ub = r0->size[0];
 			for (i0 = 0; i0 < loop_ub; i0++) {
-				//G->data[((j + G->size[0] * 34) + G->size[0] * G->size[1] * r0[i0]) +
-					//20] = dv0[i0];
-				G[i0] = dv0[0];
+				G->data[((j + G->size[0] * 34) + G->size[0] * G->size[1] * r0->data[i0]) +
+					20] = dv0[i0];
 			}
 
-			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+			if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
 			}
 			else {
-				amax = zbc;
+				*amax = zbc;
 			}
-		}
+		}*/
 
-		//  for the left part of the dam
-		for (k = 0; k < (int)((n - 1.0) + -35.0); k++) {
+	}
+
+	void twentyfourDam()
+	{
+
+		//  At the 24th cell at the corner of the dam opening
+		/*for (j = 0; j < 2; j++) {
+			zbc = zc[j + 986];
+			if (UP[j + 986] - zbc > 0.0) {
+				hl = UP[j + 986] - zbc;
+				if (hl < 0.0) {
+					hl = 0.0;
+				}
+			}
+			else {
+				if (UP[j + 986] - zbc <= 0.0) {
+					hl = 0.0;
+					ul = 0.0;
+					vl = 0.0;
+				}
+			}
+
+			solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+			loop_ub = G->size[2];
+			i0 = r0->size[0];
+			r0->size[0] = loop_ub;
+			emxEnsureCapacity_int32_T(r0, i0);
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				r0->data[i0] = i0;
+			}
+
+			loop_ub = r0->size[0];
+			for (i0 = 0; i0 < loop_ub; i0++) {
+				G->data[((j + G->size[0] * 23) + G->size[0] * G->size[1] * r0->data[i0]) +
+					20] = dv0[i0];
+			}
+
+			if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
+			}
+			else {
+				*amax = zbc;
+			}
+		}*/
+
+	}
+
+	void twentythreeDownstream()
+	{
+		//  for the 23rd rows /downstream of the dam
+		/*for (k = 0; k < 22; k++) {
 			for (j = 0; j < 2; j++) {
-				hl = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 20] - zc[(j +
-					42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 20];
+				hl = UP[(j + 42 * k) + 20] - zc[(j + 42 * k) + 20];
 				if (hl < 0.0) {
 					hl = 0.0;
 				}
 
-				ul = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 1784] / (hl +
-					hextra);
-				vl = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 3548] / (hl +
-					hextra);
-				//fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-				loop_ub =5292;
-				//
-				//
-				//emxEnsureCapacity_int32_T(r0, i0);
+				ul = UP[(j + 42 * k) + 1784] / (hl + hextra);
+				vl = UP[(j + 42 * k) + 3548] / (hl + hextra);
+				solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+				loop_ub = G->size[2];
+				i0 = r0->size[0];
+				r0->size[0] = loop_ub;
+				emxEnsureCapacity_int32_T(r0, i0);
 				for (i0 = 0; i0 < loop_ub; i0++) {
-					r0[i0] = i0;
+					r0->data[i0] = i0;
 				}
 
-				//
+				loop_ub = r0->size[0];
 				for (i0 = 0; i0 < loop_ub; i0++) {
-					//G->data[((j + G->size[0] * (k + 35)) + G->size[0] * G->size[1] *
-						//r0[i0]) + 20] = dv0[i0];
-					G[i0] = dv0[0];
+					G->data[((j + G->size[0] * (k + 1)) + G->size[0] * G->size[1] * r0->
+						data[i0]) + 20] = dv0[i0];
 				}
 
-				if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+				if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
 				}
 				else {
-					amax = zbc;
+					*amax = zbc;
 				}
 			}
-		}
-
-		// Enforce wall boundary on top of box (north)
-		for (j = 0; j < (int)n; j++) {
-			hl = UP[j + 42 * ((int)(n - 1.0) - 1)] - zc[j + 42 * ((int)(n - 1.0) - 1)];
-			if (hl < 0.0) {
-				hl = 0.0;
-			}
-
-			ul = UP[1764 + (j + 42 * ((int)(n - 1.0) - 1))] / (hl + hextra);
-			vl = UP[3528 + (j + 42 * ((int)(n - 1.0) - 1))] / (hl + hextra);
-			//fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-			loop_ub =5292;
-			//
-			//
-			//emxEnsureCapacity_int32_T(r0, i0);
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0[i0] = i0;
-			}
-
-			//
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				//G->data[(j + G->size[0] * ((int)n - 1)) + G->size[0] * G->size[1] *
-					//r0[i0]] = dv0[i0];
-				G[i0] = dv0[0];
-			}
-
-			if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
-			}
-			else {
-				amax = zbc;
-			}
-		}
-
-		
+		}*/
 	}
-	
 		//
 	// File trailer for fluxes.cpp
 	//

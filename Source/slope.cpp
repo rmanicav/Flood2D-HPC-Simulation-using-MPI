@@ -140,14 +140,12 @@ public:
 					sfx[j][k] = 0.0;
 					sfy[j][k] = 0.0;
 				}
-				/*else {
-					sfx[j + 10 * k] = u[j + 42 * k] * (ManN * ManN) * rt_hypotd_snf(u[j + 42
-						* k], v[j + 42 * k]) / rt_powd_snf(h[j + 42 * k] + hextra,
+				else {
+					sfx[j][k] = u[j][k] * (ManN * ManN) * rt_hypotd_snf(u[j][k], v[j][k]) / rt_powd_snf(h[j][k] + hextra,
 							1.3333333333333333);
-					sfy[j + 10 * k] = v[j + 42 * k] * (ManN * ManN) * rt_hypotd_snf(u[j + 42
-						* k], v[j + 42 * k]) / rt_powd_snf(h[j + 42 * k] + hextra,
+					sfy[j][k] = v[j][k] * (ManN * ManN) * rt_hypotd_snf(u[j][k], v[j][k]) / rt_powd_snf(h[j][k] + hextra,
 							1.3333333333333333);
-				}*/
+				}
 			}
 		}
 	}
