@@ -162,6 +162,7 @@ int main(void)
 	for (int j = 0; j < 1; j++) {
 		simtime = 1 + j;
 
+		//limiter
 		l.flimiter(n, zc, dzcx, dzcy);
 		l.flimiter(n, wse, dwsex, dwsey);
 		l.flimiter(n, u, dux, duy);
@@ -170,9 +171,7 @@ int main(void)
 		//  Slope calculation
 		s.fslope(h, u, v, ManN, hextra, dzcx, dzcy, cellsize, n, sox, soy, sfx, sfy);
 
-
-
-		//  predictor step (estimate the values at half timestep)
+			   //  predictor step (estimate the values at half timestep)
 		p.fpredictor(n, fd.gravity, nf, wse, h, u, v, dwsex, dwsey, dux, duy, dvx, dvy, dt2, dzcx, dzcy, epsilon, zc, sox, sfx, dt, soy, sfy, wsep, up, vp);
 
 		double*** UP = help.allocate3dMemory(n, fd.dim);
@@ -198,17 +197,12 @@ int main(void)
 				UP[0][0][j] = v[i][j];
 			}
 		}
-
-
 		//    Compute fluxes at the interfaces
 		f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
-
-
-
+			   
 		//  Estimate the flux vectors on the next time step
 		c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
-
-
+		
 		//simulate(simtime, dt, ntplot);
 
 	}
