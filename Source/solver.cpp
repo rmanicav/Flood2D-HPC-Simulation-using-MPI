@@ -3,22 +3,8 @@
 class solver
 {
 public:
-	// Function Definitions
+	///
 
-	//
-	// Arguments    : double hl
-	//                double hr
-	//                double ul
-	//                double ur
-	//                double vl
-	//                double vr
-	//                double sn
-	//                double cn
-	//                double hextra
-	//                double F[3]
-	//                double *amax
-	// Return Type  : void
-	//
 	void fsolver(double hl, double hr, double ul, double ur, double vl, double vr,
 		double sn, double cn, double hextra, double F[3], double* amax)
 	{

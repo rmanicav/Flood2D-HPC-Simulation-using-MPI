@@ -11,7 +11,7 @@ struct floodData
 	int  L, dim;
 	double hextra, epsilon, nt, ntPlot, dt, initWSE, hWL;
 	double cr;
-
+	double **zc;
 };
 class helper
 {
@@ -52,7 +52,7 @@ public:
 		}
 		return arr;
 	}
-	void readFromFile(floodData * fd)
+	void readFromFile(floodData* fd)
 	{
 		/*const signed char iv0[31] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
 	  13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 34, 35, 36, 37, 38, 39, 40, 41 };*
@@ -62,57 +62,65 @@ public:
 		infile.open("iv.txt");
 		cout << "----------------------------------\n";
 		infile >> fd->gravity;
-		cout << "Gravity is " << fd->gravity << endl;
+		cout << "Gravity:" << fd->gravity << endl;
 		infile >> fd->manN;
-		cout << "Manning is " << fd->manN << endl;
+		cout << "Manning:" << fd->manN << endl;
 		infile >> fd->hextra;
-		cout << "hextra is " << fd->hextra << endl;
+		cout << "hextra:" << fd->hextra << endl;
 		infile >> fd->epsilon;
-		cout << "epsilon is " << fd->epsilon << endl;
+		cout << "epsilon:" << fd->epsilon << endl;
 		infile >> fd->cellSize;
-		cout << "Cell size is " << fd->cellSize << endl;
+		cout << "Cell size:" << fd->cellSize << endl;
 		infile >> fd->L;
-		cout << "Box size is " << fd->L << endl;
+		cout << "Box size:" << fd->L << endl;
 		infile >> fd->nt;
-		cout << "Number of time steps is " << fd->nt << endl;
+		cout << "Number of time steps:" << fd->nt << endl;
 		infile >> fd->ntPlot;
-		cout << "Plotting interval is " << fd->ntPlot << endl;
+		cout << "Plotting interval:" << fd->ntPlot << endl;
 		infile >> fd->dt;
-		cout << "Time steps is " << fd->dt << endl;
-		cout << "----------------------------------\n\n";
+		cout << "Time steps:" << fd->dt << endl;
+		//cout << "----------------------------------\n\n";
 		infile >> count;
 		cout << "----iv0------\n";
 		for (int i = 0; i < count; i++)
 		{
 			infile >> fd->iv0[i];
-			cout << fd->iv0[i] << "\t";
+			//		cout << fd->iv0[i] << "\t";
 		}
-		cout << "\n-------------------------------\n\n";
+		//cout << "\n-------------------------------\n\n";
 		cout << endl;
 		infile >> count;
-		cout << "----iv1------\n";
+		//cout << "----iv1------\n";
 		for (int i = 0; i < count; i++)
 		{
 			infile >> fd->iv1[i];
-			cout << fd->iv1[i] << "\t";
+			//		cout << fd->iv1[i] << "\t";
 		}
-		cout << "\n-------------------------------\n\n";
-		cout << "\n-------------------------------\n\n";
+		//cout << "\n-------------------------------\n\n";
+		//cout << "\n-------------------------------\n\n";
 		cout << endl;
 		infile >> fd->initV;
-		cout << "Init value is " <<fd->initV << endl;
+		cout << "Init value:" << fd->initV << endl;
 		infile >> fd->initWSE;
-		cout << "Initial value of WSE is " << fd->initWSE << endl;
+		cout << "WSE downstream value:" << fd->initWSE << endl;
 		infile >> fd->hWL;
-		cout << "Higher water level is  " <<  fd->hWL << endl;
+		cout << "WSE upstream value:" << fd->hWL << endl;
 		infile >> fd->cr;
-		cout << "cr value is  " << fd->cr << endl;
+		cout << "cr value:" << fd->cr << endl;
 		infile >> fd->dim;
-		cout << "Dimension is " << fd->dim << endl;
+		cout << "Dimension:" << fd->dim << endl;
 		cout << "\n-------------------------------\n\n";
-
+		fd->zc = allocateMemory(42);
+		clearArray(fd->zc,42);
+		for (int i = 0; i < 42; i++)
+		{
+			for (int j = 0; j < 42; j++)
+			{
+				infile >> fd->zc[i][j];
+			}
+		}
+		printArray(fd->zc, 42, "zc");
 	}
-
 	void simulate(int simtime, double dt, int ntplot)
 	{
 		fstream fileid, fileid1, fileid2;
@@ -167,5 +175,20 @@ public:
 			//  ctrs3=num2str(ctrs3);
 		}
 
+	}
+
+	void printArray(double** arr, int n, string name)
+	{
+		cout << "*********************************************************************************************" << endl;
+		cout << "\t\t\t" << name << " Array"<<endl;
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				cout << arr[i][j] << "\t";
+			}
+			cout << endl;
+		}
+		cout << "*********************************************************************************************" << endl;
 	}
 };

@@ -1,6 +1,5 @@
 #include "solver.cpp"
 #include <stdlib.h>
-//#include "fluxes_emxAPI.cpp"
 class fluxes
 {
 
@@ -74,9 +73,14 @@ public:
 		amax = secondColumnY(n, UP, G, amax, zc, hextra);
 		//Y fluxes
 		amax = yDirectionFlux(zc, UP, amax, G, dwsex, hextra, n, duy, dwsey, dvy);
-		//35 
-		amax =twentythreerowDownStream(zc, UP, amax, G, dwsex, hextra, n, duy, dwsey, dvy);
-		
+		//23 
+		amax =twentythreerowDownStream(zc, UP, amax, G, hextra, n);
+		//24
+		amax = twentyfourDam(zc,UP,amax,G,hextra,n);
+		//35
+		amax=thirtyFiveLeftDamn(zc,UP,amax,G,hextra,n);
+		//left dam
+		amax = leftDamn(zc, UP, amax, G, hextra, n);
 	}
 	double xDirectionFlux(double **zc,double ***UP,double amax,double ***F,double **dwsex,double hextra,int n,double **dux,
 		double **dvx)
@@ -713,13 +717,9 @@ public:
 		}
 		return amax;
 	}
-	double twentythreerowDownStream(double** zc, double*** UP, double amax, double*** G, double** dwsex, double hextra, int n,
-		double** duy, double** dwsey, double** dvy)
+	double twentythreerowDownStream(double** zc, double*** UP, double amax, double*** G,double hextra,int n)
 	{
 		double zbc = 0.0;
-		double hr = 0.0;
-		double ur = 0.0;
-		double vr = 0.0;
 		double hl = 0.0;
 		double ul = 0.0;
 		double vl = 0.0;
@@ -759,125 +759,49 @@ public:
 			}
 			return amax;
 	}
-	void leftDamn()
+	double twentyfourDam(double** zc, double*** UP, double amax, double*** G,  double hextra, int n)
 	{
-		//  for the left part of the dam
-		/*for (k = 0; k < (int)((n - 1.0) + -35.0); k++) {
-			for (j = 0; j < 2; j++) {
-				hl = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 20] - zc[(j +
-					42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 20];
-				if (hl < 0.0) {
-					hl = 0.0;
-				}
+		double zbc = 0.0;
+		double hl = 0.0;
+		double ul = 0.0;
+		double vl = 0.0;
+		double dv0[3];
+		solver s;
 
-				ul = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 1784] / (hl +
-					hextra);
-				vl = UP[(j + 42 * ((int)((36.0 + (double)k) - 1.0) - 1)) + 3548] / (hl +
-					hextra);
-				solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-				loop_ub = G->size[2];
-				i0 = r0->size[0];
-				r0->size[0] = loop_ub;
-				emxEnsureCapacity_int32_T(r0, i0);
-				for (i0 = 0; i0 < loop_ub; i0++) {
-					r0->data[i0] = i0;
-				}
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 24; j < 24; j++)
+			{
+				for (int k = 21; k < 22; k++)
+				{
 
-				loop_ub = r0->size[0];
-				for (i0 = 0; i0 < loop_ub; i0++) {
-					G->data[((j + G->size[0] * (k + 35)) + G->size[0] * G->size[1] *
-						r0->data[i0]) + 20] = dv0[i0];
-				}
+					//zbc = max(zc(j, k), zc(j, k));
+					if ((UP[0][j][k] - zbc) > 0)
+					{
+						hl = UP[0][j][k] - zbc;
+						if (hl < 0)
+							hl = 0;
+						
+					}
+					else if ((UP[0][j][k] - zbc) <= 0)
+					{
+						hl = 0;
+					}
+					if (hl == 0)
+					{
+						ul = 0; vl = 0;
+					}
+					else
+					{
+						ul = (UP[1][j][k]) / (hl + hextra);
+						vl = (UP[2][j][k]) / (hl + hextra);
+					}
+					
+					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 
-				if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
-				}
-				else {
-					*amax = zbc;
-				}
-			}
-		}*/
-	}
-	
-	void twentyfourDam()
-	{
-
-		//  At the 24th cell at the corner of the dam opening
-		/*for (j = 0; j < 2; j++) {
-			zbc = zc[j + 986];
-			if (UP[j + 986] - zbc > 0.0) {
-				hl = UP[j + 986] - zbc;
-				if (hl < 0.0) {
-					hl = 0.0;
-				}
-			}
-			else {
-				if (UP[j + 986] - zbc <= 0.0) {
-					hl = 0.0;
-					ul = 0.0;
-					vl = 0.0;
-				}
-			}
-
-			solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-			loop_ub = G->size[2];
-			i0 = r0->size[0];
-			r0->size[0] = loop_ub;
-			emxEnsureCapacity_int32_T(r0, i0);
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0->data[i0] = i0;
-			}
-
-			loop_ub = r0->size[0];
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				G->data[((j + G->size[0] * 23) + G->size[0] * G->size[1] * r0->data[i0]) +
-					20] = dv0[i0];
-			}
-
-			if ((zbc < *amax) || (rtIsNaN(zbc) && (!rtIsNaN(*amax)))) {
-			}
-			else {
-				*amax = zbc;
-			}
-		}*/
-
-	}
-
-	void thirtyFiveLeftDamn()
-	{
-		//  At the 35th cell at the left wing of the dam opening
-		/*for (j = 0; j < 2; j++) {
-			zbc = zc[j + 1406];
-			if (UP[j + 1406] - zbc > 0.0) {
-				hl = UP[j + 1406] - zbc;
-				if (hl < 0.0) {
-					hl = 0.0;
-				}
-
-				ul = UP[j + 3170] / (hl + hextra);
-				vl = UP[j + 4934] / (hl + hextra);
-			}
-			else {
-				if (UP[j + 1406] - zbc <= 0.0) {
-					hl = 0.0;
-					ul = 0.0;
-					vl = 0.0;
-				}
-			}
-
-			solver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-			loop_ub = G->size[2];
-			i0 = r0->size[0];
-			r0->size[0] = loop_ub;
-			emxEnsureCapacity_int32_T(r0, i0);
-			for (i0 = 0; i0 < loop_ub; i0++) {
-				r0->data[i0] = i0;
-			}
-
-			loop_ub = r0->size[0];
-			for (int i = 0; i < n; i++) {
+					for (int i = 0; i < n; i++) {
 						for (int j = 0; j < n; j++)
 						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
 							G[0][i][j] = dv0[i];
 						}
 					}
@@ -886,10 +810,111 @@ public:
 					else {
 						amax = zbc;
 					}
-		}*/
-
-		//
+				}
+			}
+		}
+		return amax;
 	}
+	double thirtyFiveLeftDamn(double** zc, double*** UP, double amax, double*** G, double hextra, int n)
+	{
+		double zbc = 0.0;
+		double hl = 0.0;
+		double ul = 0.0;
+		double vl = 0.0;
+		double dv0[3];
+		solver s;
+
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 35; j < 36; j++)
+			{
+				for (int k = 21; k < 22; k++)
+				{
+
+					//zbc = max(zc(j, k), zc(j, k));
+					if ((UP[0][j][k] - zbc) > 0)
+					{
+						hl = UP[0][j][k] - zbc;
+						if (hl < 0)
+						{
+							hl = 0;
+						}
+						ul = (UP[1][j][k]) / (hl + hextra);
+						vl = (UP[2][j][k]) / (hl + hextra);
+					}
+					else if ((UP[0][j][k] - zbc) <= 0)
+					{
+						hl = 0;
+					}
+					if (hl == 0)
+					{
+						ul = 0; vl = 0;
+					}
+					
+					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+
+					for (int i = 0; i < n; i++) {
+						for (int j = 0; j < n; j++)
+						{
+							G[0][i][j] = dv0[i];
+						}
+					}
+					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+					}
+					else {
+						amax = zbc;
+					}
+				}
+			}
+		}
+		return amax;
+	}
+	double leftDamn(double** zc, double*** UP, double amax, double*** G, double hextra, int n)
+	{
+		double zbc = 0.0;
+		double hl = 0.0;
+		double ul = 0.0;
+		double vl = 0.0;
+		double dv0[3];
+		solver s;
+
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < n; k++)
+				{
+		
+					hl = UP[0][j][k] - zc[j][k];
+					
+				if (hl < 0.0) {
+					hl = 0.0;
+				}
+
+				ul = UP[1][j][k] / (hl + hextra);
+				vl = UP[2][j][k] / (hl + hextra);
+				s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
+				
+				for (int i = 0; i < n; i++) {
+						for (int j = 0; j < n; j++)
+						{
+							G[0][i][j] = dv0[i];
+						}
+					}
+					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+					}
+					else {
+						amax = zbc;
+					}
+	}
+	}
+	}
+		return amax;
+	}
+	
+
+
+	
 		//
 	// File trailer for fluxes.cpp
 	//
