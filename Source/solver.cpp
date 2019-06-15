@@ -1,5 +1,6 @@
 #include<cmath>
 #include <string.h>
+using namespace std;
 class solver
 {
 public:
@@ -44,14 +45,14 @@ public:
 		double grav = 0.0;
 
 		// Compute Roe averages
-		duml = std::sqrt(hl);
-		dumr = std::sqrt(hr);
-		cl = std::sqrt(grav * hl);
-		cr = std::sqrt(grav * hr);
+		duml = sqrt(hl);
+		dumr = sqrt(hr);
+		cl = sqrt(grav * hl);
+		cr = sqrt(grav * hr);
 		hhat = duml * dumr;
 		uhat = (duml * ul + dumr * ur) / ((duml + dumr) + hextra);
 		vhat = (duml * vl + dumr * vr) / ((duml + dumr) + hextra);
-		chat = std::sqrt(0.5 * grav * (hl + hr)) + hextra;
+		chat = sqrt(0.5 * grav * (hl + hr)) + hextra;
 		dh = hr - hl;
 		du = ur - ul;
 		dv = vr - vl;
@@ -66,14 +67,14 @@ public:
 		duml = (0.5 * (ul + ur) + cl) - cr;
 		dumr = 0.5 * (cl + cr) + 0.25 * (ul - ur);
 		if ((hl == 0.0) && (hr > 0.0)) {
-			a1 = std::abs(ur - 2.0 * cr);
-			a2 = std::abs(ur - 2.0 * cr);
-			dumr = std::abs(ur + cr);
+			a1 = abs(ur - 2.0 * cr);
+			a2 = abs(ur - 2.0 * cr);
+			dumr = abs(ur + cr);
 		}
 		else if ((hr == 0.0) && (hl > 0.0)) {
-			a1 = std::abs(ul - 2.0 * cl);
-			dumr = std::abs(ul + cl);
-			a2 = std::abs(ul + cl);
+			a1 = abs(ul - 2.0 * cl);
+			dumr = abs(ul + cl);
+			a2 = abs(ul + cl);
 		}
 		else {
 			da1 = ul - cl;
@@ -85,8 +86,8 @@ public:
 				b_da1 = varargin_2;
 			}
 
-			a1 = std::abs(b_da1);
-			a2 = std::abs((0.5 * (ul + ur) + cl) - cr);
+			a1 = abs(b_da1);
+			a2 = abs((0.5 * (ul + ur) + cl) - cr);
 			da1 = ur + cr;
 			varargin_2 = duml + dumr;
 			if ((da1 > varargin_2) || isnan(varargin_2)) {
@@ -96,7 +97,7 @@ public:
 				c_da1 = varargin_2;
 			}
 
-			dumr = std::abs(c_da1);
+			dumr = abs(c_da1);
 		}
 
 		duml = 2.0 * ((uperpr - cr) - (uperpl - cl));
@@ -166,7 +167,7 @@ public:
 			F[j] = 0.5 * ((b_uperpl[j] + b_uperpr[j]) - duml);
 		}
 
-		*amax = chat + std::abs(uhat * cn + vhat * sn);
+		*amax = chat + abs(uhat * cn + vhat * sn);
 	}
 };
 //

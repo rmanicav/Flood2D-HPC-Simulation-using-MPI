@@ -1,7 +1,7 @@
 #include<cmath>
 #include<iostream>
 #include<string>
-
+using namespace std;
 class slope
 {
 public:
@@ -19,15 +19,15 @@ public:
 		double y;
 		double a;
 		double b;
-		a = std::abs(u0);
-		b = std::abs(u1);
+		a = abs(u0);
+		b = abs(u1);
 		if (a < b) {
 			a /= b;
-			y = b * std::sqrt(a * a + 1.0);
+			y = b * sqrt(a * a + 1.0);
 		}
 		else if (a > b) {
 			b /= a;
-			y = a * std::sqrt(b * b + 1.0);
+			y = a * sqrt(b * b + 1.0);
 		}
 		else if (b == NAN) {
 			y = b;
@@ -53,8 +53,8 @@ public:
 			y = NAN;
 		}
 		else {
-			d0 = std::abs(u0);
-			d1 = std::abs(u1);
+			d0 = abs(u0);
+			d1 = abs(u1);
 			if (isinf(u1)) {
 				if (d0 == 1.0) {
 					y = 1.0;
@@ -89,9 +89,9 @@ public:
 				y = u0 * u0;
 			}
 			else if ((u1 == 0.5) && (u0 >= 0.0)) {
-				y = std::sqrt(u0);
+				y = sqrt(u0);
 			}
-			else if ((u0 < 0.0) && (u1 > std::floor(u1))) {
+			else if ((u0 < 0.0) && (u1 > floor(u1))) {
 				y = NAN;
 			}
 			else {
@@ -126,7 +126,7 @@ public:
 	{
 
 		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < 1764; j++) {
+			for (int j = 0; j < n; j++) {
 				sox[i][j] = dzcx[i][j] / cellsize;
 				soy[i][j] = dzcy[i][j] / cellsize;
 			}

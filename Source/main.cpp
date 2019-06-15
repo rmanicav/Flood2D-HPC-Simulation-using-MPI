@@ -16,18 +16,15 @@ int main(void)
 	helper help;
 	floodData fd;
 	help.readFromFile(&fd);
-	int iv0[31];
 	int simtime;
-	int iv1[2];
-	static double unusedExpr[5292];
 	int n;
-	copy(begin(fd.iv1), end(fd.iv1), begin(iv1));
-	copy(begin(fd.iv0), end(fd.iv0), begin(iv0));
+	//copy(begin(fd.iv1), end(fd.iv1), begin(iv1));
+	//copy(begin(fd.iv0), end(fd.iv0), begin(iv0));
 	double grav = fd.gravity;
 	double ManN = fd.manN;
 	double hextra = fd.hextra;
 	double epsilon = fd.epsilon;// minimum depth of water(threshold for dry bed)(1cm)
-	double	cellsize = fd.cellSize;// Cell size(dx = dy)m
+	int	cellsize = fd.cellSize;// Cell size(dx = dy)m
 	int	L = fd.L;// box size(200 * 200m)
 	n = L / cellsize; // (n = 40) number of cells(nx = ny)
 	int	m = n;
@@ -51,39 +48,84 @@ int main(void)
 	zc = fd.zc;
 	cout << "n:" << n << endl;
 	cout << "Completed ZC initialization" << endl;
-	/*for (int j = 0; j < n; j++) {
-		for (int k = 0; k < n; k++) {
-			zc[1][k] = fd.initV;
-			zc[n][k] = fd.initV;
-			zc[j][1] = fd.initV;
-			zc[j][n] = fd.initV;
-		}
-	}*/
-
+	
 	double** wse = help.allocateMemory(n);
 	// Set up initial conditions
 	//  wse=1.01*ones(n,n);                           % Initial water surface elevation
-	for (int i = 0; i < n; i++) {
+	//23 -42 rows - assign 6
+	for (int i = 23; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			wse[i][j] = fd.initWSE;//6 downstream
 		}
 
 	}
-
-	for (int i = 0; i < n; i++) {
+	//0-20 - assign 11
+	for (int i = 0; i < 20; i++) {
 		for (int j = 0; j < n; j++) {
 			wse[i][j] = fd.hWL;// 11 upstream
 		}
 	}
-	/*
-
-	//  0.5*n = 20 or higher water level
-	for (i0 = 0; i0 < 31; i0++) {
-		for (j = 0; j < 2; j++) {
-			wse[(j + 42 * iv0[i0]) + 20] = 99999.0;
+	//21,22 - assign 9999
+	for (int i = 21; i < 23; i++) {
+		for (int j = 0; j < n; j++) {
+			wse[i][j] = fd.initV;// 9999
 		}
-	}*/
+	}
 	double** h = help.allocateMemory(n);
+	help.clearArray(h, n);
+	//  0.5*n = 20 or higher water level
+	//  water depth to water surface elevatin relation ship
+	for (int j = 0; j < n; j++) {
+		for (int k = 0; k < n; k++) {
+			h[j][k] = wse[j][k] - zc[j][k];
+			h[j][k] = 0.0;
+			h[j][k] = 0.0;
+			h[j][k] = 0.0;
+			h[j][k] = 0.0;
+			if (h[j][k] < 0.0) {
+				h[j][k] = 0.0;
+			}
+		}
+	}
+	
+	
+
+
+
+	double*** U = help.allocate3dMemory(n, fd.dim);
+	double*** F = help.allocate3dMemory(n, fd.dim);
+	double*** G = help.allocate3dMemory(n, fd.dim);
+	double** u = help.allocateMemory(n);
+	help.clearArray(u, n);
+	double** v = help.allocateMemory(n);
+	help.clearArray(v, n);
+
+	//  fluxes in the $x$ direction
+	//  fluxes in the $y$ direction
+	//  friction slope Sf
+	//  Bed slope So
+	//  variables on the new time level
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			U[0][i][i] = h[i][j];
+			U[1][i][j] = u[i][j];
+			U[2][i][j] = v[i][j];
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+		
+			u[i][j] = U[1][i][j] / (U[0][i][j] + 0.1);
+			v[i][j] = U[2][i][j] / (U[0][i][j] + 0.1);
+		}
+	}
+
+	limiter l;
+	slope s;
+	predictor p;
+	fluxes f;
+	corrector c;
 	double** dzcx = help.allocateMemory(n);
 	help.clearArray(dzcx, n);
 	double** dzcy = help.allocateMemory(n);
@@ -100,10 +142,6 @@ int main(void)
 	help.clearArray(dvx, n);
 	double** dvy = help.allocateMemory(n);
 	help.clearArray(dvy, n);
-	double** u = help.allocateMemory(n);
-	help.clearArray(u, n);
-	double** v = help.allocateMemory(n);
-	help.clearArray(v, n);
 	double** sox = help.allocateMemory(n);
 	help.clearArray(sox, n);
 	double** soy = help.allocateMemory(n);
@@ -119,112 +157,161 @@ int main(void)
 	help.clearArray(up, n);
 	double** vp = help.allocateMemory(n);
 	help.clearArray(vp, n);
-	double*** U = help.allocate3dMemory(n, fd.dim);
-	double*** F = help.allocate3dMemory(n, fd.dim);
-	double*** G = help.allocate3dMemory(n, fd.dim);
 
-	//  0.5*n = 20 or higher water level
-	//  water depth to water surface elevatin relation ship
-	for (int j = 0; j < n; j++) {
-		for (int k = 0; k < n; k++) {
-			h[j][k] = wse[j][k] - zc[j][k];
-			h[j][k] = 0.0;
-			h[j][k] = 0.0;
-			h[j][k] = 0.0;
-			h[j][k] = 0.0;
-			if (h[j][k] < 0.0) {
-				h[j][k] = 0.0;
-			}
+	//% Bed slope along Xand Y
+	for (int j = 0; j < n - 1; j++)
+	{
+		for (int k = 0; k < n - 1; k++)
+		{
+			dzcx[j][k] = zc[j + 1][k] - zc[j][k];
+			dzcy[j][k] = zc[j][k + 1] - zc[j][k];
+			dzcx[1][k] = 0;    dzcy[1][k] = 0;
+			dzcx[n -1][k] = 0;    dzcy[n -1][k] = 0;
+			dzcx[j][1] = 0;    dzcy[j][1] = 0;
+			dzcx[j][n - 1] = 0;    dzcy[j][n - 1] = 0;
+
 		}
 	}
-
-
-
-
-
-	//  fluxes in the $x$ direction
-	//  fluxes in the $y$ direction
-	//  friction slope Sf
-	//  Bed slope So
-	//  variables on the new time level
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			U[i][i][0] = h[i][j];
-			u[i][j] = U[i][j][1] / (U[i][j][1] + 0.1);
-			v[i][j] = U[i][j][2] / (U[i][j][2] + 0.1);
-		}
-	}
-
-	limiter l;
-	slope s;
-	predictor p;
-	fluxes f;
-	corrector c;
 
 	try
 	{
+		
 		for (int j = 0; j < 1; j++) {
 			simtime = 1 + j;
 			cout << endl << "Iteration number :" << j << endl;
-			//limiter
+
+			/****limiter******************************************/
 			l.flimiter(n, zc, dzcx, dzcy);
 			cout << endl << "Completed Limiter 1 Function" << endl;
+			help.printArray(dzcx, n, "dzcx");
+			help.printArray(dzcy, n, "dzcy");
 			l.flimiter(n, wse, dwsex, dwsey);
+			help.printArray(dwsex, n, "dwsex");
+			help.printArray(dwsey, n, "dwsey");
 			cout << endl << "Completed Limiter 2 Function" << endl;
 			l.flimiter(n, u, dux, duy);
 			cout << endl << "Completed Limiter 3 Function" << endl;
 			l.flimiter(n, v, dvx, dvy);
-			cout << endl << "Completed All Limiter Function" << endl;
+			cout << endl << "Completed Limiter 4 Function" << endl;
 
-			//  Slope calculation
+			/************Slope calculation**********************************************/
 			s.fslope(h, u, v, ManN, hextra, dzcx, dzcy, cellsize, n, sox, soy, sfx, sfy);
 			cout << endl << "Completed Slope Function" << endl;
 
-			//  predictor step (estimate the values at half timestep)
+			/***********predictor step (estimate the values at half timestep)***********************************************/
 			p.fpredictor(n, fd.gravity, nf, wse, h, u, v, dwsex, dwsey, dux, duy, dvx, dvy, dt2, dzcx, dzcy, epsilon, zc, sox, sfx, dt, soy, sfy, wsep, up, vp);
 			cout << endl << "Completed Predictor Function" << endl;
 
 			double*** UP = help.allocate3dMemory(n, fd.dim);
-
+			//assign 0 dim  with wsep value
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					UP[i][0][0] = wsep[i][j];
+					UP[0][i][j] = wsep[i][j];
 				}
 			}
+			//hp = wsep - zc
+			//assign 1 dim with up value, 2 - vp
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					UP[0][j][0] = up[i][j];
+					hp = wsep[i][j] - zc[i][j];
+					if (hp < 0)
+					{
+						hp = 0.0;
+					}
+					UP[1][i][j] = up[i][j] * hp;
+					UP[2][i][j] = vp[i][j] * hp;
 				}
 			}
-			for (int i = 0; i < n; i++)
-			{
-				for (int j = 0; j < n; j++)
-				{
-					UP[0][0][j] = vp[i][j];
-				}
-			}
+			cout << endl;
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
 
 			cout << endl << "Completed Fluxes Function" << endl;
 			//  Estimate the flux vectors on the next time step
-			c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
+			double*** uNew = help.allocate3dMemory(n, fd.dim);
+			uNew = c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
 			cout << endl << "Completed Corrector Function" << endl;
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					for (int k = 0; k < n; k++)
+					{
+						U[i][j][k] = uNew[i][j][k];
+					}
+				}
+			}
+			
+			//reassign values after correction
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					
+					// computed water depth(water level)
+					h[i][j] = U[0][i][j];
+					//check epsilon
+					if (U[1][i][j] < epsilon)
+					{
+						u[i][j] =0;
+						v[i][j] =0;
+					}
+					else
+					{
+						u[i][j] = U[1][i][j];
+						v[i][j] = U[2][i][j];
+					}
+					//compute the new free surface height
+					wse[i][j] = U[1][i][j] + zc[i][j];
+					if (wse[i][j] < 0)
+					{
+						wse[i][j] = 0;
+					}
+				}
+			}
+			cout << "Correct and re-assign values completed" << endl;
+
 			///print u h v arrays
 			help.printArray(h, n, "h");
 			help.printArray(u, n, "u");
 			help.printArray(v, n, "v");
-			//simulate(simtime, dt, ntplot);
+			//help.freeMemory3d(uNew, n);
+			help.writeHout(h, n);
 
 		}
+		
+		help.freeMemory(h, n);
+		help.freeMemory(dzcx, n);
+		help.freeMemory(dzcy, n);
+		help.freeMemory(dwsex, n);
+		help.freeMemory(dwsey, n);
+		help.freeMemory(dux, n);
+		help.freeMemory(duy, n);
+		help.freeMemory(dvx, n);
+		help.freeMemory(dvy, n);
+		help.freeMemory(u, n);
+		help.freeMemory(v, n);
+		help.freeMemory(sox, n);
+		help.freeMemory(soy, n);
+		help.freeMemory(sfx, n);
+		help.freeMemory(sfy, n);
+		help.freeMemory(wsep, n);
+		help.freeMemory(up, n);
+		help.freeMemory(vp, n);
+		help.freeMemory3d(U, n);
+		help.freeMemory3d(F, n);
+		help.freeMemory3d(G, n);
 	} 
 	catch (exception ex)
 	{
 		cout << "Exception occured -->" << ex.what() << endl;
 	}
+	cout << endl;
+	cout << "Flood 2d Completed" << endl;
+
 		return 0;
 	}

@@ -1,5 +1,6 @@
 #include "solver.cpp"
 #include <stdlib.h>
+using namespace std;
 class fluxes
 {
 

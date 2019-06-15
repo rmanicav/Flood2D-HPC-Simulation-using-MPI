@@ -7,8 +7,8 @@ using namespace std;
 struct floodData
 {
 	int iv0[31], iv1[2];
-	double gravity, manN, cellSize, initV;
-	int  L, dim;
+	double gravity, manN,  initV;
+	int  L, dim,cellSize;
 	double hextra, epsilon, nt, ntPlot, dt, initWSE, hWL;
 	double cr;
 	double **zc;
@@ -38,6 +38,28 @@ public:
 		}
 		return arr;
 	}
+	///
+	void freeMemory(double** arr,int n)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			free(arr[i]);
+		}
+		free(arr);
+	}
+	void freeMemory3d(double*** arr, int n)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				free(arr[i][j]);
+			}
+			free(arr[i]);
+		}
+		free(arr);
+	}
+	///
 	double*** allocate3dMemory(int n, int dim)
 	{
 		double*** arr = new double** [n];
@@ -114,67 +136,31 @@ public:
 		clearArray(fd->zc,42);
 		for (int i = 0; i < 42; i++)
 		{
+			
 			for (int j = 0; j < 42; j++)
 			{
 				infile >> fd->zc[i][j];
+				
 			}
 		}
 		printArray(fd->zc, 42, "zc");
 	}
-	void simulate(int simtime, double dt, int ntplot)
+	void writeHout(double **h,int n)
 	{
-		fstream fileid, fileid1, fileid2;
-		const char* path1 = "C:/Users/raj/source/repos/Flood2d/Output/hsensor1.txt";
-		const char* path2 = "C:/Users/raj/source/repos/Flood2d/Output/hsensor2.txt";
-		const char* path3 = "C:/Users/raj/source/repos/Flood2d/Output/hsensor3.txt";
-		//  Bed slope along X and Y
-		//  writes the outputs for the sensors
-		//  hnorm=zeros(size(num));     hsens_1=zeros(m,3); hsens_2=zeros(m,3); hsens_3=zeros(m,3);;
-
-		//t=t+dt;
-		 // dt= cr*cellsize/amax;
-		 // cr=amax*dt/cellsize;
-	   //  Writes the output at each counters seconds
-
-		double ctrs = simtime * dt;
-		ofstream hfile;
-		if (fmod(ctrs, ntplot) == 0.0) {
-			hfile.open("C:/Users/raj/source/repos/Flood2d/Output/hOut_", ios::out);
-			//    fprintf(fid1,'%.2f\r\n',h(:,:));
-			//   dlmwrite(outfile,x,'delimiter','\t','precision',12)
-			hfile.close();
-
-			//  % %   outputs the 2D-water depth plot
-			//  ctrs=sprintf('L%s',ctrs);
-			// saveas(gca,output);
-		}
-		double ctrs2 = simtime * dt;
-		if (fmod(ctrs2, 0.5) == 0) {
-			fileid.open(path1, ios::out);
+		//hsens_1 = h(25, 29); hsens_2 = h(30, 29); hsens_3 = h(37, 29);
+		/*ofstream fileid("C:/Users/raj/source/repos/Flood2d/Output/houtput1.txt");
+		if (fileid.open())
+		{
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; i < n; j++)
+				{
+					fileid << h[i][j] << "\t";
+				}
+				fileid << endl;
+			}
 			fileid.close();
-
-			// dlmwrite(outfile2,hsens_1,'-append','newline','pc','delimiter','\t','precision',12)
-			// ctrs2=num2str(ctrs2);
-		}
-		double ctrs3 = simtime * dt;
-		if (fmod(ctrs3, 0.5) == 0) {
-			//fileid2.open("C:\Users\raj\source\repos\Flood2dOutput\hsensor2.txt","w");
-			fileid1.open(path2, ios::out);
-			// dlmwrite(outfile3,hsens_2,'-append','newline','pc','delimiter','\t','precision',12)
-			fileid1.close();
-
-			//  ctrs3=num2str(ctrs3);
-		}
-
-		double ctrs4 = simtime * dt;
-		if (fmod(ctrs4, 0.5)) {
-			fileid2.open(path3, ios::out);
-			// dlmwrite(outfile3,hsens_2,'-append','newline','pc','delimiter','\t','precision',12)
-			fileid2.close();
-
-			//  ctrs3=num2str(ctrs3);
-		}
-
+		}*/
 	}
 
 	void printArray(double** arr, int n, string name)

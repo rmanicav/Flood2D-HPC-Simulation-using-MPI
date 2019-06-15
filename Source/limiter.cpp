@@ -1,7 +1,7 @@
 #include<iostream>
 #include<cmath>
 
-
+using namespace std;
 class limiter
 {
 public:
@@ -48,14 +48,14 @@ public:
 		
 		for (int j = 0; j < n; j++)
 		{
-			df1[n][j] = 0.0;
-			df2[j][n] = 0.0;
-			df1[n][j] = 0.0;
-			df2[j][n] = 0.0;
+			df1[n-1][j] = 0.0;
+			df2[j][n-1] = 0.0;
+			df1[n-1][j] = 0.0;
+			df2[j][n-1] = 0.0;
 		}
 		
-		for (int j = 1; j < n; j++) {
-			for (int k = 1; k < n ; k++)
+		for (int j = 1; j < n - 1; j++) {
+			for (int k = 1; k < n - 1 ; k++)
 			{
 				df1x = f[j + 1][k] - f[j][k];
 				df2x = f[j][k] - f[j -1][k];
@@ -65,7 +65,7 @@ public:
 				
 				//  Superbee limiterv  (df1x,df2x,df1m,df1y,df2y,df2m)
 				if (df1x * df2x < 0.0) {
-					df2x = 0.0;
+					df1[j][k] = 0.0;
 				}
 				else {
 					s = df1x;
@@ -81,8 +81,8 @@ public:
 						}
 					}
 
-					a = std::abs(df1x);
-					df1x = std::abs(df2x);
+					a = abs(df1x);
+					df1x = abs(df2x);
 					varargin_1[0] = 2.0 * a;
 					varargin_1[1] = 2.0 * df1x;
 					varargin_1[2] = 0.5 * (a + df1x);
@@ -117,12 +117,12 @@ public:
 							idx++;
 						}
 					}
-
-					df2x = s * df1x;
+					//modified
+					df2x = s * df1[j][k];
 				}
 
 				if (df1y * df2y < 0.0) {
-					df1x = 0.0;
+					df2[j][k] = 0.0;
 				}
 				else {
 					s = df1y;
@@ -138,8 +138,8 @@ public:
 						}
 					}
 
-					a = std::abs(df1y);
-					df1x = std::abs(df2y);
+					a = abs(df1y);
+					df1x = abs(df2y);
 					varargin_1[0] = 2.0 * a;
 					varargin_1[1] = 2.0 * df1x;
 					varargin_1[2] = 0.5 * (a + df1x);
@@ -175,10 +175,11 @@ public:
 						}
 					}
 
-					df1x *= s;
+					df2[j][k] *= s;
 				}
-				df1[j][k] = df2x;
-				df2[j][k] = df1x;
+				//modified
+				df1[j][k] = df1x;
+				df2[j][k] = df2x;
 			}
 		}
 	}
