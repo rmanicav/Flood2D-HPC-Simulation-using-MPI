@@ -4,6 +4,8 @@
 #include<ostream>
 #include<iomanip>
 using namespace std;
+
+
 struct floodData
 {
 	int iv0[31], iv1[2];
@@ -13,9 +15,12 @@ struct floodData
 	double cr;
 	double **zc;
 };
+
+
 class helper
 {
 public:
+
 	
 	void clearArray(double** arr, int n)
 	{
@@ -76,9 +81,7 @@ public:
 	}
 	void readFromFile(floodData* fd)
 	{
-		/*const signed char iv0[31] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-	  13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 34, 35, 36, 37, 38, 39, 40, 41 };*
-	  static int iv1[2] = { 10, 10 };*/
+		
 		ifstream infile;
 		int count;
 		infile.open("iv.txt");
@@ -137,7 +140,7 @@ public:
 		for (int i = 0; i < 42; i++)
 		{
 			
-			for (int j = 0; j < 42; j++)
+	      for (int j = 0; j < 42; j++)
 			{
 				infile >> fd->zc[i][j];
 				
@@ -148,20 +151,28 @@ public:
 	void writeHout(double **h,int n)
 	{
 		//hsens_1 = h(25, 29); hsens_2 = h(30, 29); hsens_3 = h(37, 29);
-		/*ofstream fileid("C:/Users/raj/source/repos/Flood2d/Output/houtput1.txt");
-		if (fileid.open())
+		ofstream outStream;;
+		outStream.open("C:/Users/raj/source/repos/FVM/output/hOutput1.txt",ios::out);
+		if (outStream.is_open())
 		{
 			for (int i = 0; i < n; i++)
 			{
-				for (int j = 0; i < n; j++)
+				for (int j = 0; j < n; j++)
 				{
-					fileid << h[i][j] << "\t";
+					
+					outStream << h[i][j] << "\t";
 				}
-				fileid << endl;
+				outStream << endl;
 			}
-			fileid.close();
-		}*/
+			outStream.close();
+		}
+		else
+		{
+			cout << "Unable to open file" << endl;
+		}
+		
 	}
+	///
 
 	void printArray(double** arr, int n, string name)
 	{
