@@ -33,7 +33,7 @@ public:
 	//                double vp[1764]
 	// Return Type  : void
 	//
-	void fpredictor(int n, double grav, double nf, double** wse, double** hdouble,
+	void fpredictor(int n, double grav, double nf, double** wse, double** h,
 		double **  u, double ** v, double ** dwsex,
 		double ** dwsey, double ** dux, double **
 		duy, double ** dvx, double ** dvy, double 
@@ -67,8 +67,7 @@ public:
 
 		for (int j = 0; j < (int)nf; j++) {
 			for (int k = 0; k < (int)nf; k++) {
-				wsep[j][k] = wse[j][k] - 0.5 * dt2 * (((hp[j][k] * dux[j][k] + u[j][k] * dhx[j][k]) + hp[j][k] * dvy[j][k]) 
-					+ v[j][k] * dhy[j][k]);
+				wsep[j][k] = wse[j][j] - 0.5 * dt2 * (h[j][k] * dux[j][k] + u[j][k] * dhx[j][k] + h[j][k] * dvy[j][k] + v[j][k] * dhy[j][k]);
 				hp[j][k] = wsep[j][k] - zc[j][k];
 
 				//  continuity for wet/dry interface (roger et al page 60)
@@ -82,9 +81,7 @@ public:
 						duy[j][k] + grav * dhx[j][k]) +0.5 * grav * dt * (sox[j][k] + sfx[j][k]));
 					vp[j][k] = (v[j][k] - 0.5 * dt2 * (((u[j][k] * dvx[j][k] + v[j][k] * dux[j][k]) + 2.0 * v[j][k] *
 						dvy[j][k]) + grav * dhy[j][k])) + 0.5 * grav * dt * (soy[j][k] + sfy[j][k]);
-
-					// up(j,k) = u(j,k)-0.5*dt2*(2*u(j,k)*dux(j,k)+u(j,k)*dvy(j,k)+v(j,k)*duy(j,k)+grav*dhx(j,k))-0.5*grav*dt*(sox(j,k)+sfx(j,k)); 
-					// vp(j,k) = v(j,k)-0.5*dt2*(u(j,k)*dvx(j,k)+v(j,k)*dux(j,k)+2*v(j,k)*dvy(j,k)+grav*dhy(j,k))-0.5*grav*dt*(soy(j,k)+sfy(j,k)); 
+					
 				}
 			}
 		}

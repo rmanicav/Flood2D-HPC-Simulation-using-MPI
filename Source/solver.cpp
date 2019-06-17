@@ -1,5 +1,8 @@
 #include<cmath>
 #include <string.h>
+#include<algorithm>
+#include<stdlib.h>
+#include<iostream>
 using namespace std;
 class solver
 {
@@ -9,166 +12,194 @@ public:
 	void fsolver(double hl, double hr, double ul, double ur, double vl, double vr,
 		double sn, double cn, double hextra, double F[3], double* amax)
 	{
-		double duml;
-		double dumr;
-		double cl;
-		double cr;
-		double hhat;
+		double grav = 0.0;
+		double duml = pow(hl, 0.5);;
+		double dumr = pow(hr, 0.5);
+		double cl = pow(grav * hl, 0.5);
+		double cr = pow(grav * hl, 0.5);
+		double hhat = duml * dumr;
 		double uhat;
 		double vhat;
 		double chat;
 		double dh;
 		double du;
 		double dv;
+		double dupar;
+		double dW[3][3];
 		double duperp;
 		double uperpl;
 		double uperpr;
 		double a1;
 		double da1;
 		double a2;
-		double varargin_2;
-		double b_da1;
-		double d0;
-		double c_da1;
-		double d1;
-		double v[3];
-		double A[9];
-		double b_uperpl[3];
-		double b_uperpr[3];
-		int j;
-		double dv0[9];
-		static const signed char iv0[3] = { 1, 0, 1 };
 
-		int i0;
-		double dv1[9];
-		int i1;
-		double grav = 0.0;
 
-		// Compute Roe averages
-		duml = sqrt(hl);
-		dumr = sqrt(hr);
-		cl = sqrt(grav * hl);
-		cr = sqrt(grav * hr);
-		hhat = duml * dumr;
+
 		uhat = (duml * ul + dumr * ur) / ((duml + dumr) + hextra);
 		vhat = (duml * vl + dumr * vr) / ((duml + dumr) + hextra);
-		chat = sqrt(0.5 * grav * (hl + hr)) + hextra;
+		chat = pow(0.5 * grav * (hl + hr), 0.5) + hextra;
 		dh = hr - hl;
 		du = ur - ul;
 		dv = vr - vl;
+
+
+		dupar = du * sn + dv * cn;
 		duperp = du * cn + dv * sn;
+
+
+		dW[0][0] = 0.5 * (dh - hhat * duperp / chat);
+		dW[0][1] = hhat * dupar;
+		dW[0][2] = 0.5 * (dh + hhat * duperp / chat);
+		dW[1][0] = 0;
+		dW[1][1] = 0;
+		dW[1][2] = 0;
+		dW[2][0] = 0;
+		dW[2][1] = 0;
+		dW[2][2] = 0;
+
+
 		uperpl = ul * cn + vl * sn;
 		uperpr = ur * cn + vr * sn;
+
+		double R[3][3];
+		R[0][0] = 1;
+		R[0][1] = 0;
+		R[0][2] = 1;
+		R[1][0] = uhat - chat * cn;
+		R[1][1] = -sn;
+		R[1][2] = uhat + chat * sn;
+		R[1][0] = vhat - chat * sn;
+		R[1][1] = cn;
+		R[1][2] = vhat + chat * sn;
 
 		//  a1=abs(uperp-chat);
 		//  a2=abs(uperp);
 		//  a3=abs(uperp+chat);
 		//  Dry bed condition (HLLC by Toro,.. kim 2007..)
-		duml = (0.5 * (ul + ur) + cl) - cr;
-		dumr = 0.5 * (cl + cr) + 0.25 * (ul - ur);
+		double ustar, cstar, a3;
+
+		ustar = (0.5 * (ul + ur) + cl) - cr;
+		cstar = 0.5 * (cl + cr) + 0.25 * (ul - ur);
+
 		if ((hl == 0.0) && (hr > 0.0)) {
 			a1 = abs(ur - 2.0 * cr);
 			a2 = abs(ur - 2.0 * cr);
-			dumr = abs(ur + cr);
+			a3 = abs(ur + cr);
 		}
 		else if ((hr == 0.0) && (hl > 0.0)) {
 			a1 = abs(ul - 2.0 * cl);
-			dumr = abs(ul + cl);
+			a3 = abs(ul + cl);
 			a2 = abs(ul + cl);
 		}
 		else {
-			da1 = ul - cl;
-			varargin_2 = duml - dumr;
-			if ((da1 < varargin_2) || isnan(varargin_2)) {
-				b_da1 = da1;
-			}
-			else {
-				b_da1 = varargin_2;
-			}
-
-			a1 = abs(b_da1);
-			a2 = abs((0.5 * (ul + ur) + cl) - cr);
-			da1 = ur + cr;
-			varargin_2 = duml + dumr;
-			if ((da1 > varargin_2) || isnan(varargin_2)) {
-				c_da1 = da1;
-			}
-			else {
-				c_da1 = varargin_2;
-			}
-
-			dumr = abs(c_da1);
+			a1 = abs(minmax(ul - cl, ustar - cstar).first);
+			a2 = abs(0.5 * (ul + ur) + cl - cr);
+			a3 = abs(minmax(ur + cr, ustar + cstar).second);
 		}
+		double al1 = uperpl - cl;
+		double al3 = uperpl + cl;
+		double ar1 = uperpr - cr;
+		double ar3 = uperpr + cr;
+		da1 = 0.2 * (ar1 - al1) + hextra;
+		double da3 = 0.2 * (ar3 - al3) + hextra;
 
-		duml = 2.0 * ((uperpr - cr) - (uperpl - cl));
-		if (0.0 < duml) {
-			d0 = duml;
+		if (a1 < da1)
+		{
+			a1 = 0.5 * ((a1 * a1) / (da1 + da1));
 		}
-		else {
-			d0 = 0.0;
+		if (a3 < da3)
+		{
+			a3 = 0.5 * ((a3 * a3) / (da3 + da3));
 		}
-
-		da1 = d0 + hextra;
-		duml = 2.0 * ((uperpr + cr) - (uperpl + cl));
-		if (0.0 < duml) {
-			d1 = duml;
-		}
-		else {
-			d1 = 0.0;
-		}
-
-		duml = d1 + hextra;
-
-		// Critical flow fix
-		if (a1 < da1) {
-			a1 = 0.5 * (a1 * a1 / da1 + da1);
-		}
-
-		if (dumr < duml) {
-			dumr = 0.5 * (dumr * dumr / duml + duml);
-		}
-
 		// Compute interface flux
-		v[0] = a1;
-		v[1] = a2;
-		v[2] = dumr;
-		memset(&A[0], 0, 9U * sizeof(double));
-		b_uperpl[0] = uperpl * hl;
-		b_uperpl[1] = ul * uperpl * hl + 0.5 * grav * hl * hl * cn;
-		b_uperpl[2] = vl * uperpl * hl + 0.5 * grav * hl * hl * sn;
-		b_uperpr[0] = uperpr * hr;
-		b_uperpr[1] = ur * uperpr * hr + 0.5 * grav * hr * hr * cn;
-		b_uperpr[2] = vr * uperpr * hr + 0.5 * grav * hr * hr * sn;
-		for (j = 0; j < 3; j++) {
-			A[j + 3 * j] = v[j];
-			dv0[3 * j] = iv0[j];
-		}
+		double A[3][3], FL[3][3], FR[3][3];
+		//assign A
+		A[0][0] = a1;
+		A[0][1] = 0;
+		A[0][2] = 0;
+		A[1][0] = 0;
+		A[1][1] = a2;
+		A[1][2] = 0;
+		A[2][0] = 0;
+		A[2][1] = 0;
+		A[2][2] = a3;
 
-		dv0[1] = uhat - chat * cn;
-		dv0[4] = -sn;
-		dv0[7] = uhat + chat * cn;
-		dv0[2] = vhat - chat * sn;
-		dv0[5] = cn;
-		dv0[8] = vhat + chat * sn;
-		v[0] = 0.5 * (dh - hhat * duperp / chat);
-		v[1] = hhat * (-du * sn + dv * cn);
-		v[2] = 0.5 * (dh + hhat * duperp / chat);
-		for (j = 0; j < 3; j++) {
-			duml = 0.0;
-			for (i0 = 0; i0 < 3; i0++) {
-				dv1[j + 3 * i0] = 0.0;
-				for (i1 = 0; i1 < 3; i1++) {
-					dv1[j + 3 * i0] += dv0[j + 3 * i1] * A[i1 + 3 * i0];
+		//F
+		FL[0][0] = uperpl * hl;
+		FL[0][1] = (ul * uperpl * hl) + (0.5 * grav * hl * hl * cn);
+		FL[0][2] = (vl * uperpl * hl) + (0.5 * grav * hl * hl * sn);
+		FL[1][0] = 0;
+		FL[1][1] = 0;
+		FL[1][2] = 0;
+		FL[2][0] = 0;
+		FL[2][1] = 0;
+		FL[2][2] = 0;
+		//FR
+		FR[0][0] = uperpr * hr;
+		FR[0][1] = (ul * uperpr * hr) + (0.5 * grav * hr * hr * cn);
+		FR[0][2] = (vl * uperpr * hr) + (0.5 * grav * hr * hr * sn);
+		FR[1][0] = 0;
+		FR[1][1] = 0;
+		FR[1][2] = 0;
+		FR[2][0] = 0;
+		FR[2][1] = 0;
+		FR[2][2] = 0;
+
+		double FSUM[3][3];
+		FSUM[0][0] = FL[0][0] + FR[0][0];
+		FSUM[0][1] = FL[0][1] + FR[0][1];
+		FSUM[0][2] = FL[0][2] + FR[0][2];
+		FSUM[1][0] = 0;
+		FSUM[1][1] = 0;
+		FSUM[1][2] = 0;
+		FSUM[2][0] = 0;
+		FSUM[2][1] = 0;
+		FSUM[2][2] = 0;
+
+		//F = 0.5 * ((FL + FR- R * A * dW);
+		double temp[3][3], sub[3][3];
+		double** c = new double* [3];
+		int n = 3;
+		for (int i = 0; i < n; i++)
+		{
+			c[i] = new double[n];
+		}
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				c[i][j] = 0;
+				for (int k = 0; k < n; k++)
+				{
+					c[i][j] += R[i][k] * A[k][j];
 				}
-
-				duml += dv1[j + 3 * i0] * v[i0];
 			}
-
-			F[j] = 0.5 * ((b_uperpl[j] + b_uperpr[j]) - duml);
 		}
+		
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				temp[i][j] = 0;
+				for (int k = 0; k < n; k++)
+				{
+				temp[i][j] += c[i][k] * dW[k][j];
+				}
+			}
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				sub[i][j] = FSUM[i][j] - temp[i][j];
+			}
+	    }
 
+		
 		*amax = chat + abs(uhat * cn + vhat * sn);
 	}
+	
+	
 };
 //
 // File trailer for solver.cpp
