@@ -84,7 +84,7 @@ public:
 		
 		ifstream infile;
 		int count;
-		infile.open("iv.txt");
+		infile.open("Input/iv.txt");
 		cout << "----------------------------------\n";
 		infile >> fd->gravity;
 		cout << "Gravity:" << fd->gravity << endl;
@@ -106,14 +106,14 @@ public:
 		cout << "Time steps:" << fd->dt << endl;
 		//cout << "----------------------------------\n\n";
 		infile >> count;
-		cout << "----iv0------\n";
+		//cout << "----iv0------\n";
 		for (int i = 0; i < count; i++)
 		{
 			infile >> fd->iv0[i];
 			//		cout << fd->iv0[i] << "\t";
 		}
 		//cout << "\n-------------------------------\n\n";
-		cout << endl;
+		//cout << endl;
 		infile >> count;
 		//cout << "----iv1------\n";
 		for (int i = 0; i < count; i++)
@@ -123,7 +123,7 @@ public:
 		}
 		//cout << "\n-------------------------------\n\n";
 		//cout << "\n-------------------------------\n\n";
-		cout << endl;
+		//cout << endl;
 		infile >> fd->initV;
 		cout << "Init value:" << fd->initV << endl;
 		infile >> fd->initWSE;
@@ -135,6 +135,8 @@ public:
 		infile >> fd->dim;
 		cout << "Dimension:" << fd->dim << endl;
 		cout << "\n-------------------------------\n\n";
+		infile.close();
+		infile.open("Input/zc_dem.txt");
 		fd->zc = allocateMemory(42);
 		clearArray(fd->zc,42);
 		for (int i = 0; i < 42; i++)
@@ -147,12 +149,13 @@ public:
 			}
 		}
 		printArray(fd->zc, 42, "zc");
+		infile.close();
 	}
-	void writeHout(double **h,int n)
+	void writeHout(double **h,int n, string fileName)
 	{
 		//hsens_1 = h(25, 29); hsens_2 = h(30, 29); hsens_3 = h(37, 29);
 		ofstream outStream;;
-		outStream.open("C:/Users/raj/source/repos/FVM/output/hOutput1.txt",ios::out);
+		outStream.open(fileName,ios::out);
 		if (outStream.is_open())
 		{
 			for (int i = 0; i < n; i++)

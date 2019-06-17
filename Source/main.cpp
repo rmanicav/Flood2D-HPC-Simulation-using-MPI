@@ -66,29 +66,30 @@ int main(void)
 		}
 	}
 	//21,22 - assign 9999
-	for (int i = 21; i < 23; i++) {
+	for (int i = 20; i < 23; i++) {
 		for (int j = 0; j < n; j++) {
 			wse[i][j] = fd.initV;// 9999
 		}
 	}
 	double** h = help.allocateMemory(n);
 	help.clearArray(h, n);
+	//help.printArray(wse, n, "wse");
 	//  0.5*n = 20 or higher water level
 	//  water depth to water surface elevatin relation ship
 	for (int j = 0; j < n; j++) {
 		for (int k = 0; k < n; k++) {
 			h[j][k] = wse[j][k] - zc[j][k];
-			h[j][k] = 0.0;
-			h[j][k] = 0.0;
-			h[j][k] = 0.0;
-			h[j][k] = 0.0;
+			h[1][k] = 0.0;
+			h[n-1][k] = 0.0;
+			h[j][1] = 0.0;
+			h[j][n-1] = 0.0;
 			if (h[j][k] < 0.0) {
 				h[j][k] = 0.0;
 			}
 		}
 	}
 	
-	
+	//help.printArray(h, n, "h");
 
 
 
@@ -107,7 +108,7 @@ int main(void)
 	//  variables on the new time level
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			U[0][i][i] = h[i][j];
+			U[0][i][j] = h[i][j];
 			U[1][i][j] = u[i][j];
 			U[2][i][j] = v[i][j];
 		}
@@ -150,7 +151,6 @@ int main(void)
 	help.clearArray(sfx, n);
 	double** sfy = help.allocateMemory(n);
 	help.clearArray(sfy, n);
-	help.clearArray(h, n);
 	double** wsep = help.allocateMemory(n);
 	help.clearArray(wsep, n);
 	double** up = help.allocateMemory(n);
@@ -183,17 +183,18 @@ int main(void)
 			/****limiter******************************************/
 			l.flimiter(n, zc, dzcx, dzcy);
 			cout << endl << "Completed Limiter 1 Function" << endl;
-			help.printArray(dzcx, n, "dzcx");
-			help.printArray(dzcy, n, "dzcy");
+			//help.printArray(dzcx, n, "dzcx");
+			//help.printArray(dzcy, n, "dzcy");
 			l.flimiter(n, wse, dwsex, dwsey);
-			help.printArray(dwsex, n, "dwsex");
-			help.printArray(dwsey, n, "dwsey");
+			//help.printArray(dwsex, n, "dwsex");
+			//help.printArray(dwsey, n, "dwsey");
 			cout << endl << "Completed Limiter 2 Function" << endl;
 			l.flimiter(n, u, dux, duy);
 			cout << endl << "Completed Limiter 3 Function" << endl;
 			l.flimiter(n, v, dvx, dvy);
 			cout << endl << "Completed Limiter 4 Function" << endl;
 
+			
 			/************Slope calculation**********************************************/
 			s.fslope(h, u, v, ManN, hextra, dzcx, dzcy, cellsize, n, sox, soy, sfx, sfy);
 			cout << endl << "Completed Slope Function" << endl;
@@ -227,6 +228,7 @@ int main(void)
 				}
 			}
 			cout << endl;
+			
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
 
@@ -274,14 +276,15 @@ int main(void)
 				}
 			}
 			cout << "Correct and re-assign values completed" << endl;
-
-			///print u h v arrays
 			help.printArray(h, n, "h");
-			help.printArray(u, n, "u");
-			help.printArray(v, n, "v");
+			///print u h v arrays
+			//help.printArray(h, n, "h");
+			//help.printArray(u, n, "u");
+			//help.printArray(v, n, "v");
 			//help.freeMemory3d(uNew, n);
-			help.writeHout(h, n);
-
+			help.writeHout(h, n,"output/hOut.txt");
+			help.writeHout(u, n, "output/uOut.txt");
+			help.writeHout(v, n, "output/vOut.txt");
 		}
 		
 		help.freeMemory(h, n);

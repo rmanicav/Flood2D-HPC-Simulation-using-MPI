@@ -27,7 +27,7 @@ public:
 		double df2y;
 		double s;
 		double a, b,c;
-		double f1,f2;
+	
 		
 		//zero array
 		for (int i = 0; i < n; i++) {
@@ -63,7 +63,7 @@ public:
 				df2y = f[j][k] - f[j][k - 1];
 
 				if (df1x * df2x < 0.0) {
-					f1 = 0.0;
+					df1[j][k] = 0.0;
 				}
 				else {
 					s = sign(df1x);
@@ -71,10 +71,10 @@ public:
 					b = abs(df2x);
 					c = 0.5 * (a + b);
 					auto min = minmax({ 2 * a, 2 * b, c });
-					f1 = s * min.first;
+					df1[j][k] = s * min.first;
 				}
 				if (df1y * df2y < 0.0) {
-					f2 = 0.0;
+					df2[j][k] = 0.0;
 				}
 				else {
 					s = sign(df1y);
@@ -82,10 +82,9 @@ public:
 					b = abs(df2y);
 					c = 0.5 * (a + b);
 					auto min = minmax({ 2 * a, 2 * b, c });
-					f2 = s * min.first;
+					df2[j][k] = s * min.first;
 				}
-				df1[j][k] = f1;
-				df2[j][k] = f2;
+				
 			}
 		}
 	}

@@ -27,7 +27,7 @@ public:
 	void ffluxes(double*** UP, int n, double** dwsex,
 		double** dwsey, double** dux, double** duy,
 		double** dvx, double** dvy, double hextra,
-		double** zc, double*** F, double*** G, double  amax)
+		double** zc, double*** F, double*** G, double  &amax)
 	{
 		double hr=0.0;
 		double hl=0.0;
@@ -35,8 +35,6 @@ public:
 		double vl=0.0;
 		double ur=0.0;
 		double vr=0.0;
-		
-		
 		amax = 0.0;
 		
 
@@ -102,7 +100,7 @@ public:
 			{
 				for (int k = 0; k < n; k++)
 				{
-					//zbc = max(zc(j - 1, k), zc(j, k));
+//					zbc = minmax(zc[j - 1][k]), zc[j],[k]).second();
 
 					if ((UP[0][j][k] - zbc) > 0)
 					{
@@ -330,8 +328,7 @@ public:
 		}
 		return amax;
 		}
-	
-	double boundaryX(double amax, double*** UP, double hextra, double** zc, double*** F,int n)
+		double boundaryX(double amax, double*** UP, double hextra, double** zc, double*** F,int n)
 	{
 		solver s;
 		double zbc = 0.0;
@@ -339,13 +336,10 @@ public:
 		double ul = 0.0;
 		double vl = 0.0;
 		double dv0[3];
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < n; j++)
-			{
+		
 				for (int k = 0; k < n; k++)
 				{
-					hl = UP[0][i][j] - zc[j][0];
+					hl = UP[0][2][k] - zc[2][k];
 					if (hl < 0.0) {
 						hl = 0.0;
 					}
@@ -355,45 +349,37 @@ public:
 						vl = 0.0;
 					}
 					else {
-						ul = UP[1][j][k] / (hl + hextra);
-						vl = UP[2][j][k] / (hl + hextra);
+						ul = UP[1][1][k] / (hl + hextra);
+						vl = UP[2][1][k] / (hl + hextra);
 					}
 					s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+				
+						for (int j = 0; j < 3; j++)
 						{
 							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							F[i][j][0] = dv0[i];
+							F[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
 						amax = zbc;
 					}
 				}
-								
-			}
-			
-		}
+					
 		return amax;
 	}
 	double boundaryWest(int n,double ***UP, double ***F,double &amax,double **zc,double hextra)
-	{
-		
+	{	
 		double zbc = 0.0;
 		double hr = 0.0;
 		double ur = 0.0;
 		double vr = 0.0;
 		double dv0[3];
 		solver s;
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < n; j++)
-			{
-				for (int k = 0; k < n; k++)
+			for (int k = 1; k < n-1; k++)
 				{
-					hr = UP[0][i][j] - zc[j][0];
+					hr = UP[0][1][k] - zc[1][k];
 					if (hr < 0.0) {
 						hr = 0.0;
 					}
@@ -407,15 +393,11 @@ public:
 						vr = UP[2][1][k] / (hr + hextra);
 					}
 					s.fsolver(hr, hr, ur, -ur, vr, vr, 0.0, 1.0, hextra, dv0, &zbc);
-
-				
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+									
+						for (int j = 0; j < 3; j++)
 						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							F[0][i][j] = dv0[i];
+							F[2][0][j] = dv0[j];
 						}
-					}
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -423,10 +405,7 @@ public:
 					}
 				}
 								
-			}
-			
-		}
-		return amax;
+			return amax;
 	}
 	double boundaryNorth(int n, double*** UP, double*** G, double amax, double** zc, double hextra)
 	{

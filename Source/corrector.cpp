@@ -28,14 +28,14 @@ public:
 		int k;
 		for (j = 0; j < n - 1 ; j++) {
 			for (k = 0; k < n - 1 ; k++) {
-				U[0][j][k] = (U[0][j][k] - dt2 * (F[0][j + 1][k - 1] - F[0][j][k])) - dt2 * (G[0][j][k + 1] - G[0][j][k]);
+				U[0][j][k] = (U[0][j][k] - dt2 * (F[0][j + 1][k] - F[0][j][k])) - dt2 * (G[0][j][k + 1] - G[0][j][k]);
 				if (U[0][j][k] < 0.0) {
 					U[0][j][k] = 0.0;
 				}
 
-				U[0][j][k] = ((U[0][j][k] - dt2 * (F[0][j + 1][k] - F[0][j][k])) - dt2 * (G[0][j][k + 1] - G[0][j][k])) - (dt * grav * (sox[j][k]
+				U[1][j][k] = ((U[1][j][k] - dt2 * (F[1][j + 1][k] - F[1][j][k])) - dt2 * (G[1][j][k + 1] - G[1][j][k])) - (dt * grav * (sox[j][k]
 						+ sfx[j][k]));
-				U[0][j][k] = ((U[0][j][k] - dt2 * (F[0][j+1][k] - F[0][j][k]) - dt2 * (G[0][j][k + 1] - G[0][j][k]))) - (dt * grav * (soy[j][k]
+				U[2][j][k] = ((U[2][j][k] - dt2 * (F[2][j+1][k] - F[2][j][k]) - dt2 * (G[2][j][k + 1] - G[2][j][k]))) - (dt * grav * (soy[j][k]
 						+ sfy[j][k]));
 			}
 		}

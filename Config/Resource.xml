@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <location>
+    <sensepath id="1" value="C:/Users/raj/source/repos/Flood2d/Output/hsensor1.txt"></sensepath>
+    <sensepath id="2" value="C:/Users/raj/source/repos/Flood2d/Output/hsensor2.txt"></sensepath>
+    <sensepath id="3" value="C:/Users/raj/source/repos/Flood2d/Output/hsensor3.txt"></sensepath>
+    <output id ="1" value="C:/Users/raj/source/repos/Flood2d/Output/hOut"></output>
+  </location>
+</resources>
