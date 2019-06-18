@@ -2,14 +2,18 @@
 #include<fstream>
 #include<ostream>
 #include<algorithm>
+#include<ctime>
 #include "helper.h"
 #include "corrector.cpp"
 #include "limiter.cpp"
 #include "predictor.cpp"
 #include "slope.cpp"
 #include "fluxes.cpp"
+
+
 using namespace std;
 
+const int NUM_SECONDS = 10;
 /// <summary>
 /// 
 /// </summary>
@@ -21,8 +25,6 @@ int main(void)
 	help.readFromFile(&fd);
 	int simtime;
 	int n;
-	//copy(begin(fd.iv1), end(fd.iv1), begin(iv1));
-	//copy(begin(fd.iv0), end(fd.iv0), begin(iv0));
 	double grav = fd.gravity;
 	double ManN = fd.manN;
 	double hextra = fd.hextra;
@@ -81,14 +83,14 @@ int main(void)
 			h[j][k] = wse[j][k] - zc[j][k];
 			h[1][k] = 0.0;
 			h[n-1][k] = 0.0;
-			h[j][1] = 0.0;
-			h[j][n-1] = 0.0;
-			if (h[j][k] < 0.0) {
-				h[j][k] = 0.0;
-			}
+h[j][1] = 0.0;
+h[j][n - 1] = 0.0;
+if (h[j][k] < 0.0) {
+	h[j][k] = 0.0;
+}
 		}
 	}
-	
+
 	//help.printArray(h, n, "h");
 	double*** U = help.allocate3dMemory(n, fd.dim);
 	double*** F = help.allocate3dMemory(n, fd.dim);
@@ -113,7 +115,7 @@ int main(void)
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-		
+
 			u[i][j] = U[1][i][j] / (U[0][i][j] + fd.hextra);
 			v[i][j] = U[2][i][j] / (U[0][i][j] + fd.hextra);
 		}
@@ -163,7 +165,7 @@ int main(void)
 			dzcx[j][k] = zc[j + 1][k] - zc[j][k];
 			dzcy[j][k] = zc[j][k + 1] - zc[j][k];
 			dzcx[1][k] = 0;    dzcy[1][k] = 0;
-			dzcx[n -1][k] = 0;    dzcy[n -1][k] = 0;
+			dzcx[n - 1][k] = 0;    dzcy[n - 1][k] = 0;
 			dzcx[j][1] = 0;    dzcy[j][1] = 0;
 			dzcx[j][n - 1] = 0;    dzcy[j][n - 1] = 0;
 
@@ -172,8 +174,26 @@ int main(void)
 
 	try
 	{
-		
+		int count = 1;
+		double time_counter = 0;
+		clock_t this_time = clock();
+		clock_t last_time = this_time;
 		for (int j = 0; j < 3; j++) {
+			//print after every tenth iterration
+			help.printArrayInterval(h, u, v, n,j);
+
+			//print every ten seconds
+			this_time = clock();
+			time_counter += (double)(this_time - last_time);
+			last_time = this_time;
+			if ((time_counter > (double)(NUM_SECONDS * CLOCKS_PER_SEC)))
+			{
+			time_counter -= (double)(NUM_SECONDS * CLOCKS_PER_SEC);
+			help.printArray(h, n, "h");
+			help.printArray(u, n, "u");
+			help.printArray(v, n, "v");
+             }
+
 			simtime = 1 + j;
 			cout << endl << "Iteration number :" << j << endl;
 
@@ -273,11 +293,10 @@ int main(void)
 				}
 			}
 			cout << "Correct and re-assign values completed" << endl;
-			help.printArray(h, n, "h");
 			///print u h v arrays
-			//help.printArray(h, n, "h");
-			//help.printArray(u, n, "u");
-			//help.printArray(v, n, "v");
+			help.printArray(h, n, "h");
+			help.printArray(u, n, "u");
+			help.printArray(v, n, "v");
 			//help.freeMemory3d(uNew, n);
 			help.writeHout(h, n,"hOut_" + to_string(j+1) + ".txt");
 			help.writeHout(u, n, "uOut_" + to_string(j+1) + ".txt");
