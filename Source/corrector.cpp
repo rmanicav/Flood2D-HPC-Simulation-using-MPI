@@ -1,26 +1,26 @@
 using namespace std;
-
+/// <summary>
+/// 
+/// </summary>
 class corrector
 {
 public:
-	// Function Definitions
-
-	//
-	// Arguments    : double U[5292]
-	//                const double F[5292]
-	//                const double G[5292]
-	//                double n
-	//                double dt2
-	//                double dt
-	//                const double sox[1764]
-	//                const double sfx[1764]
-	//                const double soy[1764]
-	//                const double sfy[1764]
-	//                double grav
-	// Return Type  : void
-	//
-	///
-
+	
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="U"></param>
+	/// <param name="F"></param>
+	/// <param name="G"></param>
+	/// <param name="n"></param>
+	/// <param name="dt2"></param>
+	/// <param name="dt"></param>
+	/// <param name="sox"></param>
+	/// <param name="sfx"></param>
+	/// <param name="soy"></param>
+	/// <param name="sfy"></param>
+	/// <param name="grav"></param>
+	/// <returns></returns>
 	double*** fcorrector(double ***U, double ***F,  double ***G,double n, double dt2, double dt, double **sox, 
 		double **sfx, double **soy, double **sfy,double grav)
 	{
@@ -43,8 +43,3 @@ public:
 	}
 	
 };
-//
-// File trailer for corrector.cpp
-//
-// [EOF]
-//

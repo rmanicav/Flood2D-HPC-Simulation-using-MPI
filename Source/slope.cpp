@@ -2,26 +2,30 @@
 #include<iostream>
 #include<string>
 using namespace std;
+/// <summary>
+/// 
+/// 
+/// </summary>
 class slope
 {
 public:
 	//
-	// Intermediate Bed Slope values
-	// Arguments    : const double h[1764]
-	//                const double u[1764]
-	//                const double v[1764]
-	//                double ManN
-	//                double hextra
-	//                const double dzcx[1764]
-	//                const double dzcy[1764]
-	//                double cellsize
-	//                double n
-	//                double sox[1764]
-	//                double soy[1764]
-	//                double sfx[100]
-	//                double sfy[100]
-	// Return Type  : void
-	//
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="h"></param>
+	/// <param name="u"></param>
+	/// <param name="v"></param>
+	/// <param name="ManN"></param>
+	/// <param name="hextra"></param>
+	/// <param name="dzcx"></param>
+	/// <param name="dzcy"></param>
+	/// <param name="cellsize"></param>
+	/// <param name="n"></param>
+	/// <param name="sox"></param>
+	/// <param name="soy"></param>
+	/// <param name="sfx"></param>
+	/// <param name="sfy"></param>
 	void fslope(double** h, double** u, double** v,
 		double ManN, double hextra, double** dzcx, double**
 		dzcy, int cellsize, int n, double** sox, double** soy

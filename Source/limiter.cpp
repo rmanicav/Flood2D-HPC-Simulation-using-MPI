@@ -1,22 +1,20 @@
 #include<iostream>
 #include<cmath>
 #include<algorithm>
-
 using namespace std;
-
-
+/// <summary>
+/// 
+/// </summary>
 class limiter
 {
 public:
-	// Function Definitions
-
-	//
-	// Arguments    : double n
-	//                double f[1764]
-	//                double f[1764]
-	//                double df2[1764]
-	// Return Type  : void
-	//
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <param name="f"></param>
+	/// <param name="df1"></param>
+	/// <param name="df2"></param>
 	void flimiter(int n, double** f, double** df1,
 		double** df2)
 	{
@@ -88,7 +86,11 @@ public:
 			}
 		}
 	}
-	///
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="v"></param>
+	/// <returns></returns>
 	int sign(double v)
 	{
 		return (v < 0) ? -1 : (v > 0) ? 1 : 0;

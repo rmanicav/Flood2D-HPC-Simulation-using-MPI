@@ -4,13 +4,14 @@
 #include<ostream>
 #include<string>
 #include<iomanip>
-#include<vector>
+#include<ctime>
 using namespace std;
 
-
+/// <summary>
+/// 
+/// </summary>
 struct floodData
 {
-	int iv0[31], iv1[2];
 	double gravity, manN,  initV;
 	int  L, dim,cellSize;
 	double hextra, epsilon, nt, ntPlot, dt, initWSE, hWL;
@@ -18,12 +19,18 @@ struct floodData
 	double **zc;
 };
 
-
+/// <summary>
+/// 
+/// </summary>
 class helper
 {
 public:
 
-	
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="arr"></param>
+	/// <param name="n"></param>
 	void clearArray(double** arr, int n)
 	{
 		for (int i = 0; i < n; i++)
@@ -34,6 +41,11 @@ public:
 			}
 		}
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <returns></returns>
 	double** allocateMemory(int n)
 	{
 		double** arr;
@@ -45,7 +57,12 @@ public:
 		}
 		return arr;
 	}
-	///
+	
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="arr"></param>
+	/// <param name="n"></param>
 	void freeMemory(double** arr,int n)
 	{
 		for (int i = 0; i < n; i++)
@@ -54,6 +71,12 @@ public:
 		}
 		free(arr);
 	}
+	/// <summary>
+	/// 
+	/// 
+	/// </summary>
+	/// <param name="arr"></param>
+	/// <param name="n"></param>
 	void freeMemory3d(double*** arr, int n)
 	{
 		for (int i = 0; i < n; i++)
@@ -66,7 +89,12 @@ public:
 		}
 		free(arr);
 	}
-	///
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <param name="dim"></param>
+	/// <returns></returns>
 	double*** allocate3dMemory(int n, int dim)
 	{
 		double*** arr = new double** [n];
@@ -81,6 +109,10 @@ public:
 		}
 		return arr;
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="fd"></param>
 	void readFromFile(floodData* fd)
 	{
 		
@@ -161,11 +193,16 @@ public:
 		printArray(fd->zc, 42, "zc");
 		infile.close();
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="h"></param>
+	/// <param name="n"></param>
+	/// <param name="fileName"></param>
 	void writeHout(double **h,int n, string fileName)
 	{
-		//hsens_1 = h(25, 29); hsens_2 = h(30, 29); hsens_3 = h(37, 29);
-		ofstream outStream;;
-		outStream.open(fileName,ios::out);
+		ofstream outStream;
+		outStream.open("Output/" + fileName,ios::out);
 		if (outStream.is_open())
 		{
 			for (int i = 0; i < n; i++)
@@ -185,8 +222,13 @@ public:
 		}
 		
 	}
-	///
-
+	
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="arr"></param>
+	/// <param name="n"></param>
+	/// <param name="name"></param>
 	void printArray(double** arr, int n, string name)
 	{
 		cout << "*********************************************************************************************" << endl;
@@ -200,5 +242,30 @@ public:
 			cout << endl;
 		}
 		cout << "*********************************************************************************************" << endl;
+	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="error"></param>
+	void writeErrorLog(string error)
+	{
+		ofstream outStream;
+		time_t now = time(0);
+		//char* dt = ctime(&now);
+
+		outStream.open("Output/errorLog.txt", ios::out);
+		if (outStream.is_open())
+		{
+			outStream << "*********************************************************" << endl;
+			//outStream << "Date is: " << dt << endl;
+			outStream << endl;
+			outStream << "Error Message:" << error << endl;
+			outStream << "*********************************************************" << endl;
+			outStream.close();
+		}
+		else
+		{
+			cout << "Unable to open file" << endl;
+		}
 	}
 };

@@ -10,7 +10,10 @@
 #include "fluxes.cpp"
 using namespace std;
 
-
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 int main(void)
 {
 	helper help;
@@ -30,9 +33,6 @@ int main(void)
 	int	m = n;
 	int nf = n;// number of edges(will be used to compute fluxes at the interface)
 	double	cr = fd.cr;
-
-	// x = 0:cellsize:L;// array for edge coordinates in x
-	// y = 0:cellsize:L;// array for edge coordinates in y
 
 	double xc = cellsize / 2; //cellsize:L;// x coordinate of cell center
 	double	yc = cellsize / 2; //:cellsize:L;// y coordinate of cell center
@@ -90,9 +90,6 @@ int main(void)
 	}
 	
 	//help.printArray(h, n, "h");
-
-
-
 	double*** U = help.allocate3dMemory(n, fd.dim);
 	double*** F = help.allocate3dMemory(n, fd.dim);
 	double*** G = help.allocate3dMemory(n, fd.dim);
@@ -109,16 +106,16 @@ int main(void)
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			U[0][i][j] = h[i][j];
-			U[1][i][j] = u[i][j];
-			U[2][i][j] = v[i][j];
+			U[1][i][j] = u[i][j] * h[i][j];
+			U[2][i][j] = v[i][j] * h[i][j];
 		}
 	}
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 		
-			u[i][j] = U[1][i][j] / (U[0][i][j] + 0.1);
-			v[i][j] = U[2][i][j] / (U[0][i][j] + 0.1);
+			u[i][j] = U[1][i][j] / (U[0][i][j] + fd.hextra);
+			v[i][j] = U[2][i][j] / (U[0][i][j] + fd.hextra);
 		}
 	}
 
@@ -176,7 +173,7 @@ int main(void)
 	try
 	{
 		
-		for (int j = 0; j < 1; j++) {
+		for (int j = 0; j < 3; j++) {
 			simtime = 1 + j;
 			cout << endl << "Iteration number :" << j << endl;
 
@@ -264,8 +261,8 @@ int main(void)
 					}
 					else
 					{
-						u[i][j] = U[1][i][j];
-						v[i][j] = U[2][i][j];
+						u[i][j] = U[1][i][j]/(U[0][i][j] + fd.hextra);
+						v[i][j] = U[2][i][j]/(U[0][i][j] + fd.hextra);
 					}
 					//compute the new free surface height
 					wse[i][j] = U[1][i][j] + zc[i][j];
@@ -282,9 +279,9 @@ int main(void)
 			//help.printArray(u, n, "u");
 			//help.printArray(v, n, "v");
 			//help.freeMemory3d(uNew, n);
-			help.writeHout(h, n,"output/hOut.txt");
-			help.writeHout(u, n, "output/uOut.txt");
-			help.writeHout(v, n, "output/vOut.txt");
+			help.writeHout(h, n,"hOut_" + to_string(j+1) + ".txt");
+			help.writeHout(u, n, "uOut_" + to_string(j+1) + ".txt");
+			help.writeHout(v, n, "vOut_" + to_string(j+1) + ".txt");
 		}
 		
 		help.freeMemory(h, n);
@@ -312,6 +309,7 @@ int main(void)
 	catch (exception ex)
 	{
 		cout << "Exception occured -->" << ex.what() << endl;
+		
 	}
 	cout << endl;
 	cout << "Flood 2d Completed" << endl;

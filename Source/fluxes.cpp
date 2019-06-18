@@ -1,29 +1,30 @@
 #include "solver.cpp"
 #include <stdlib.h>
+#include<algorithm>
 using namespace std;
+/// <summary>
+/// 
+/// </summary>
 class fluxes
 {
 
 public:
-	// Function Definitions
-
-//
-// Compute fluxes in X-direction
-// Arguments    : const double UP[5292]
-//                double n
-//                const double dwsex[1764]
-//                const double dwsey[1764]
-//                const double dux[1764]
-//                const double duy[1764]
-//                const double dvx[1764]
-//                const double dvy[1764]
-//                double hextra
-//                const double zc[1764]
-//                emxArray_real_T *F
-//                emxArray_real_T *G
-//                double amax
-// Return Type  : void
-//
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="UP"></param>
+	/// <param name="n"></param>
+	/// <param name="dwsex"></param>
+	/// <param name="dwsey"></param>
+	/// <param name="dux"></param>
+	/// <param name="duy"></param>
+	/// <param name="dvx"></param>
+	/// <param name="dvy"></param>
+	/// <param name="hextra"></param>
+	/// <param name="zc"></param>
+	/// <param name="F"></param>
+	/// <param name="G"></param>
+	/// <param name="amax"></param>
 	void ffluxes(double*** UP, int n, double** dwsex,
 		double** dwsey, double** dux, double** duy,
 		double** dvx, double** dvy, double hextra,
@@ -81,6 +82,19 @@ public:
 		//left dam
 		amax = leftDamn(zc, UP, amax, G, hextra, n);
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="zc"></param>
+	/// <param name="UP"></param>
+	/// <param name="amax"></param>
+	/// <param name="F"></param>
+	/// <param name="dwsex"></param>
+	/// <param name="hextra"></param>
+	/// <param name="n"></param>
+	/// <param name="dux"></param>
+	/// <param name="dvx"></param>
+	/// <returns></returns>
 	double xDirectionFlux(double **zc,double ***UP,double amax,double ***F,double **dwsex,double hextra,int n,double **dux,
 		double **dvx)
 	{
@@ -94,17 +108,15 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < n; j++)
+			for (int j = 2; j < n -1; j++)
 			{
 				for (int k = 0; k < n; k++)
 				{
-//					zbc = minmax(zc[j - 1][k]), zc[j],[k]).second();
+					zbc = minmax(zc[j - 1][k], zc[j][k]).second;
 
-					if ((UP[0][j][k] - zbc) > 0)
+					if ((UP[0][j-1][k] - zbc) > 0)
 					{
-					hl = UP[0][j][k] - zbc;
+					hl = UP[0][j-1][k] - zbc;
 					}
 					else if ((UP[0][j][k] - zbc) <= 0)
 					{
@@ -120,27 +132,14 @@ public:
 						hr = 0;
 					}
 
-					if (hr < 0.0) {
-						hr = 0.0;
-					}
+				
 					if (hl > 0)
 					{
-						hl = hl + 0.5 * dwsex[j][k];
+						hl = hl + 0.5 * dwsex[j-1][k];
 						if (hl < 0)
 						{
 							hl = 0;
 						}
-					}
-					if (hl == 0.0) {
-						ul = 0.0;
-						vl = 0.0;
-					}
-					else {
-						ul = (UP[1][j][k] / (hr + hextra)) + 0.5 * dux[j][k];
-						vl = (UP[2][j][k] / (hr + hextra)) + 0.5 * dvx[j][k];
-					}
-					if (hr < 0.0) {
-						hr = 0.0;
 					}
 					if (hr > 0.0)
 					{
@@ -151,6 +150,18 @@ public:
 						}
 					}
 
+					if (hl == 0.0) {
+						ul = 0.0;
+						vl = 0.0;
+					}
+					else {
+						ul = (UP[1][j-1][k] / (hl + hextra)) + 0.5 * dux[j-1][k];
+						vl = (UP[2][j-1][k] / (hl + hextra)) + 0.5 * dvx[j-1][k];
+					}
+					if (hr < 0.0) {
+						hr = 0.0;
+					}
+					
 					if (hr == 0.0) {
 						ur = 0.0;
 						vr = 0.0;
@@ -160,15 +171,12 @@ public:
 						vr = (UP[2][j][k] / (hr + hextra)) - 0.5 * dvx[j][k];
 					}
 					s.fsolver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
-
-
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+						for (int j = 0; j < 3; j++)
 						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							F[0][i][j] = dv0[i];
+							
+							F[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -178,11 +186,24 @@ public:
 
 			}
 
-		}
+		
 		
 		return amax;
 	}
 	// From 20th to 21st and 22nd rows
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="zc"></param>
+	/// <param name="UP"></param>
+	/// <param name="amax"></param>
+	/// <param name="F"></param>
+	/// <param name="dwsex"></param>
+	/// <param name="hextra"></param>
+	/// <param name="n"></param>
+	/// <param name="dux"></param>
+	/// <param name="dvx"></param>
+	/// <returns></returns>
 	double middleX(double** zc, double*** UP, double amax, double*** F, double** dwsex, double hextra, int n, double** dux,
 		double** dvx)
 	{
@@ -193,13 +214,12 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 20; j < 21; j++)
+		
+			for (int j = 19; j < 20; j++)
 			{
-				for (int k = 1; k < 23 || k > 34 && k < n; k++)
+				for (int k = 0;(k<22 || k >34) && k < n - 1; k++)
 				{
-					//zbc = max(zc(j, k), zc(j, k));
+					zbc = minmax(zc[j][k], zc[j][k]).second;
 					if ((UP[0][j][k] - zbc) > 0)
 					{
 						hl = UP[0][j][k] - zbc;
@@ -209,7 +229,7 @@ public:
 							hl = 0;
 						}
 						ul = (UP[1][j][k]) / (hl + hextra);
-						vl = (UP[1][j][k]) / (hl + hextra);
+						vl = (UP[2][j][k]) / (hl + hextra);
 					}
 					else if ((UP[0][j][k] - zbc) <= 0)
 					{
@@ -218,13 +238,12 @@ public:
 							
 					s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
 					
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+					
+						for (int j = 0; j < 3; j++)
 						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							F[0][i][j] = dv0[i];
+							F[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -234,13 +253,26 @@ public:
 
 			}
 
-		}
+		
 
 		return amax;
 	}
 	//23 X direction
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="zc"></param>
+	/// <param name="UP"></param>
+	/// <param name="amax"></param>
+	/// <param name="F"></param>
+	/// <param name="dwsex"></param>
+	/// <param name="hextra"></param>
+	/// <param name="n"></param>
+	/// <param name="dux"></param>
+	/// <param name="dvx"></param>
+	/// <returns></returns>
 	double twentythirdX(double** zc, double*** UP, double amax, double*** F, double** dwsex, double hextra, int n, double** dux,
-		double** dvx)
+	double** dvx)
 	{
 		double zbc = 0.0;
 		double hr = 0.0;
@@ -252,11 +284,10 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 23; j < 24; j++)
+		
+			for (int j = 22; j < 23; j++)
 			{
-				for (int k = 1; (k < 24 || k >34) && k < n; k++)
+				for (int k = 0; (k < 22 || k >34) && k < n; k++)
 				{
 
 					//zbc = max(zc(j, k), zc(j, k));
@@ -311,13 +342,12 @@ public:
 					}
 
 					s.fsolver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+					
+						for (int j = 0; j < 3; j++)
 						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							F[0][i][j] = dv0[i];
+							F[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -325,10 +355,20 @@ public:
 					}
 				}
 			}
-		}
+		
 		return amax;
 		}
-		double boundaryX(double amax, double*** UP, double hextra, double** zc, double*** F,int n)
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="amax"></param>
+	/// <param name="UP"></param>
+	/// <param name="hextra"></param>
+	/// <param name="zc"></param>
+	/// <param name="F"></param>
+	/// <param name="n"></param>
+	/// <returns></returns>
+	double boundaryX(double amax, double*** UP, double hextra, double** zc, double*** F,int n)
 	{
 		solver s;
 		double zbc = 0.0;
@@ -337,9 +377,9 @@ public:
 		double vl = 0.0;
 		double dv0[3];
 		
-				for (int k = 0; k < n; k++)
+				for (int k = 1; k < n - 1; k++)
 				{
-					hl = UP[0][2][k] - zc[2][k];
+					hl = UP[0][1][k] - zc[1][k];
 					if (hl < 0.0) {
 						hl = 0.0;
 					}
@@ -349,14 +389,13 @@ public:
 						vl = 0.0;
 					}
 					else {
-						ul = UP[1][1][k] / (hl + hextra);
-						vl = UP[2][1][k] / (hl + hextra);
+						ul = UP[1][0][k] / (hl + hextra);
+						vl = UP[2][0][k] / (hl + hextra);
 					}
 					s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
 				
 						for (int j = 0; j < 3; j++)
-						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
+						{							
 							F[2][0][j] = dv0[j];
 						}
 					
@@ -369,6 +408,16 @@ public:
 					
 		return amax;
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <param name="UP"></param>
+	/// <param name="F"></param>
+	/// <param name="amax"></param>
+	/// <param name="zc"></param>
+	/// <param name="hextra"></param>
+	/// <returns></returns>
 	double boundaryWest(int n,double ***UP, double ***F,double &amax,double **zc,double hextra)
 	{	
 		double zbc = 0.0;
@@ -407,6 +456,16 @@ public:
 								
 			return amax;
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <param name="UP"></param>
+	/// <param name="G"></param>
+	/// <param name="amax"></param>
+	/// <param name="zc"></param>
+	/// <param name="hextra"></param>
+	/// <returns></returns>
 	double boundaryNorth(int n, double*** UP, double*** G, double amax, double** zc, double hextra)
 	{
 		double zbc = 0.0;
@@ -449,6 +508,16 @@ public:
 		}
 		return amax;
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <param name="UP"></param>
+	/// <param name="F"></param>
+	/// <param name="amax"></param>
+	/// <param name="zc"></param>
+	/// <param name="hextra"></param>
+	/// <returns></returns>
 	double boundaryEast(int n, double*** UP, double*** F, double amax, double** zc, double hextra)
 	{
 		double zbc = 0.0;
@@ -458,13 +527,10 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < n; j++)
-			{
+	
 				for (int k = 0; k < n; k++)
 				{
-					hl = UP[0][j][k] - zc[j][k];
+					hl = UP[0][n-1][k] - zc[n-1][k];
 					if (hl < 0)
 					{
 						hl = 0;
@@ -475,28 +541,37 @@ public:
 					}
 					else
 					{
-						ul = (UP[1][j][k]) / (hl + hextra);
-						vl = (UP[2][j][k]) / (hl + hextra);
+						ul = (UP[1][n-1][k]) / (hl + hextra);
+						vl = (UP[2][n-1][k]) / (hl + hextra);
 					}
-					//s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 0.05, hextra);
+					
 					s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+					
+						for (int j = 0; j < 3; j++)
 						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							F[0][i][j] = dv0[i];
+							
+							F[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
 						amax = zbc;
 					}
-				}
-			}
+			
 		}
 		return amax;
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <param name="UP"></param>
+	/// <param name="G"></param>
+	/// <param name="amax"></param>
+	/// <param name="zc"></param>
+	/// <param name="hextra"></param>
+	/// <returns></returns>
 	double boundarySouthY(int n, double*** UP, double*** G, double amax, double** zc, double hextra)
 	{
 		double zbc = 0.0;
@@ -506,14 +581,11 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < n; j++)
+		
+			for (int j = 1; j < n -1; j++)
 			{
-				for (int k = 0; k < n; k++)
-				{
-					//hl = UP(j, 2, 1) - zc(j, 2);
-					hl = UP[0][j][k] - zc[j][k];
+						
+					hl = UP[0][j][1] - zc[j][1];
 					if (hl < 0)
 					{
 						hl = 0;
@@ -524,30 +596,37 @@ public:
 					}
 					else
 					{
-						ul = (UP[1][j][k]) / (hl + hextra);
-						vl = (UP[2][j][k]) / (hl + hextra);
+						ul = (UP[1][j][0]) / (hl + hextra);
+						vl = (UP[2][j][0]) / (hl + hextra);
 					}
-					//s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 0.05, hextra);
+					
 					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0, hextra, dv0, &zbc);
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+					
+						for (int j = 0; j < 3; j++)
 						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							G[0][i][j] = dv0[i];
+							
+							G[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
 						amax = zbc;
 					}
-				}
-			}
-		}
+			
+			}		
 		return amax;
-
-
-	}
+ 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <param name="UP"></param>
+	/// <param name="G"></param>
+	/// <param name="amax"></param>
+	/// <param name="zc"></param>
+	/// <param name="hextra"></param>
+	/// <returns></returns>
 	double secondColumnY(int n, double*** UP, double*** G, double amax, double** zc, double hextra)
 	{
 		double zbc = 0.0;
@@ -557,14 +636,9 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < n; j++)
-			{
-				for (int k = 0; k < n; k++)
-				{
-					//hl = UP(j, 2, 1) - zc(j, 2);
-					hl = UP[0][j][k] - zc[j][k];
+		for (int j = 1; j < n -1; j++)
+			{			
+					hl = UP[0][j][1] - zc[j][1];
 					if (hl < 0)
 					{
 						hl = 0;
@@ -575,29 +649,41 @@ public:
 					}
 					else
 					{
-						ul = (UP[1][j][k]) / (hl + hextra);
-						vl = (UP[2][j][k]) / (hl + hextra);
+						ul = (UP[1][j][0]) / (hl + hextra);
+						vl = (UP[2][j][0]) / (hl + hextra);
 					}
-					//s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 0.05, hextra);
+					
 					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0, hextra, dv0, &zbc);
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+						for (int j = 0; j < 3; j++)
 						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							G[0][i][j] = dv0[i];
+							G[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
 						amax = zbc;
 					}
-				}
+				
 			}
-		}
+		
 		return amax;
 
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="zc"></param>
+	/// <param name="UP"></param>
+	/// <param name="amax"></param>
+	/// <param name="G"></param>
+	/// <param name="dwsex"></param>
+	/// <param name="hextra"></param>
+	/// <param name="n"></param>
+	/// <param name="duy"></param>
+	/// <param name="dwsey"></param>
+	/// <param name="dvy"></param>
+	/// <returns></returns>
 	double yDirectionFlux(double** zc, double*** UP, double amax, double*** G, double** dwsex, double hextra, int n, 
 		double** duy,	double** dwsey,double ** dvy)
 	{
@@ -611,41 +697,33 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < n; j++)
-			{
-				for (int k = 0; k < n; k++)
-				{
 		
-				if ((zc[j][k-1] > zc[j][k]) || !isnan(zc[j][k])) {
-					zbc = zc[j][k];
-				}
-				else {
-					zbc = zc[j][k];
-				}
+			for (int k = 2; k < n -1; k++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					zbc = minmax(zc[j][k - 1], zc[j][k]).second;
+				
 
-				if ((UP[0][j][k] - zbc) > 0.0) {
-					hl = (UP[0][j][k] - zbc);
+				if ((UP[0][j][k - 1] - zbc) > 0.0) {
+					hl = (UP[0][j][k-1] - zbc);
 				}
-				else {
-					if ((UP[0][j][k] - zbc) <= 0.0)
+				else if ((UP[0][j][k] - zbc) <= 0.0)
 					{
 						hl = 0.0;
 					}
-				}
+				
 
 				if ((UP[0][j][k] - zbc) > 0.0) {
 					hr = UP[0][j][k] - zbc;
 				}
-				else {
-					if ((UP[0][j][k] - zbc) <= 0.0) {
+				else if ((UP[0][j][k] - zbc) <= 0.0) {
 						hr = 0.0;
 					}
-				}
+				
 
 				if (hl > 0.0) {
-					hl += 0.5 * dwsey[j][k];
+					hl += 0.5 * dwsey[j][k-1];
 					if (hl < 0.0) {
 						hl = 0.0;
 					}
@@ -663,9 +741,9 @@ public:
 					vl = 0.0;
 				}
 				else {
-					ul = UP[1][j][k-1] + 0.5 * (duy[j][k-2] /
+					ul = UP[1][j][k-1] + 0.5 * (duy[j][k-1] /
 						(hl + hextra));
-					vl = UP[2][j][k - 2] + 0.5 * (duy[j][k - 2] /
+					vl = UP[2][j][k -1] + 0.5 * (duy[j][k - 1] /
 						(hl + hextra));
 				}
 
@@ -679,13 +757,13 @@ public:
 				}
 
 				s.fsolver(hl, hr, ul, ur, vl, vr, 1.0, 0.0, hextra, dv0, &zbc);
-				for (int i = 0; i < n; i++) {
+				
 						for (int j = 0; j < n; j++)
 						{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							G[0][i][j] = dv0[i];
+						
+							G[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -694,9 +772,19 @@ public:
 			
 		}
 		}
-		}
+		
 		return amax;
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="zc"></param>
+	/// <param name="UP"></param>
+	/// <param name="amax"></param>
+	/// <param name="G"></param>
+	/// <param name="hextra"></param>
+	/// <param name="n"></param>
+	/// <returns></returns>
 	double twentythreerowDownStream(double** zc, double*** UP, double amax, double*** G,double hextra,int n)
 	{
 		double zbc = 0.0;
@@ -705,29 +793,24 @@ public:
 		double vl = 0.0;
 		double dv0[3];
 		solver s;
-
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 1; j < 23; j++)
+				
+			for (int k = 1; k < 23; k++)
 			{
-				for (int k = 21; k < 22; k++)
-				{
-					
-								hl = UP[0][j][k] - zc[j][k];
+				for (int j = 21; j < 22; j++)
+				{					
+								hl = UP[0][j][k - 1] - zc[j][k-1];
 								if (hl < 0.0) {
 									hl = 0.0;
 								}
-
-								ul = UP[1][j][k] / (hl + hextra);
-								vl = UP[2][j][k] / (hl + hextra);
+								ul = UP[1][j][k-1] / (hl + hextra);
+								vl = UP[2][j][k-1] / (hl + hextra);
 								s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 								
-								for (int i = 0; i < n; i++) {
-									for (int j = 0; j < n; j++)
+									for (int j = 0; j < 3; j++)
 									{
-										G[0][i][j] = dv0[i];
+										G[2][0][j] = dv0[j];
 									}
-								}
+								
 								if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 								}
 								else {
@@ -736,9 +819,19 @@ public:
 							}
 						
 				}
-			}
+			
 			return amax;
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="zc"></param>
+	/// <param name="UP"></param>
+	/// <param name="amax"></param>
+	/// <param name="G"></param>
+	/// <param name="hextra"></param>
+	/// <param name="n"></param>
+	/// <returns></returns>
 	double twentyfourDam(double** zc, double*** UP, double amax, double*** G,  double hextra, int n)
 	{
 		double zbc = 0.0;
@@ -748,14 +841,11 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 24; j < 24; j++)
-			{
-				for (int k = 21; k < 22; k++)
+		
+		int k = 23;
+				for (int j = 20; j < 21; j++)
 				{
-
-					//zbc = max(zc(j, k), zc(j, k));
+					zbc = minmax(zc[j][k], zc[j][k]).second;
 					if ((UP[0][j][k] - zbc) > 0)
 					{
 						hl = UP[0][j][k] - zbc;
@@ -779,22 +869,31 @@ public:
 					
 					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+						for (int j = 0; j < 3; j++)
 						{
-							G[0][i][j] = dv0[i];
+							G[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
 						amax = zbc;
 					}
 				}
-			}
-		}
+			
+		
 		return amax;
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="zc"></param>
+	/// <param name="UP"></param>
+	/// <param name="amax"></param>
+	/// <param name="G"></param>
+	/// <param name="hextra"></param>
+	/// <param name="n"></param>
+	/// <returns></returns>
 	double thirtyFiveLeftDamn(double** zc, double*** UP, double amax, double*** G, double hextra, int n)
 	{
 		double zbc = 0.0;
@@ -803,52 +902,57 @@ public:
 		double vl = 0.0;
 		double dv0[3];
 		solver s;
-
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 35; j < 36; j++)
-			{
-				for (int k = 21; k < 22; k++)
+		int k = 34;
+			for (int j = 20; j < 21; j++)
 				{
-
-					//zbc = max(zc(j, k), zc(j, k));
-					if ((UP[0][j][k] - zbc) > 0)
+				zbc = minmax(zc[j][k - 1], zc[j][k - 1]).second;
+					
+					if ((UP[0][j][k-1] - zbc) > 0)
 					{
-						hl = UP[0][j][k] - zbc;
+						hl = UP[0][j][k-1] - zbc;
 						if (hl < 0)
 						{
 							hl = 0;
 						}
-						ul = (UP[1][j][k]) / (hl + hextra);
-						vl = (UP[2][j][k]) / (hl + hextra);
+						ul = (UP[1][j][k-1]) / (hl + hextra);
+						vl = (UP[2][j][k-1]) / (hl + hextra);
 					}
-					else if ((UP[0][j][k] - zbc) <= 0)
+					else if ((UP[0][j][k-1] - zbc) <= 0)
 					{
 						hl = 0;
-					}
-					if (hl == 0)
-					{
-						ul = 0; vl = 0;
-					}
+						if (hl == 0)
+						{
+							ul = 0; vl = 0;
+						}
+					}					
 					
 					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 
-					for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+						for (int j = 0; j < 3; j++)
 						{
-							G[0][i][j] = dv0[i];
+							G[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
 						amax = zbc;
 					}
 				}
-			}
-		}
+			
+		
 		return amax;
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="zc"></param>
+	/// <param name="UP"></param>
+	/// <param name="amax"></param>
+	/// <param name="G"></param>
+	/// <param name="hextra"></param>
+	/// <param name="n"></param>
+	/// <returns></returns>
 	double leftDamn(double** zc, double*** UP, double amax, double*** G, double hextra, int n)
 	{
 		double zbc = 0.0;
@@ -858,29 +962,28 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < n; j++)
+		
+			for (int k = 35; k < n -1; k++)
 			{
-				for (int k = 0; k < n; k++)
+				for (int j = 20; j < 21; j++)
 				{
 		
-					hl = UP[0][j][k] - zc[j][k];
+					hl = UP[0][j][k-1] - zc[j][k-1];
 					
 				if (hl < 0.0) {
 					hl = 0.0;
 				}
 
-				ul = UP[1][j][k] / (hl + hextra);
-				vl = UP[2][j][k] / (hl + hextra);
+				ul = UP[1][j-1][k] / (hl + hextra);
+				vl = UP[2][j-1][k] / (hl + hextra);
 				s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 				
-				for (int i = 0; i < n; i++) {
-						for (int j = 0; j < n; j++)
+				
+						for (int j = 0; j < 3; j++)
 						{
-							G[0][i][j] = dv0[i];
+							G[2][0][j] = dv0[j];
 						}
-					}
+					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -888,16 +991,8 @@ public:
 					}
 	}
 	}
-	}
+	
 		return amax;
 	}
-	
-
-
-	
-		//
-	// File trailer for fluxes.cpp
-	//
-	// [EOF]
-	//
+		
 };

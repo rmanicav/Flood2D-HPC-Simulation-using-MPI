@@ -1,38 +1,39 @@
 #include <cmath>
+/// <summary>
+/// 
+/// </summary>
 class predictor
 {
 public:
-	predictor()
-	{
-
-	}
-	//
-	// Arguments    : double nf
-	//                 double wse[1764]
-	//                 double h[1764]
-	//                 double u[1764]
-	//                 double v[1764]
-	//                 double dwsex[1764]
-	//                 double dwsey[1764]
-	//                 double dux[1764]
-	//                 double duy[1764]
-	//                 double dvx[1764]
-	//                 double dvy[1764]
-	//                double dt2
-	//                 double dzcx[1764]
-	//                 double dzcy[1764]
-	//                double epsilon
-	//                 double zc[1764]
-	//                 double sox[1764]
-	//                 double sfx[1764]
-	//                double dt
-	//                 double soy[1764]
-	//                 double sfy[1764]
-	//                double wsep[1764]
-	//                double up[1764]
-	//                double vp[1764]
-	// Return Type  : void
-	//
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <param name="grav"></param>
+	/// <param name="nf"></param>
+	/// <param name="wse"></param>
+	/// <param name="h"></param>
+	/// <param name="u"></param>
+	/// <param name="v"></param>
+	/// <param name="dwsex"></param>
+	/// <param name="dwsey"></param>
+	/// <param name="dux"></param>
+	/// <param name="duy"></param>
+	/// <param name="dvx"></param>
+	/// <param name="dvy"></param>
+	/// <param name="dt2"></param>
+	/// <param name="dzcx"></param>
+	/// <param name="dzcy"></param>
+	/// <param name="epsilon"></param>
+	/// <param name="zc"></param>
+	/// <param name="sox"></param>
+	/// <param name="sfx"></param>
+	/// <param name="dt"></param>
+	/// <param name="soy"></param>
+	/// <param name="sfy"></param>
+	/// <param name="wsep"></param>
+	/// <param name="up"></param>
+	/// <param name="vp"></param>
 	void fpredictor(int n, double grav, double nf, double** wse, double** h,
 		double **  u, double ** v, double ** dwsex,
 		double ** dwsey, double ** dux, double **
@@ -87,8 +88,4 @@ public:
 		}
 	}
 };
-//
-// File trailer for predictor.cpp
-//
-// [EOF]
-//
+

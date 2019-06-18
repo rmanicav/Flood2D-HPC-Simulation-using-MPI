@@ -4,11 +4,27 @@
 #include<stdlib.h>
 #include<iostream>
 using namespace std;
+/// <summary>
+/// 
+/// </summary>
 class solver
 {
 public:
-	///
-
+	
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="hl"></param>
+	/// <param name="hr"></param>
+	/// <param name="ul"></param>
+	/// <param name="ur"></param>
+	/// <param name="vl"></param>
+	/// <param name="vr"></param>
+	/// <param name="sn"></param>
+	/// <param name="cn"></param>
+	/// <param name="hextra"></param>
+	/// <param name="F"></param>
+	/// <param name="amax"></param>
 	void fsolver(double hl, double hr, double ul, double ur, double vl, double vr,
 		double sn, double cn, double hextra, double F[3], double* amax)
 	{
@@ -194,15 +210,9 @@ public:
 				sub[i][j] = FSUM[i][j] - temp[i][j];
 			}
 	    }
-
-		
+			
 		*amax = chat + abs(uhat * cn + vhat * sn);
 	}
 	
 	
 };
-//
-// File trailer for solver.cpp
-//
-// [EOF]
-//
