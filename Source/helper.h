@@ -2,7 +2,9 @@
 #include<iostream>
 #include<fstream>
 #include<ostream>
+#include<string>
 #include<iomanip>
+#include<vector>
 using namespace std;
 
 
@@ -83,56 +85,64 @@ public:
 	{
 		
 		ifstream infile;
-		int count;
+		string name;
 		infile.open("Input/iv.txt");
 		cout << "----------------------------------\n";
-		infile >> fd->gravity;
+		getline(infile, name);
+		size_t pos = name.find(":");
+		fd->gravity = atof(name.substr(pos+1).c_str());
 		cout << "Gravity:" << fd->gravity << endl;
-		infile >> fd->manN;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->manN = atof(name.substr(pos + 1).c_str());
 		cout << "Manning:" << fd->manN << endl;
-		infile >> fd->hextra;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->hextra = atof(name.substr(pos + 1).c_str());
 		cout << "hextra:" << fd->hextra << endl;
-		infile >> fd->epsilon;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->epsilon = atof(name.substr(pos + 1).c_str());
 		cout << "epsilon:" << fd->epsilon << endl;
-		infile >> fd->cellSize;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->cellSize = atoi(name.substr(pos + 1).c_str());
 		cout << "Cell size:" << fd->cellSize << endl;
-		infile >> fd->L;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->L = atoi(name.substr(pos + 1).c_str());
 		cout << "Box size:" << fd->L << endl;
-		infile >> fd->nt;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->nt = atof(name.substr(pos + 1).c_str());
 		cout << "Number of time steps:" << fd->nt << endl;
-		infile >> fd->ntPlot;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->ntPlot = atof(name.substr(pos + 1).c_str());
 		cout << "Plotting interval:" << fd->ntPlot << endl;
-		infile >> fd->dt;
-		cout << "Time steps:" << fd->dt << endl;
-		//cout << "----------------------------------\n\n";
-		infile >> count;
-		//cout << "----iv0------\n";
-		for (int i = 0; i < count; i++)
-		{
-			infile >> fd->iv0[i];
-			//		cout << fd->iv0[i] << "\t";
-		}
-		//cout << "\n-------------------------------\n\n";
-		//cout << endl;
-		infile >> count;
-		//cout << "----iv1------\n";
-		for (int i = 0; i < count; i++)
-		{
-			infile >> fd->iv1[i];
-			//		cout << fd->iv1[i] << "\t";
-		}
-		//cout << "\n-------------------------------\n\n";
-		//cout << "\n-------------------------------\n\n";
-		//cout << endl;
-		infile >> fd->initV;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->dt = atof(name.substr(pos + 1).c_str());
+		cout << "Time steps:" << fd->dt << endl;		
+		getline(infile, name);
+		pos = name.find(":");
+		fd->initV = atof(name.substr(pos + 1).c_str());
 		cout << "Init value:" << fd->initV << endl;
-		infile >> fd->initWSE;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->initWSE= atof(name.substr(pos + 1).c_str());
 		cout << "WSE downstream value:" << fd->initWSE << endl;
-		infile >> fd->hWL;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->hWL= atof(name.substr(pos + 1).c_str());
 		cout << "WSE upstream value:" << fd->hWL << endl;
-		infile >> fd->cr;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->cr = atof(name.substr(pos + 1).c_str());
 		cout << "cr value:" << fd->cr << endl;
-		infile >> fd->dim;
+		getline(infile, name);
+		pos = name.find(":");
+		fd->dim= atoi(name.substr(pos + 1).c_str());
 		cout << "Dimension:" << fd->dim << endl;
 		cout << "\n-------------------------------\n\n";
 		infile.close();
