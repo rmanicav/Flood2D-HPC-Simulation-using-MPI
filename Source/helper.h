@@ -429,4 +429,47 @@ public:
 			cout << "Unable to open file" << endl;
 		}
 	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="h"></param>
+	/// <param name="ntPlot"></param>
+	/// <param name="simTime"></param>
+	/// <param name="dt"></param>
+	void writeSensor(double **h,double ntPlot,int simTime, double dt)
+	{
+		ofstream outStream,outStream2,outStream3;
+		double ctrs, ctrs2, ctrs3;
+
+		
+		ctrs = simTime * dt;
+		double** hsens_1 = allocateMemory(1);
+		double** hsens_2 = allocateMemory(1);
+		double** hsens_3 = allocateMemory(1);
+		hsens_1[0][0] = h[24][28];
+		hsens_2[0][0] = h[29][28];
+		hsens_3[0][0] = h[36][28];
+
+			ctrs = simTime * dt;
+			if (fmod(ctrs, 0.5) == 0)
+			{
+				outStream.open("Output/hsensor1.txt", ios::out);
+				outStream << hsens_1[0][0] << endl;
+				outStream.close();
+			}
+			ctrs2 = simTime * dt;
+			if (fmod(ctrs2, 0.5) == 0)
+			{
+				outStream2.open("Output/hsensor2.txt", ios::out);
+				outStream2 << hsens_2[0][0] << endl;
+				outStream2.close();
+			}
+			ctrs3 = simTime * dt;
+			if (fmod(ctrs3, 0.5) == 0)
+			{
+				outStream3.open("Output/hsensor3.txt", ios::out);
+				outStream3 << hsens_2[0][0] << endl;
+				outStream3.close();
+			}
+	}
 };

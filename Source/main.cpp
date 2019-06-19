@@ -188,7 +188,8 @@ int main(void)
 
 	try
 	{
-		int count = 1, t = 0;
+		int count = 1;
+		double t = 0.0;
 		double time_counter = 0;
 		clock_t this_time = clock();
 		clock_t last_time = this_time;
@@ -310,23 +311,27 @@ int main(void)
 				}
 			}
 			cout << "Correct and re-assign values completed" << endl;
-			///print u h v arrays
-			//help.printArray(h, n, "h");
-			//help.printArray(u, n, "u");
-			//help.printArray(v, n, "v");
-
+			
 			//time steps
 			t = t + dt;
 			cr = (amax * dt) / cellsize;
-			double ctrs = simtime * dt;
+			double ctrs;
+			ctrs= simtime * dt;
 			//help.freeMemory3d(uNew, n);
-			if (fmod(ctrs, ntplot) == 0)
+			if (j % int(ntplot) ==0)
 			{
-				help.write3dOutputFile(U, n, "UOut" + to_string(j + 1) + ".txt");
-				help.writeOutputFile(h, n, "hOut_" + to_string(j + 1) + ".txt");
-				help.writeOutputFile(u, n, "uOut_" + to_string(j + 1) + ".txt");
-				help.writeOutputFile(v, n, "vOut_" + to_string(j + 1) + ".txt");
+				///print u h v arrays
+			//help.printArray(h, n, "h");
+			//help.printArray(u, n, "u");
+			//help.printArray(v, n, "v");
+				help.write3dOutputFile(U, n, "UOut" + to_string(j) + ".txt");
+				help.writeOutputFile(h, n, "hOut_" + to_string(j) + ".txt");
+				help.writeOutputFile(u, n, "uOut_" + to_string(j) + ".txt");
+				help.writeOutputFile(v, n, "vOut_" + to_string(j) + ".txt");
+				
 			}
+			
+			help.writeSensor(h, ntplot, simtime, dt);
 
 			
 		}
