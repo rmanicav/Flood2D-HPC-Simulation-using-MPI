@@ -199,18 +199,19 @@ public:
 	/// <param name="h"></param>
 	/// <param name="n"></param>
 	/// <param name="fileName"></param>
-	void writeHout(double **h,int n, string fileName)
+	void writeOutputFile(double **h,int n, string fileName)
 	{
 		ofstream outStream;
 		outStream.open("Output/" + fileName,ios::out);
 		if (outStream.is_open())
 		{
+			
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
 				{
 					
-					outStream << h[i][j] << "\t";
+					outStream <<setw(5)<< h[i][j] << "\t";
 				}
 				outStream << endl;
 			}
@@ -221,6 +222,55 @@ public:
 			cout << "Unable to open file" << endl;
 		}
 		
+	}
+
+	void write3dOutputFile(double*** arr, int n, string fileName)
+	{
+		ofstream outStream;
+		outStream.open("Output/" + fileName, ios::out);
+		if (outStream.is_open())
+		{
+
+			outStream << "*********************************************************************************************" << endl;
+			outStream << " Arr 0 dim" << endl;
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < n; k++)
+				{
+					outStream << arr[0][j][k] << "\t";
+				}
+				outStream << endl;
+			}
+			outStream << endl;
+			outStream << " Arr 1 dim" << endl;
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < n; k++)
+				{
+					outStream << arr[1][j][k] << "\t";
+				}
+				outStream << endl;
+			}
+			outStream << endl;
+			outStream << " Arr 2 dim" << endl;
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < 3; k++)
+				{
+					outStream << arr[2][j][k] << "\t";
+				}
+				outStream << endl;
+			}
+			outStream << endl;
+
+			outStream << "*********************************************************************************************" << endl;
+			outStream.close();
+		}
+		else
+		{
+			cout << "Unable to open file" << endl;
+		}
+
 	}
 	
 	/// <summary>
@@ -235,6 +285,11 @@ public:
 		cout << "\t\t\t" << name << " Array"<<endl;
 		for (int i = 0; i < n; i++)
 		{
+			cout <<i + 1 << "\t";
+		}
+		cout << endl;
+		for (int i = 0; i < n; i++)
+		{
 			for (int j = 0; j < n; j++)
 			{
 				cout << arr[i][j] << "\t";
@@ -243,7 +298,48 @@ public:
 		}
 		cout << "*********************************************************************************************" << endl;
 	}
-
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="arr"></param>
+	/// <param name="n"></param>
+	/// <param name="name"></param>
+	void print3dArray(double*** arr, int n, string name)
+	{
+		cout << "*********************************************************************************************" << endl;
+		cout << " Arr 0 dim" << endl;
+		for (int j = 0; j < n; j++)
+		{
+			for (int k = 0; k < n; k++)
+			{
+				cout << arr[0][j][k] << "\t";
+			}
+			cout << endl;
+		}
+		cout << endl;
+		cout << " Arr 1 dim" << endl;
+		for (int j = 0; j < n; j++)
+		{
+			for (int k = 0; k < n; k++)
+			{
+				cout << arr[1][j][k] << "\t";
+			}
+			cout << endl;
+		}
+		cout << endl;
+		cout << " Arr 2 dim" << endl;
+		for (int j = 0; j < n; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				cout << arr[2][j][k] << "\t";
+			}
+			cout << endl;
+		}
+		cout << endl;
+		cout << "*********************************************************************************************" << endl;
+		cout << "*********************************************************************************************" << endl;
+	}
 	/// <summary>
 /// <summary>
 /// 

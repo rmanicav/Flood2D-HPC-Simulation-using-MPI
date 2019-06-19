@@ -54,28 +54,45 @@ int main(void)
 	double** wse = help.allocateMemory(n);
 	// Set up initial conditions
 	//  wse=1.01*ones(n,n);                           % Initial water surface elevation
-	//23 -42 rows - assign 6
-	for (int i = 23; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			wse[i][j] = fd.initWSE;//6 downstream
-		}
 
-	}
 	//0-20 - assign 11
 	for (int i = 0; i < 20; i++) {
 		for (int j = 0; j < n; j++) {
 			wse[i][j] = fd.hWL;// 11 upstream
 		}
 	}
+	
+
 	//21,22 - assign 9999
-	for (int i = 20; i < 23; i++) {
-		for (int j = 0; j < n; j++) {
+	for (int i = 20; i < 22; i++) {
+		for (int j = 0; j < n ; j++) {
 			wse[i][j] = fd.initV;// 9999
 		}
 	}
+	
+	//23 -42 rows - assign 6
+	for (int i = 22; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			wse[i][j] = fd.initWSE;//6 downstream
+		}
+
+	}
+	//row 21 - columns(24-34) - assign 11
+			for (int j = 23; j < 34; j++)
+			{
+				wse[20][j] = fd.hWL;// 11 upstream
+			}
+	
+	//row 22 columns(24-34)- assign 6
+		for (int j = 23; j < 34; j++) {
+			wse[21][j] = fd.initWSE;//6 downstream
+		}
+				
+	help.printArray(wse, n, "wse");
+	help.writeOutputFile(wse, n, "wse.txt");
 	double** h = help.allocateMemory(n);
 	help.clearArray(h, n);
-	//help.printArray(wse, n, "wse");
+	
 	//  0.5*n = 20 or higher water level
 	//  water depth to water surface elevatin relation ship
 	for (int j = 0; j < n; j++) {
@@ -83,11 +100,11 @@ int main(void)
 			h[j][k] = wse[j][k] - zc[j][k];
 			h[1][k] = 0.0;
 			h[n-1][k] = 0.0;
-h[j][1] = 0.0;
-h[j][n - 1] = 0.0;
-if (h[j][k] < 0.0) {
-	h[j][k] = 0.0;
-}
+            h[j][1] = 0.0;
+            h[j][n - 1] = 0.0;
+            if (h[j][k] < 0.0) {
+	             h[j][k] = 0.0;
+            }
 		}
 	}
 
@@ -112,7 +129,8 @@ if (h[j][k] < 0.0) {
 			U[2][i][j] = v[i][j] * h[i][j];
 		}
 	}
-
+	//help.print3dArray(U, n, "U");
+	help.write3dOutputFile(U, n, "U.txt");
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 
@@ -298,9 +316,10 @@ if (h[j][k] < 0.0) {
 			help.printArray(u, n, "u");
 			help.printArray(v, n, "v");
 			//help.freeMemory3d(uNew, n);
-			help.writeHout(h, n,"hOut_" + to_string(j+1) + ".txt");
-			help.writeHout(u, n, "uOut_" + to_string(j+1) + ".txt");
-			help.writeHout(v, n, "vOut_" + to_string(j+1) + ".txt");
+			help.write3dOutputFile(U, n, "UOut" + to_string(j + 1) + ".txt");
+			help.writeOutputFile(h, n,"hOut_" + to_string(j+1) + ".txt");
+			help.writeOutputFile(u, n, "uOut_" + to_string(j+1) + ".txt");
+			help.writeOutputFile(v, n, "vOut_" + to_string(j+1) + ".txt");
 		}
 		
 		help.freeMemory(h, n);
