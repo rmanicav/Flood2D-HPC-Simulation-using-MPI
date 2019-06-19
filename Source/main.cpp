@@ -188,7 +188,7 @@ int main(void)
 
 	try
 	{
-		int count = 1;
+		int count = 0;
 		double t = 0.0;
 		double time_counter = 0;
 		clock_t this_time = clock();
@@ -324,16 +324,14 @@ int main(void)
 			//help.printArray(h, n, "h");
 			//help.printArray(u, n, "u");
 			//help.printArray(v, n, "v");
-				help.write3dOutputFile(U, n, "UOut" + to_string(j) + ".txt");
-				help.writeOutputFile(h, n, "hOut_" + to_string(j) + ".txt");
-				help.writeOutputFile(u, n, "uOut_" + to_string(j) + ".txt");
-				help.writeOutputFile(v, n, "vOut_" + to_string(j) + ".txt");
-				
+				help.write3dOutputFile(U, n, "UOut" + to_string(count) + ".txt");
+				help.writeOutputFile(h, n, "hOut_" + to_string(count) + ".txt");
+				help.writeOutputFile(u, n, "uOut_" + to_string(count) + ".txt");
+				help.writeOutputFile(v, n, "vOut_" + to_string(count) + ".txt");
+				count++;
 			}
-			
 			help.writeSensor(h, ntplot, simtime, dt);
-
-			
+					
 		}
 		
 		help.freeMemory(h, n);

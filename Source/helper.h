@@ -471,5 +471,8 @@ public:
 				outStream3 << hsens_2[0][0] << endl;
 				outStream3.close();
 			}
+			freeMemory(hsens_1,1);
+			freeMemory(hsens_2, 1);
+			freeMemory(hsens_3, 1);
 	}
 };
