@@ -9,17 +9,14 @@
 #include "predictor.cpp"
 #include "slope.cpp"
 #include "fluxes.cpp"
-
-
 using namespace std;
-
-const int NUM_SECONDS = 10;
 /// <summary>
 /// 
 /// </summary>
 /// <returns></returns>
 int main(void)
 {
+	const int NUM_SECONDS = 10;
 	helper help;
 	floodData fd;
 	help.readFromFile(&fd);
@@ -109,9 +106,9 @@ int main(void)
 	}
 
 	//help.printArray(h, n, "h");
-	double*** U = help.allocate3dMemory(n, fd.dim);
-	double*** F = help.allocate3dMemory(n, fd.dim);
-	double*** G = help.allocate3dMemory(n, fd.dim);
+	double*** U = help.allocate3dMemory(n,n, fd.dim);
+	double*** F = help.allocate3dMemory(n,n,fd.dim);
+	double*** G = help.allocate3dMemory(n,n, fd.dim);
 	double** u = help.allocateMemory(n);
 	help.clearArray(u, n);
 	double** v = help.allocateMemory(n);
@@ -186,17 +183,19 @@ int main(void)
 			dzcx[n - 1][k] = 0;    dzcy[n - 1][k] = 0;
 			dzcx[j][1] = 0;    dzcy[j][1] = 0;
 			dzcx[j][n - 1] = 0;    dzcy[j][n - 1] = 0;
-
 		}
 	}
 
 	try
 	{
-		int count = 1;
+		int count = 1, t = 0;
 		double time_counter = 0;
 		clock_t this_time = clock();
 		clock_t last_time = this_time;
-		for (int j = 0; j < 3; j++) {
+	
+		for (int j = 0; j < nt; j++) {
+			simtime = j;
+			
 			//print after every tenth iterration
 			help.printArrayInterval(h, u, v, n,j);
 
@@ -238,7 +237,7 @@ int main(void)
 			p.fpredictor(n, fd.gravity, nf, wse, h, u, v, dwsex, dwsey, dux, duy, dvx, dvy, dt2, dzcx, dzcy, epsilon, zc, sox, sfx, dt, soy, sfy, wsep, up, vp);
 			cout << endl << "Completed Predictor Function" << endl;
 
-			double*** UP = help.allocate3dMemory(n, fd.dim);
+			double*** UP = help.allocate3dMemory(n,n, fd.dim);
 			//assign 0 dim  with wsep value
 			for (int i = 0; i < n; i++)
 			{
@@ -269,7 +268,7 @@ int main(void)
 
 			cout << endl << "Completed Fluxes Function" << endl;
 			//  Estimate the flux vectors on the next time step
-			double*** uNew = help.allocate3dMemory(n, fd.dim);
+			double*** uNew = help.allocate3dMemory(n,n, fd.dim);
 			uNew = c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
 			cout << endl << "Completed Corrector Function" << endl;
 			for (int i = 0; i < n; i++)
@@ -312,14 +311,24 @@ int main(void)
 			}
 			cout << "Correct and re-assign values completed" << endl;
 			///print u h v arrays
-			help.printArray(h, n, "h");
-			help.printArray(u, n, "u");
-			help.printArray(v, n, "v");
+			//help.printArray(h, n, "h");
+			//help.printArray(u, n, "u");
+			//help.printArray(v, n, "v");
+
+			//time steps
+			t = t + dt;
+			cr = (amax * dt) / cellsize;
+			double ctrs = simtime * dt;
 			//help.freeMemory3d(uNew, n);
-			help.write3dOutputFile(U, n, "UOut" + to_string(j + 1) + ".txt");
-			help.writeOutputFile(h, n,"hOut_" + to_string(j+1) + ".txt");
-			help.writeOutputFile(u, n, "uOut_" + to_string(j+1) + ".txt");
-			help.writeOutputFile(v, n, "vOut_" + to_string(j+1) + ".txt");
+			if (fmod(ctrs, ntplot) == 0)
+			{
+				help.write3dOutputFile(U, n, "UOut" + to_string(j + 1) + ".txt");
+				help.writeOutputFile(h, n, "hOut_" + to_string(j + 1) + ".txt");
+				help.writeOutputFile(u, n, "uOut_" + to_string(j + 1) + ".txt");
+				help.writeOutputFile(v, n, "vOut_" + to_string(j + 1) + ".txt");
+			}
+
+			
 		}
 		
 		help.freeMemory(h, n);

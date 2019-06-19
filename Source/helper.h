@@ -12,10 +12,8 @@ using namespace std;
 /// </summary>
 struct floodData
 {
-	double gravity, manN,  initV;
-	int  L, dim,cellSize;
-	double hextra, epsilon, nt, ntPlot, dt, initWSE, hWL;
-	double cr;
+	int  L, dim,cellSize,x,y,z;
+	double hextra, epsilon, nt, ntPlot, dt, initWSE, hWL,cr,gravity, manN, initV;
 	double **zc;
 };
 
@@ -92,19 +90,20 @@ public:
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <param name="n"></param>
-	/// <param name="dim"></param>
+	/// <param name="a"></param>
+	/// <param name="b"></param>
+	/// <param name="c"></param>
 	/// <returns></returns>
-	double*** allocate3dMemory(int n, int dim)
+	double*** allocate3dMemory(int a,int b, int c)
 	{
-		double*** arr = new double** [n];
+		double*** arr = new double** [a];
 		
-		for (int i = 0; i < n; i++)
+		for (int i = 0; i < b; i++)
 		{
-			arr[i] = new double* [n];
-			for (int j = 0; j < n; j++)
+			arr[i] = new double* [b];
+			for (int j = 0; j < b; j++)
 			{
-				arr[i][j] = new double[n];
+				arr[i][j] = new double[b];
 			}			
 		}
 		return arr;
@@ -177,17 +176,31 @@ public:
 		fd->dim= atoi(name.substr(pos + 1).c_str());
 		cout << "Dimension:" << fd->dim << endl;
 		cout << "\n-------------------------------\n\n";
+		getline(infile, name);
+		pos = name.find(":");
+		fd->x = atoi(name.substr(pos + 1).c_str());
+		cout << "X:" << fd->x<< endl;
+		cout << "\n-------------------------------\n\n";
+		getline(infile, name);
+		pos = name.find(":");
+		fd->y = atoi(name.substr(pos + 1).c_str());
+		cout << "Y:" << fd->y << endl;
+		cout << "\n-------------------------------\n\n";
+		getline(infile, name);
+		pos = name.find(":");
+		fd->z = atoi(name.substr(pos + 1).c_str());
+		cout << "Z:" << fd->z << endl;
+		cout << "\n-------------------------------\n\n";
+
 		infile.close();
 		infile.open("Input/zc_dem.txt");
-		fd->zc = allocateMemory(42);
-		clearArray(fd->zc,42);
-		for (int i = 0; i < 42; i++)
-		{
-			
-	      for (int j = 0; j < 42; j++)
+		fd->zc = allocateMemory(fd->x);
+		clearArray(fd->zc,fd->x);
+		for (int i = 0; i < fd->x; i++)
+		{			
+	      for (int j = 0; j < fd->y; j++)
 			{
 				infile >> fd->zc[i][j];
-				
 			}
 		}
 		printArray(fd->zc, 42, "zc");
