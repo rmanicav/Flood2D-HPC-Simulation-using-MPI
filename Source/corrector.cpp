@@ -33,10 +33,8 @@ public:
 					U[0][j][k] = 0.0;
 				}
 
-				U[1][j][k] = ((U[1][j][k] - dt2 * (F[1][j + 1][k] - F[1][j][k])) - dt2 * (G[1][j][k + 1] - G[1][j][k])) - (dt * grav * (sox[j][k]
-						+ sfx[j][k]));
-				U[2][j][k] = ((U[2][j][k] - dt2 * (F[2][j+1][k] - F[2][j][k]) - dt2 * (G[2][j][k + 1] - G[2][j][k]))) - (dt * grav * (soy[j][k]
-						+ sfy[j][k]));
+				U[1][j][k] = ((U[1][j][k] - dt2 * (F[1][j + 1][k] - F[1][j][k])) - dt2 * (G[1][j][k + 1] - G[1][j][k])) - (dt * grav * (sox[j][k] + sfx[j][k]));
+				U[2][j][k] = ((U[2][j][k] - dt2 * (F[2][j+1][k] - F[2][j][k]) - dt2 * (G[2][j][k + 1] - G[2][j][k]))) - (dt * grav * (soy[j][k] + sfy[j][k]));
 			}
 		}
 		return U;

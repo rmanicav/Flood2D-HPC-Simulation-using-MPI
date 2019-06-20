@@ -26,9 +26,9 @@ public:
 	/// <param name="F"></param>
 	/// <param name="amax"></param>
 	void fsolver(double hl, double hr, double ul, double ur, double vl, double vr,
-		double sn, double cn, double hextra, double F[3], double* amax)
+		double sn, double cn, double hextra, double (&F)[3], double* amax)
 	{
-		double grav = 0.0;
+		double grav = 9.806;
 		double duml = pow(hl, 0.5);;
 		double dumr = pow(hr, 0.5);
 		double cl = pow(grav * hl, 0.5);
@@ -41,7 +41,7 @@ public:
 		double du;
 		double dv;
 		double dupar;
-		double dW[3][3];
+		double dW[3];
 		double duperp;
 		double uperpl;
 		double uperpr;
@@ -63,15 +63,10 @@ public:
 		duperp = du * cn + dv * sn;
 
 
-		dW[0][0] = 0.5 * (dh - hhat * duperp / chat);
-		dW[0][1] = hhat * dupar;
-		dW[0][2] = 0.5 * (dh + hhat * duperp / chat);
-		dW[1][0] = 0;
-		dW[1][1] = 0;
-		dW[1][2] = 0;
-		dW[2][0] = 0;
-		dW[2][1] = 0;
-		dW[2][2] = 0;
+		dW[0] = 0.5 * (dh - hhat * duperp / chat);
+		dW[1] = hhat * dupar;
+		dW[2] = 0.5 * (dh + hhat * duperp / chat);
+		
 
 
 		uperpl = ul * cn + vl * sn;
@@ -83,10 +78,10 @@ public:
 		R[0][2] = 1;
 		R[1][0] = uhat - chat * cn;
 		R[1][1] = -sn;
-		R[1][2] = uhat + chat * sn;
-		R[1][0] = vhat - chat * sn;
-		R[1][1] = cn;
-		R[1][2] = vhat + chat * sn;
+		R[1][2] = uhat + chat * cn;
+		R[2][0] = vhat - chat * sn;
+		R[2][1] = cn;
+		R[2][2] = vhat + chat * sn;
 
 		//  a1=abs(uperp-chat);
 		//  a2=abs(uperp);
@@ -128,7 +123,7 @@ public:
 			a3 = 0.5 * ((a3 * a3) / (da3 + da3));
 		}
 		// Compute interface flux
-		double A[3][3], FL[3][3], FR[3][3];
+		double A[3][3], FL[3], FR[3], FSUM[3];
 		//assign A
 		A[0][0] = a1;
 		A[0][1] = 0;
@@ -141,39 +136,26 @@ public:
 		A[2][2] = a3;
 
 		//F
-		FL[0][0] = uperpl * hl;
-		FL[0][1] = (ul * uperpl * hl) + (0.5 * grav * hl * hl * cn);
-		FL[0][2] = (vl * uperpl * hl) + (0.5 * grav * hl * hl * sn);
-		FL[1][0] = 0;
-		FL[1][1] = 0;
-		FL[1][2] = 0;
-		FL[2][0] = 0;
-		FL[2][1] = 0;
-		FL[2][2] = 0;
+		FL[0] = uperpl * hl;
+		FL[1] = (ul * uperpl * hl) + (0.5 * grav * hl * hl * cn);
+		FL[2] = (vl * uperpl * hl) + (0.5 * grav * hl * hl * sn);
+		
 		//FR
-		FR[0][0] = uperpr * hr;
-		FR[0][1] = (ul * uperpr * hr) + (0.5 * grav * hr * hr * cn);
-		FR[0][2] = (vl * uperpr * hr) + (0.5 * grav * hr * hr * sn);
-		FR[1][0] = 0;
-		FR[1][1] = 0;
-		FR[1][2] = 0;
-		FR[2][0] = 0;
-		FR[2][1] = 0;
-		FR[2][2] = 0;
+		FR[0] = uperpr * hr;
+		FR[1] = (ul * uperpr * hr) + (0.5 * grav * hr * hr * cn);
+		FR[2] = (vl * uperpr * hr) + (0.5 * grav * hr * hr * sn);
+	
+		
+		FSUM[0] = FL[0] + FR[0];
+		FSUM[1] = FL[1] + FR[1];
+		FSUM[2] = FL[2] + FR[2];
 
-		double FSUM[3][3];
-		FSUM[0][0] = FL[0][0] + FR[0][0];
-		FSUM[0][1] = FL[0][1] + FR[0][1];
-		FSUM[0][2] = FL[0][2] + FR[0][2];
-		FSUM[1][0] = 0;
-		FSUM[1][1] = 0;
-		FSUM[1][2] = 0;
-		FSUM[2][0] = 0;
-		FSUM[2][1] = 0;
-		FSUM[2][2] = 0;
+
+	
 
 		//F = 0.5 * ((FL + FR- R * A * dW);
-		double temp[3][3], sub[3][3];
+		
+		double temp[3], sub[3][3];
 		double** c = new double* [3];
 		int n = 3;
 		for (int i = 0; i < n; i++)
@@ -194,23 +176,17 @@ public:
 		
 		for (int i = 0; i < n; i++)
 		{
-			for (int j = 0; j < n; j++)
-			{
-				temp[i][j] = 0;
+				temp[i] = 0;
 				for (int k = 0; k < n; k++)
 				{
-				temp[i][j] += c[i][k] * dW[k][j];
+				temp[i] += c[i][k] * dW[k];
 				}
 			}
-		}
-		for (int i = 0; i < 3; i++)
-		{
-			for (int j = 0; j < 3; j++)
-			{
-				sub[i][j] = FSUM[i][j] - temp[i][j];
-			}
-	    }
-			
+		
+		F[0] = 0.5 *(FSUM[0] - temp[0]);
+		F[1] = 0.5 *(FSUM[1] - temp[1]);
+		F[2] = 0.5 *(FSUM[2] - temp[2]);
+		
 		*amax = chat + abs(uhat * cn + vhat * sn);
 	}
 	

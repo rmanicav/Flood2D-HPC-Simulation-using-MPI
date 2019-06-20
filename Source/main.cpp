@@ -85,7 +85,7 @@ int main(void)
 			wse[21][j] = fd.initWSE;//6 downstream
 		}
 				
-	help.printArray(wse, n, "wse");
+//	help.printArray(wse, n, "wse");
 	help.writeOutputFile(wse, n, "wse.txt");
 	double** h = help.allocateMemory(n);
 	help.clearArray(h, n);
@@ -106,9 +106,9 @@ int main(void)
 	}
 
 	//help.printArray(h, n, "h");
-	double*** U = help.allocate3dMemory(n,n, fd.dim);
-	double*** F = help.allocate3dMemory(n,n,fd.dim);
-	double*** G = help.allocate3dMemory(n,n, fd.dim);
+	double*** U = help.allocate3dMemory(n,n, n);
+	double*** F = help.allocate3dMemory(n,n,n);
+	double*** G = help.allocate3dMemory(n,n,n);
 	double** u = help.allocateMemory(n);
 	help.clearArray(u, n);
 	double** v = help.allocateMemory(n);
@@ -194,11 +194,11 @@ int main(void)
 		clock_t this_time = clock();
 		clock_t last_time = this_time;
 	
-		for (int j = 0; j < nt; j++) {
+		for (int j = 0; j < 1; j++) {
 			simtime = j;
 			
 			//print after every tenth iterration
-			help.printArrayInterval(h, u, v, n,j);
+		//	help.printArrayInterval(h, u, v, n,j);
 
 			//print every ten seconds
 			this_time = clock();
@@ -207,9 +207,9 @@ int main(void)
 			if ((time_counter > (double)(NUM_SECONDS * CLOCKS_PER_SEC)))
 			{
 			time_counter -= (double)(NUM_SECONDS * CLOCKS_PER_SEC);
-			help.printArray(h, n, "h");
-			help.printArray(u, n, "u");
-			help.printArray(v, n, "v");
+		//	help.printArray(h, n, "h");
+		//	help.printArray(u, n, "u");
+		//	help.printArray(v, n, "v");
              }
 
 			simtime = 1 + j;
@@ -238,7 +238,7 @@ int main(void)
 			p.fpredictor(n, fd.gravity, nf, wse, h, u, v, dwsex, dwsey, dux, duy, dvx, dvy, dt2, dzcx, dzcy, epsilon, zc, sox, sfx, dt, soy, sfy, wsep, up, vp);
 			cout << endl << "Completed Predictor Function" << endl;
 
-			double*** UP = help.allocate3dMemory(n,n, fd.dim);
+			double*** UP = help.allocate3dMemory(n,n,n);
 			//assign 0 dim  with wsep value
 			for (int i = 0; i < n; i++)
 			{
@@ -266,12 +266,15 @@ int main(void)
 			
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
-
+			help.print3dArray(F, n, "F");
 			cout << endl << "Completed Fluxes Function" << endl;
 			//  Estimate the flux vectors on the next time step
-			double*** uNew = help.allocate3dMemory(n,n, fd.dim);
+			double*** uNew = help.allocate3dMemory(n,n, n);
+			
 			uNew = c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
 			cout << endl << "Completed Corrector Function" << endl;
+			//help.print3dArray(uNew, n, "U");
+		
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
@@ -282,25 +285,34 @@ int main(void)
 					}
 				}
 			}
+
+			for (int j = 0; j < n; j++)
+			{
+				for (int k = 0; k < n; k++)
+				{
+					// computed water depth(water level)
+					h[j][k] = uNew[0][j][k];
+				}
+			}
+
+			
 			
 			//reassign values after correction
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					
-					// computed water depth(water level)
-					h[i][j] = U[0][i][j];
+							
 					//check epsilon
-					if (U[1][i][j] < epsilon)
+					if (uNew[0][i][j] < epsilon)
 					{
 						u[i][j] =0;
 						v[i][j] =0;
 					}
 					else
 					{
-						u[i][j] = U[1][i][j]/(U[0][i][j] + fd.hextra);
-						v[i][j] = U[2][i][j]/(U[0][i][j] + fd.hextra);
+						u[i][j] = uNew[1][i][j]/(U[0][i][j] + fd.hextra);
+						v[i][j] = uNew[2][i][j]/(U[0][i][j] + fd.hextra);
 					}
 					//compute the new free surface height
 					wse[i][j] = U[1][i][j] + zc[i][j];
@@ -311,14 +323,14 @@ int main(void)
 				}
 			}
 			cout << "Correct and re-assign values completed" << endl;
-			
+			//help.printArray(u, n, "u");
 			//time steps
 			t = t + dt;
 			cr = (amax * dt) / cellsize;
 			double ctrs;
 			ctrs= simtime * dt;
 			//help.freeMemory3d(uNew, n);
-			if (j % int(ntplot) ==0)
+			/*if (j % int(ntplot) ==0)
 			{
 				///print u h v arrays
 			//help.printArray(h, n, "h");
@@ -329,7 +341,7 @@ int main(void)
 				help.writeOutputFile(u, n, "uOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(v, n, "vOut_" + to_string(count) + ".txt");
 				count++;
-			}
+			}*/
 			help.writeSensor(h, ntplot, simtime, dt);
 					
 		}

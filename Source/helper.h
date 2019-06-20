@@ -106,6 +106,18 @@ public:
 				arr[i][j] = new double[b];
 			}			
 		}
+		for (int i = 0; i < b; i++)
+		{
+			for (int j = 0; j < b; j++)
+			{
+				for (int k = 0; k < b; k++)
+				{
+					arr[i][j][k] = 0.0;
+				}
+				
+			}
+		}
+
 		return arr;
 	}
 	/// <summary>
@@ -175,23 +187,19 @@ public:
 		pos = name.find(":");
 		fd->dim= atoi(name.substr(pos + 1).c_str());
 		cout << "Dimension:" << fd->dim << endl;
-		cout << "\n-------------------------------\n\n";
 		getline(infile, name);
 		pos = name.find(":");
 		fd->x = atoi(name.substr(pos + 1).c_str());
 		cout << "X:" << fd->x<< endl;
-		cout << "\n-------------------------------\n\n";
 		getline(infile, name);
 		pos = name.find(":");
 		fd->y = atoi(name.substr(pos + 1).c_str());
 		cout << "Y:" << fd->y << endl;
-		cout << "\n-------------------------------\n\n";
 		getline(infile, name);
 		pos = name.find(":");
 		fd->z = atoi(name.substr(pos + 1).c_str());
 		cout << "Z:" << fd->z << endl;
 		cout << "\n-------------------------------\n\n";
-
 		infile.close();
 		infile.open("Input/zc_dem.txt");
 		fd->zc = allocateMemory(fd->x);
@@ -203,7 +211,7 @@ public:
 				infile >> fd->zc[i][j];
 			}
 		}
-		printArray(fd->zc, 42, "zc");
+	//	printArray(fd->zc, 42, "zc");
 		infile.close();
 	}
 	/// <summary>
@@ -268,7 +276,7 @@ public:
 			outStream << " Arr 2 dim" << endl;
 			for (int j = 0; j < n; j++)
 			{
-				for (int k = 0; k < 3; k++)
+				for (int k = 0; k < n; k++)
 				{
 					outStream << arr[2][j][k] << "\t";
 				}
@@ -343,7 +351,7 @@ public:
 		cout << " Arr 2 dim" << endl;
 		for (int j = 0; j < n; j++)
 		{
-			for (int k = 0; k < 3; k++)
+			for (int k = 0; k < n; k++)
 			{
 				cout << arr[2][j][k] << "\t";
 			}
