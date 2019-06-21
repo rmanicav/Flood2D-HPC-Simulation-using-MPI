@@ -3,6 +3,7 @@
 #include<ostream>
 #include<algorithm>
 #include<ctime>
+#include<math.h>
 #include "helper.h"
 #include "corrector.cpp"
 #include "limiter.cpp"
@@ -194,14 +195,14 @@ int main(void)
 		clock_t this_time = clock();
 		clock_t last_time = this_time;
 	
-		for (int j = 0; j < 1; j++) {
+		for (int j = 0; j < nt; j++) {
 			simtime = j;
 			
 			//print after every tenth iterration
 		//	help.printArrayInterval(h, u, v, n,j);
 
 			//print every ten seconds
-			this_time = clock();
+		/*	this_time = clock();
 			time_counter += (double)(this_time - last_time);
 			last_time = this_time;
 			if ((time_counter > (double)(NUM_SECONDS * CLOCKS_PER_SEC)))
@@ -210,7 +211,7 @@ int main(void)
 		//	help.printArray(h, n, "h");
 		//	help.printArray(u, n, "u");
 		//	help.printArray(v, n, "v");
-             }
+             }*/
 
 			simtime = 1 + j;
 			cout << endl << "Iteration number :" << j << endl;
@@ -276,8 +277,8 @@ int main(void)
 			
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
-			help.print3dArray(F, n, "F");
-			help.print3dArray(G, n, "G");
+			//help.print3dArray(F, n, "F");
+			//help.print3dArray(G, n, "G");
 
 			cout << endl << "Completed Fluxes Function" << endl;
 			//  Estimate the flux vectors on the next time step
@@ -342,7 +343,7 @@ int main(void)
 			double ctrs;
 			ctrs= simtime * dt;
 			//help.freeMemory3d(uNew, n);
-			/*if (j % int(ntplot) ==0)
+			if (fmod(ctrs,ntplot) == 0)
 			{
 				///print u h v arrays
 			//help.printArray(h, n, "h");
@@ -353,7 +354,7 @@ int main(void)
 				help.writeOutputFile(u, n, "uOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(v, n, "vOut_" + to_string(count) + ".txt");
 				count++;
-			}*/
+			}
 			help.writeSensor(h, ntplot, simtime, dt);
 					
 		}
