@@ -85,7 +85,7 @@ public:
 		amax = secondColumnY(n, UP, G, amax, zc, hextra);
 		//Y fluxes
 		amax = yDirectionFlux(zc, UP, amax, G, dwsex, hextra, n, duy, dwsey, dvy);
-		print3dArray(G, n, "G");
+	//	print3dArray(G, n, "G");
 		//23 
 		amax =twentythreerowDownStream(zc, UP, amax, G, hextra, n);
 		//print3dArray(G, n, "G");
@@ -875,11 +875,7 @@ public:
 				G[1][j][k] = dv0[1];
 				G[2][j][k] = dv0[2];
 
-				if (j == 20 && k > 25)
-				{
-					cout << G[2][j][k] << endl;
-				}
-				
+							
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -1112,7 +1108,7 @@ public:
 /// <param name="arr"></param>
 /// <param name="n"></param>
 /// <param name="name"></param>
-	void print3dArray(double*** arr, int n, string name)
+	/*void print3dArray(double*** arr, int n, string name)
 	{
 		cout << "*********************************************************************************************" << endl;
 		cout << " Arr 0 dim" << endl;
@@ -1148,7 +1144,7 @@ public:
 		cout << endl;
 		cout << "*********************************************************************************************" << endl;
 		cout << "*********************************************************************************************" << endl;
-	}
+	}*/
 	/// <summary>
 	/// 
 	/// </summary>

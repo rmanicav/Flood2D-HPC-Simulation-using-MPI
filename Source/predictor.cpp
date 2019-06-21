@@ -69,7 +69,8 @@ public:
 
 		for (int j = 0; j < (int)nf; j++) {
 			for (int k = 0; k < (int)nf; k++) {
-				wsep[j][k] = wse[j][j] - 0.5 * dt2 * (h[j][k] * dux[j][k] + u[j][k] * dhx[j][k] + h[j][k] * dvy[j][k] + v[j][k] * dhy[j][k]);
+				//wse(j, k) - 0.5 * dt2 * (h(j, k) * dux(j, k) + u(j, k) * dhx(j, k) + h(j, k) * dvy(j, k) + v(j, k) * dhy(j, k));
+				wsep[j][k] = wse[j][k] - 0.5 * dt2 * (h[j][k] * dux[j][k] + u[j][k] * dhx[j][k] + h[j][k] * dvy[j][k] + v[j][k] * dhy[j][k]);
 				hp[j][k] = wsep[j][k] - zc[j][k];
 
 				//  continuity for wet/dry interface (roger et al page 60)

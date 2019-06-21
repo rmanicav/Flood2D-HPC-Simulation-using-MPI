@@ -276,8 +276,8 @@ int main(void)
 			
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
-			//help.print3dArray(F, n, "F");
-			//help.print3dArray(G, n, "G");
+			help.print3dArray(F, n, "F");
+			help.print3dArray(G, n, "G");
 
 			cout << endl << "Completed Fluxes Function" << endl;
 			//  Estimate the flux vectors on the next time step
