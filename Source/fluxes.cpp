@@ -1,6 +1,7 @@
 #include "solver.cpp"
 #include <stdlib.h>
 #include<algorithm>
+
 using namespace std;
 /// <summary>
 /// 
@@ -56,31 +57,50 @@ public:
 		//  added
 		//  Enforce wall boundary on left side of box (west)
 		amax =boundaryWest(n,UP,F,amax,zc,hextra);
+		cout << endl;
+		//print3dArray(F, n, "F");
 		//  Enforce wall boundary on second rows along the X-axis
 		amax=boundaryX(amax, UP, hextra, zc, F, n);
+			//print3dArray(F, n, "F");
+		
 		// Compute the fluxe in the X-direction on the domain
 		amax = xDirectionFlux(zc, UP, amax, F, dwsex,hextra,n,dux,dvx);
+		//print3dArray(F, n, "F");
+		
 		// From 20th to 21st and 22nd rows
 		amax = middleX(zc, UP, amax, F, dwsex, hextra, n, dux, dvx);
+		//	print3dArray(F, n, "F");
 		//  % For the 23rd row
 		amax = twentythirdX(zc, UP, amax, F, dwsex, hextra, n, dux, dvx);
+		//	print3dArray(F, n, "F");
 		//boundary east
 		amax = boundaryEast(n, UP, F, amax, zc,hextra);
+		
+	//print3dArray(F, n, "F");
 	/**************************Y Direction***********************/
 		//boundary south Y direction
 		amax = boundarySouthY(n,UP,G,amax,zc,hextra);
+		//print3dArray(G, n, "G");
 		//second column y
 		amax = secondColumnY(n, UP, G, amax, zc, hextra);
 		//Y fluxes
 		amax = yDirectionFlux(zc, UP, amax, G, dwsex, hextra, n, duy, dwsey, dvy);
+		print3dArray(G, n, "G");
 		//23 
 		amax =twentythreerowDownStream(zc, UP, amax, G, hextra, n);
+		//print3dArray(G, n, "G");
 		//24
 		amax = twentyfourDam(zc,UP,amax,G,hextra,n);
+		//print3dArray(G, n, "G");
 		//35
 		amax=thirtyFiveLeftDamn(zc,UP,amax,G,hextra,n);
+		//print3dArray(G, n, "G");
 		//left dam
 		amax = leftDamn(zc, UP, amax, G, hextra, n);
+		//print3dArray(G, n, "G");
+		//boundary North direction
+		amax = boundaryNorth(n, UP, G, amax, zc, hextra);
+	//	print3dArray(G, n, "G");
 	}
 	/// <summary>
 	/// 
@@ -107,6 +127,7 @@ public:
 		double vl = 0.0;
 		double dv0[3];
 		solver s;
+		clearArray(dv0);
 
 			for (int j = 2; j < n -1; j++)
 			{
@@ -171,11 +192,9 @@ public:
 						vr = (UP[2][j][k] / (hr + hextra)) - 0.5 * dvx[j][k];
 					}
 					s.fsolver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
-						for (int j = 0; j < 3; j++)
-						{
-							
-							F[2][0][j] = dv0[j];
-						}
+					F[0][j][k] = dv0[0];
+					F[1][j][k] = dv0[1];
+					F[2][j][k] = dv0[2];
 					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -213,11 +232,11 @@ public:
 		double vl = 0.0;
 		double dv0[3];
 		solver s;
-
+		clearArray(dv0);
 		
 			for (int j = 19; j < 20; j++)
 			{
-				for (int k = 0;(k<22 || k >34) && k < n - 1; k++)
+				for (int k = 0;k<22; k++)
 				{
 					zbc = minmax(zc[j][k], zc[j][k]).second;
 					if ((UP[0][j][k] - zbc) > 0)
@@ -239,11 +258,49 @@ public:
 					s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
 					
 					
-						for (int j = 0; j < 3; j++)
-						{
-							F[2][0][j] = dv0[j];
-						}
+					F[0][j+1][k] = dv0[0];
+					F[1][j+1][k] = dv0[1];
+					F[2][j+1][k] = dv0[2];
 					
+					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+					}
+					else {
+						amax = zbc;
+					}
+				}
+
+			}
+
+			//columnx 35 - n-1
+			for (int j = 19; j < 20; j++)
+			{
+				for (int k = 34; k < n-1; k++)
+				{
+					zbc = minmax(zc[j][k], zc[j][k]).second;
+					if ((UP[0][j][k] - zbc) > 0)
+					{
+						hl = UP[0][j][k] - zbc;
+
+						if (hl < 0)
+						{
+							hl = 0;
+						}
+						ul = (UP[1][j][k]) / (hl + hextra);
+						vl = (UP[2][j][k]) / (hl + hextra);
+					}
+					else if ((UP[0][j][k] - zbc) <= 0)
+					{
+						hl = 0; ul = 0; vl = 0;
+					}
+
+					s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
+
+
+					for (int i = 0; i < 3; i++)
+					{
+						F[j + 1][k][i] = dv0[i];
+					}
+
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -283,11 +340,11 @@ public:
 		double vl = 0.0;
 		double dv0[3];
 		solver s;
-
+		clearArray(dv0);
 		
 			for (int j = 22; j < 23; j++)
 			{
-				for (int k = 0; (k < 22 || k >34) && k < n; k++)
+				for (int k = 0; k < 22 ; k++)
 				{
 
 					//zbc = max(zc(j, k), zc(j, k));
@@ -343,11 +400,81 @@ public:
 
 					s.fsolver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
 					
-						for (int j = 0; j < 3; j++)
+						for (int i = 0; i < 3; i++)
 						{
-							F[2][0][j] = dv0[j];
+							F[j][k][i] = dv0[i];
 						}
 					
+					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
+					}
+					else {
+						amax = zbc;
+					}
+				}
+			}
+			//columns 35 - n
+			for (int j = 22; j < 23; j++)
+			{
+				for (int k = 34; k < n; k++)
+				{
+
+					//zbc = max(zc(j, k), zc(j, k));
+					if ((UP[0][j][k] - zbc) > 0)
+					{
+						hl = UP[0][j][k] - zbc;
+					}
+					else if ((UP[0][j][k] - zbc) <= 0)
+					{
+						hl = 0;
+					}
+					if ((UP[0][j][k] - zbc) > 0)
+					{
+						hr = UP[0][j][k] - zbc;
+					}
+					else if ((UP[0][j][k] - zbc) <= 0)
+					{
+						hr = 0;
+					}
+
+					if (hl > 0)
+					{
+						hl = hl + 0.0;
+						if (hl < 0)
+							hl = 0;
+					}
+
+					if (hr > 0)
+					{
+						hr = hr - 0.5 * (UP[0][j][k] - UP[0][j][k]); //% wse difference bn 25 & 26
+						if (hr < 0)
+							hr = 0;
+					}
+
+					if (hl == 0)
+					{
+						ul = 0; vl = 0;
+					}
+					else
+					{
+						ul = ((UP[1][j][k]) / (hl + hextra));
+						vl = ((UP[2][j][k]) / (hl + hextra));
+					}
+					if (hr == 0)
+					{
+						ur = 0; vr = 0;
+					}
+					else
+					{
+						ur = ((UP[1][j][k]) / (hr + hextra));
+						vr = ((UP[2][j][k]) / (hr + hextra));
+					}
+
+					s.fsolver(hl, hr, ul, ur, vl, vr, 0.0, 1.0, hextra, dv0, &zbc);
+
+					F[0][j][k] = dv0[0];
+					F[1][j][k] = dv0[1];
+					F[2][j][k] = dv0[2];
+
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -394,10 +521,9 @@ public:
 					}
 					s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
 				
-						for (int j = 0; j < 3; j++)
-						{							
-							F[2][0][j] = dv0[j];
-						}
+					F[0][2][k] = dv0[0];
+					F[1][2][k] = dv0[1];
+					F[2][2][k] = dv0[2];
 					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -443,10 +569,10 @@ public:
 					}
 					s.fsolver(hr, hr, ur, -ur, vr, vr, 0.0, 1.0, hextra, dv0, &zbc);
 									
-						for (int j = 0; j < 3; j++)
-						{
-							F[2][0][j] = dv0[j];
-						}
+					F[0][1][k] = dv0[0];
+					F[1][1][k] = dv0[1];
+					F[2][1][k] = dv0[2];
+
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -475,37 +601,30 @@ public:
 		double dv0[3];
 		solver s;
 
-		for (int i = 0; i < n; i++)
-		{
+		
 			for (int j = 0; j < n; j++)
 			{
-				for (int k = 0; k < n; k++)
-				{
+				
 					// Enforce wall boundary on top of box (north)
 				
-						hl = UP[0][j][k]- zc[j][k];
+						hl = UP[0][j][n-1]- zc[j][n-1];
 						if (hl < 0.0) {
 							hl = 0.0;
 						}
 
-						ul = (UP[1][j][k]) / (hl + hextra);
-						vl = (UP[2][j][k]) / (hl + hextra);
+						ul = (UP[1][j][n-1]) / (hl + hextra);
+						vl = (UP[2][j][n-1]) / (hl + hextra);
 						s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
-						for (int i = 0; i < n; i++) {
-							for (int j = 0; j < n; j++)
-							{
-							//F->data[F->size[0] * k + F->size[0] * F->size[1] * r0[i0]] = dv0[i0];
-							G[0][i][j] = dv0[i];
-							}
-					    }
+						G[0][j][n-1] = dv0[0];
+						G[1][j][n-1] = dv0[1];
+						G[2][j][n-1] = dv0[2];
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
 						amax = zbc;
 					}
-				}
 			}
-		}
+	
 		return amax;
 	}
 	/// <summary>
@@ -547,11 +666,9 @@ public:
 					
 					s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
 					
-						for (int j = 0; j < 3; j++)
-						{
-							
-							F[2][0][j] = dv0[j];
-						}
+					F[0][n-1][k] = dv0[0];
+					F[1][n-1][k] = dv0[1];
+					F[2][n-1][k] = dv0[2];
 					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -581,7 +698,7 @@ public:
 		double dv0[3];
 		solver s;
 
-		
+		clearArray(dv0);
 			for (int j = 1; j < n -1; j++)
 			{
 						
@@ -602,11 +719,10 @@ public:
 					
 					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0, hextra, dv0, &zbc);
 					
-						for (int j = 0; j < 3; j++)
-						{
-							
-							G[2][0][j] = dv0[j];
-						}
+					G[0][j][1] = dv0[0];
+					G[1][j][1] = dv0[1];
+					G[2][j][1] = dv0[2];
+						
 					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -635,6 +751,7 @@ public:
 		double vl = 0.0;
 		double dv0[3];
 		solver s;
+		clearArray(dv0);
 
 		for (int j = 1; j < n -1; j++)
 			{			
@@ -654,10 +771,9 @@ public:
 					}
 					
 					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0, hextra, dv0, &zbc);
-						for (int j = 0; j < 3; j++)
-						{
-							G[2][0][j] = dv0[j];
-						}
+					G[0][j][2] = dv0[0];
+					G[1][j][2] = dv0[1];
+					G[2][j][2] = dv0[2];
 					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -697,22 +813,20 @@ public:
 		double dv0[3];
 		solver s;
 
-		
+		clearArray(dv0);
 			for (int k = 2; k < n -1; k++)
 			{
 				for (int j = 0; j < n; j++)
 				{
 					zbc = minmax(zc[j][k - 1], zc[j][k]).second;
 				
-
 				if ((UP[0][j][k - 1] - zbc) > 0.0) {
 					hl = (UP[0][j][k-1] - zbc);
 				}
-				else if ((UP[0][j][k] - zbc) <= 0.0)
+				else if ((UP[0][j][k-1] - zbc) <= 0.0)
 					{
 						hl = 0.0;
-					}
-				
+					}			
 
 				if ((UP[0][j][k] - zbc) > 0.0) {
 					hr = UP[0][j][k] - zbc;
@@ -756,14 +870,16 @@ public:
 					vr = UP[2][j][k] / (hr + hextra) - 0.5 * dvy[j][k];
 				}
 
-				s.fsolver(hl, hr, ul, ur, vl, vr, 1.0, 0.0, hextra, dv0, &zbc);
+				s.fsolver(hl, hr, ul, ur, vl, vr, 1.0, 0.0, hextra, dv0, &zbc);				
+				G[0][j][k] = dv0[0];
+				G[1][j][k] = dv0[1];
+				G[2][j][k] = dv0[2];
+
+				if (j == 20 && k > 25)
+				{
+					cout << G[2][j][k] << endl;
+				}
 				
-						for (int j = 0; j < n; j++)
-						{
-						
-							G[2][0][j] = dv0[j];
-						}
-					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
 					else {
@@ -806,11 +922,10 @@ public:
 								vl = UP[2][j][k-1] / (hl + hextra);
 								s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 								
-									for (int j = 0; j < 3; j++)
-									{
-										G[2][0][j] = dv0[j];
-									}
-								
+								G[0][j][k] = dv0[0];
+								G[1][j][k] = dv0[1];
+								G[2][j][k] = dv0[2];
+
 								if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 								}
 								else {
@@ -869,10 +984,9 @@ public:
 					
 					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 
-						for (int j = 0; j < 3; j++)
-						{
-							G[2][0][j] = dv0[j];
-						}
+					G[0][j][k] = dv0[0];
+					G[1][j][k] = dv0[1];
+					G[2][j][k] = dv0[2];
 					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -928,10 +1042,9 @@ public:
 					
 					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 
-						for (int j = 0; j < 3; j++)
-						{
-							G[2][0][j] = dv0[j];
-						}
+					G[0][j][k] = dv0[0];
+					G[1][j][k] = dv0[1];
+					G[2][j][k] = dv0[2];
 					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -979,10 +1092,9 @@ public:
 				s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0.0, hextra, dv0, &zbc);
 				
 				
-						for (int j = 0; j < 3; j++)
-						{
-							G[2][0][j] = dv0[j];
-						}
+				G[0][j][k] = dv0[0];
+				G[1][j][k] = dv0[1];
+				G[2][j][k] = dv0[2];
 					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -994,5 +1106,57 @@ public:
 	
 		return amax;
 	}
-		
+	/// <summary>
+/// 
+/// </summary>
+/// <param name="arr"></param>
+/// <param name="n"></param>
+/// <param name="name"></param>
+	void print3dArray(double*** arr, int n, string name)
+	{
+		cout << "*********************************************************************************************" << endl;
+		cout << " Arr 0 dim" << endl;
+		for (int j = 0; j < n; j++)
+		{
+			for (int k = 0; k < n; k++)
+			{
+				cout << arr[0][j][k] << "\t";
+			}
+			cout << endl;
+		}
+		cout << endl;
+		cout << " Arr 1 dim" << endl;
+		for (int j = 0; j < n; j++)
+		{
+			for (int k = 0; k < n; k++)
+			{
+				cout << arr[1][j][k] << "\t";
+			}
+			cout << endl;
+		}
+		cout << endl;
+		cout << " Arr 2 dim" << endl;
+		for (int j = 0; j < n; j++)
+		{
+			for (int k = 0; k < n; k++)
+			{
+				//cout << j << k << endl;
+				cout << arr[2][j][k] << "\t";
+			}
+			cout << endl;
+		}
+		cout << endl;
+		cout << "*********************************************************************************************" << endl;
+		cout << "*********************************************************************************************" << endl;
+	}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="dv0"></param>
+	void clearArray(double dv0[3])
+	{
+		dv0[0] = 0.0;
+		dv0[1] = 0.0;
+		dv0[2] = 0.0;
+	}
 };

@@ -78,12 +78,13 @@ public:
 					vp[j][k] = 0.0;
 				}
 				else {
-					up[j][k] = (u[j][k] - 0.5 * dt2 * (2.0 * u[j][k] *
+					up[j][k] = u[j][k] - 0.5 * dt2 * (2.0 * u[j][k] *
 						dux[j][k] + u[j][k] * dvy[j][k] + v[j][k] *
-						duy[j][k] + grav * dhx[j][k]) +0.5 * grav * dt * (sox[j][k] + sfx[j][k]));
-					vp[j][k] = (v[j][k] - 0.5 * dt2 * (((u[j][k] * dvx[j][k] + v[j][k] * dux[j][k]) + 2.0 * v[j][k] *
-						dvy[j][k]) + grav * dhy[j][k])) + 0.5 * grav * dt * (soy[j][k] + sfy[j][k]);
+						duy[j][k] + grav * dhx[j][k]) - 0.5 * grav * dt * (sox[j][k] + sfx[j][k]);
 					
+					vp[j][k] = v[j][k] - 0.5 * dt2 * (u[j][k] *
+						dvx[j][k] + v[j][k] * dux[j][k] + 2 * v[j][k] *
+						dvy[j][k] + grav * dhy[j][k]) - 0.5 * grav * dt * (soy[j][k] + sfy[j][k]);
 				}
 			}
 		}

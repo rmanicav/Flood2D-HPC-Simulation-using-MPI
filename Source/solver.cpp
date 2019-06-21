@@ -26,7 +26,7 @@ public:
 	/// <param name="F"></param>
 	/// <param name="amax"></param>
 	void fsolver(double hl, double hr, double ul, double ur, double vl, double vr,
-		double sn, double cn, double hextra, double (&F)[3], double* amax)
+		double sn, double cn, double hextra, double (&a)[3], double* amax)
 	{
 		double grav = 9.806;
 		double duml = pow(hl, 0.5);;
@@ -155,7 +155,7 @@ public:
 
 		//F = 0.5 * ((FL + FR- R * A * dW);
 		
-		double temp[3], sub[3][3];
+		double temp[3];
 		double** c = new double* [3];
 		int n = 3;
 		for (int i = 0; i < n; i++)
@@ -183,12 +183,11 @@ public:
 				}
 			}
 		
-		F[0] = 0.5 *(FSUM[0] - temp[0]);
-		F[1] = 0.5 *(FSUM[1] - temp[1]);
-		F[2] = 0.5 *(FSUM[2] - temp[2]);
+		a[0] = 0.5 *(FSUM[0] - temp[0]);
+		a[1] = 0.5 *(FSUM[1] - temp[1]);
+		a[2] = 0.5 *(FSUM[2] - temp[2]);
 		
 		*amax = chat + abs(uhat * cn + vhat * sn);
 	}
-	
-	
+
 };

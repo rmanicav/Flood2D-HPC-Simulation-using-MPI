@@ -40,7 +40,7 @@ int main(void)
 	double	ntplot = fd.ntPlot;// plotting interval
 	double	dt = fd.dt;// time steps
 	double	dt2 = dt / cellsize;// ratio of dt / dx or dt / dy
-	double hp = 0.0;
+	
 	double amax = 0.0;
 	double** zc = help.allocateMemory(n);
 	help.clearArray(zc, n);
@@ -247,26 +247,38 @@ int main(void)
 					UP[0][i][j] = wsep[i][j];
 				}
 			}
+			double** hp = help.allocateMemory(n);
 			//hp = wsep - zc
 			//assign 1 dim with up value, 2 - vp
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					hp = wsep[i][j] - zc[i][j];
-					if (hp < 0)
+					hp[i][j] = wsep[i][j] - zc[i][j];
+					if (hp[i][j] < 0)
 					{
-						hp = 0.0;
+						hp[i][j] = 0.0;
 					}
-					UP[1][i][j] = up[i][j] * hp;
-					UP[2][i][j] = vp[i][j] * hp;
+					
 				}
 			}
-			cout << endl;
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
+					
+					UP[1][i][j] = up[i][j] * hp[i][j];
+					UP[2][i][j] = vp[i][j] * hp[i][j];
+				}
+			}
+
+			
 			
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
-			help.print3dArray(F, n, "F");
+			//help.print3dArray(F, n, "F");
+			//help.print3dArray(G, n, "G");
+
 			cout << endl << "Completed Fluxes Function" << endl;
 			//  Estimate the flux vectors on the next time step
 			double*** uNew = help.allocate3dMemory(n,n, n);
