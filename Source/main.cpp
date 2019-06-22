@@ -172,7 +172,8 @@ int main(void)
 	help.clearArray(up, n);
 	double** vp = help.allocateMemory(n);
 	help.clearArray(vp, n);
-
+	double** hp = help.allocateMemory(n);
+	help.clearArray(hp, n);
 	//% Bed slope along Xand Y
 	for (int j = 0; j < n - 1; j++)
 	{
@@ -196,24 +197,7 @@ int main(void)
 		clock_t last_time = this_time;
 	
 		for (int j = 0; j < nt; j++) {
-			simtime = j;
-			
-			//print after every tenth iterration
-		//	help.printArrayInterval(h, u, v, n,j);
-
-			//print every ten seconds
-		/*	this_time = clock();
-			time_counter += (double)(this_time - last_time);
-			last_time = this_time;
-			if ((time_counter > (double)(NUM_SECONDS * CLOCKS_PER_SEC)))
-			{
-			time_counter -= (double)(NUM_SECONDS * CLOCKS_PER_SEC);
-		//	help.printArray(h, n, "h");
-		//	help.printArray(u, n, "u");
-		//	help.printArray(v, n, "v");
-             }*/
-
-			simtime = 1 + j;
+			simtime = j;				
 			cout << endl << "Iteration number :" << j << endl;
 
 			/****limiter******************************************/
@@ -248,7 +232,7 @@ int main(void)
 					UP[0][i][j] = wsep[i][j];
 				}
 			}
-			double** hp = help.allocateMemory(n);
+			
 			//hp = wsep - zc
 			//assign 1 dim with up value, 2 - vp
 			for (int i = 0; i < n; i++)
@@ -271,9 +255,7 @@ int main(void)
 					UP[1][i][j] = up[i][j] * hp[i][j];
 					UP[2][i][j] = vp[i][j] * hp[i][j];
 				}
-			}
-
-			
+			}			
 			
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
@@ -306,10 +288,7 @@ int main(void)
 					// computed water depth(water level)
 					h[j][k] = uNew[0][j][k];
 				}
-			}
-
-			
-			
+			}						
 			//reassign values after correction
 			for (int i = 0; i < n; i++)
 			{
@@ -355,10 +334,8 @@ int main(void)
 				help.writeOutputFile(v, n, "vOut_" + to_string(count) + ".txt");
 				count++;
 			}
-			help.writeSensor(h, ntplot, simtime, dt);
-					
-		}
-		
+			help.writeSensor(h, ntplot, simtime, dt);					
+		}		
 		help.freeMemory(h, n);
 		help.freeMemory(dzcx, n);
 		help.freeMemory(dzcy, n);
@@ -380,6 +357,7 @@ int main(void)
 		help.freeMemory3d(U, n);
 		help.freeMemory3d(F, n);
 		help.freeMemory3d(G, n);
+		help.freeMemory(hp, n);
 	} 
 	catch (exception ex)
 	{
@@ -389,5 +367,5 @@ int main(void)
 	cout << endl;
 	cout << "Flood 2d Completed" << endl;
 
-		return 0;
+	return 0;
 	}

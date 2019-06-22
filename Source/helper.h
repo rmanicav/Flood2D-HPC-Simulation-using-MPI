@@ -1,4 +1,4 @@
-#include<stdlib.h>
+
 #include<iostream>
 #include<fstream>
 #include<ostream>
@@ -244,7 +244,12 @@ public:
 		}
 		
 	}
-
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="arr"></param>
+	/// <param name="n"></param>
+	/// <param name="fileName"></param>
 	void write3dOutputFile(double*** arr, int n, string fileName)
 	{
 		ofstream outStream;
