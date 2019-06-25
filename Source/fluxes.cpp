@@ -54,7 +54,9 @@ public:
 		//  added
 		vl = 0.0;
 
-		write3dOutputFile(UP, n, "UP.txt");
+		//write3dOutputFile(UP, n, "UP.txt");
+		const int out = remove("F.txt");
+		
 		//  added
 		//  Enforce wall boundary on left side of box (west)
 		amax =boundaryWest(n,UP,F,amax,zc,hextra);
@@ -70,11 +72,13 @@ public:
 		// Compute the fluxe in the X-direction on the domain
 		amax = xDirectionFlux(zc, UP, amax, F, dwsex,hextra,n,dux,dvx);
 		//print3dArray(F, n, "F");
-		
+		write3dOutputFile(F, n, "F.txt");
 		
 		// From 20th to 21st and 22nd rows
 		amax = middleX(zc, UP, amax, F, dwsex, hextra, n, dux, dvx);
 			//print3dArray(F, n, "F");
+		
+
 		
 		//  % For the 23rd row
 		amax = twentythirdX(zc, UP, amax, F, dwsex, hextra, n, dux, dvx);
@@ -83,7 +87,7 @@ public:
 		
 	  
 		amax = boundaryEast(n, UP, F, amax, zc,hextra);
-		write3dOutputFile(F, n, "F.txt");
+		
 		
 	//print3dArray(F, n, "F");
 		
@@ -144,7 +148,7 @@ public:
 
 			for (int j = 2; j < n -1; j++)
 			{
-				for (int k = 0; k < n; k++)
+				for (int k = 0; k < n -1; k++)
 				{
 					zbc = minmax(zc[j - 1][k], zc[j][k]).second;
 
@@ -152,7 +156,7 @@ public:
 					{
 					hl = UP[0][j-1][k] - zbc;
 					}
-					else if ((UP[0][j][k] - zbc) <= 0)
+					else if ((UP[0][j-1][k] - zbc) <= 0)
 					{
 						hl = 0;
 					}

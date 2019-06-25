@@ -136,7 +136,7 @@ int main(void)
 			v[i][j] = U[2][i][j] / (U[0][i][j] + fd.hextra);
 		}
 	}
-
+	
 	limiter l;
 	slope s;
 	predictor p;
@@ -195,11 +195,10 @@ int main(void)
 		double time_counter = 0;
 		clock_t this_time = clock();
 		clock_t last_time = this_time;
-	
+		
 		for (int j = 0; j < 2; j++) {
 			simtime = j;				
 			cout << endl << "Iteration number :" << j << endl;
-
 			/****limiter******************************************/
 			l.flimiter(n, zc, dzcx, dzcy);
 			cout << endl << "Completed Limiter 1 Function" << endl;
@@ -213,6 +212,7 @@ int main(void)
 			cout << endl << "Completed Limiter 3 Function" << endl;
 			l.flimiter(n, v, dvx, dvy);
 			cout << endl << "Completed Limiter 4 Function" << endl;
+			
 
 			
 			/************Slope calculation**********************************************/
@@ -222,7 +222,7 @@ int main(void)
 			/***********predictor step (estimate the values at half timestep)***********************************************/
 			p.fpredictor(n, fd.gravity, nf, wse, h, u, v, dwsex, dwsey, dux, duy, dvx, dvy, dt2, dzcx, dzcy, epsilon, zc, sox, sfx, dt, soy, sfy, wsep, up, vp);
 			cout << endl << "Completed Predictor Function" << endl;
-
+			
 			double*** UP = help.allocate3dMemory(n,n,n);
 			//assign 0 dim  with wsep value
 			for (int i = 0; i < n; i++)
@@ -232,7 +232,7 @@ int main(void)
 					UP[0][i][j] = wsep[i][j];
 				}
 			}
-			
+			help.write3dOutputFile(UP, n, "UP.txt");
 			//hp = wsep - zc
 			//assign 1 dim with up value, 2 - vp
 			for (int i = 0; i < n; i++)
@@ -259,11 +259,7 @@ int main(void)
 			
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
-			//help.print3dArray(F, n, "F");
-			//help.print3dArray(G, n, "G");
 			
-			//help.write3dOutputFile(F, n, "F.txt");
-
 			cout << endl << "Completed Fluxes Function" << endl;
 			//  Estimate the flux vectors on the next time step
 			double*** uNew = help.allocate3dMemory(n,n, n);
@@ -296,7 +292,7 @@ int main(void)
 			{
 				for (int j = 0; j < n; j++)
 				{
-							
+		
 					//check epsilon
 					if (uNew[0][i][j] < epsilon)
 					{
@@ -308,15 +304,22 @@ int main(void)
 						u[i][j] = uNew[1][i][j]/(U[0][i][j] + fd.hextra);
 						v[i][j] = uNew[2][i][j]/(U[0][i][j] + fd.hextra);
 					}
+				}
+			}
+			for (int i = 0; i < n; i++)
+			{
+				for (int j = 0; j < n; j++)
+				{
 					//compute the new free surface height
-					wse[i][j] = U[1][i][j] + zc[i][j];
+					wse[i][j] = U[0][i][j] + zc[i][j];
 					if (wse[i][j] < 0)
 					{
 						wse[i][j] = 0;
 					}
 				}
 			}
-			help.printArray(h, n, "h");
+			//help.writeOutputFile(wse, n, "wse");
+			//help.printArray(h, n, "h");
 			cout << "Correct and re-assign values completed" << endl;
 			//help.printArray(u, n, "u");
 			//time steps
