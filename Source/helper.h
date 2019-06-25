@@ -54,8 +54,7 @@ public:
 			arr[i] = (double*)malloc(sizeof(double) * (int)n);
 		}
 		return arr;
-	}
-	
+	}	
 	/// <summary>
 	/// 
 	/// </summary>

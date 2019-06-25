@@ -96,16 +96,16 @@ int main(void)
 	for (int j = 0; j < n; j++) {
 		for (int k = 0; k < n; k++) {
 			h[j][k] = wse[j][k] - zc[j][k];
-			h[1][k] = 0.0;
+			h[0][k] = 0.0;
 			h[n-1][k] = 0.0;
-            h[j][1] = 0.0;
+            h[j][0] = 0.0;
             h[j][n - 1] = 0.0;
             if (h[j][k] < 0.0) {
 	             h[j][k] = 0.0;
             }
 		}
 	}
-
+	//help.writeOutputFile(h, n, "h.txt");
 	//help.printArray(h, n, "h");
 	double*** U = help.allocate3dMemory(n,n, n);
 	double*** F = help.allocate3dMemory(n,n,n);
@@ -128,7 +128,7 @@ int main(void)
 		}
 	}
 	//help.print3dArray(U, n, "U");
-	help.write3dOutputFile(U, n, "U.txt");
+	//help.write3dOutputFile(U, n, "U.txt");
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 
@@ -196,7 +196,7 @@ int main(void)
 		clock_t this_time = clock();
 		clock_t last_time = this_time;
 	
-		for (int j = 0; j < nt; j++) {
+		for (int j = 0; j < 2; j++) {
 			simtime = j;				
 			cout << endl << "Iteration number :" << j << endl;
 
@@ -261,6 +261,8 @@ int main(void)
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
 			//help.print3dArray(F, n, "F");
 			//help.print3dArray(G, n, "G");
+			
+			//help.write3dOutputFile(F, n, "F.txt");
 
 			cout << endl << "Completed Fluxes Function" << endl;
 			//  Estimate the flux vectors on the next time step
@@ -268,8 +270,7 @@ int main(void)
 			
 			uNew = c.fcorrector(U, F, G, n, dt2, dt, sox, sfx, soy, sfy, grav);
 			cout << endl << "Completed Corrector Function" << endl;
-			//help.print3dArray(uNew, n, "U");
-		
+					
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
@@ -288,7 +289,8 @@ int main(void)
 					// computed water depth(water level)
 					h[j][k] = uNew[0][j][k];
 				}
-			}						
+			}	
+			help.writeOutputFile(h, n, "h.txt");
 			//reassign values after correction
 			for (int i = 0; i < n; i++)
 			{
@@ -314,6 +316,7 @@ int main(void)
 					}
 				}
 			}
+			help.printArray(h, n, "h");
 			cout << "Correct and re-assign values completed" << endl;
 			//help.printArray(u, n, "u");
 			//time steps
@@ -322,19 +325,19 @@ int main(void)
 			double ctrs;
 			ctrs= simtime * dt;
 			//help.freeMemory3d(uNew, n);
-			if (fmod(ctrs,ntplot) == 0)
-			{
+			//if (fmod(ctrs,ntplot) == 0)
+			//{
 				///print u h v arrays
 			//help.printArray(h, n, "h");
 			//help.printArray(u, n, "u");
 			//help.printArray(v, n, "v");
-				help.write3dOutputFile(U, n, "UOut" + to_string(count) + ".txt");
+				//help.write3dOutputFile(U, n, "UOut" + to_string(count) + ".txt");
 				help.writeOutputFile(h, n, "hOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(u, n, "uOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(v, n, "vOut_" + to_string(count) + ".txt");
 				count++;
-			}
-			help.writeSensor(h, ntplot, simtime, dt);					
+			//}
+			//help.writeSensor(h, ntplot, simtime, dt);					
 		}		
 		help.freeMemory(h, n);
 		help.freeMemory(dzcx, n);

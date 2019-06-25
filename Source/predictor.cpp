@@ -35,7 +35,7 @@ public:
 	/// <param name="wsep"></param>
 	/// <param name="up"></param>
 	/// <param name="vp"></param>
-	void fpredictor(int n, double grav, double nf, double** wse, double** h,
+	void fpredictor(int n, double grav, int nf, double** wse, double** h,
 		double **  u, double ** v, double ** dwsex,
 		double ** dwsey, double ** dux, double **
 		duy, double ** dvx, double ** dvy, double 
@@ -67,8 +67,8 @@ public:
 			}
 		}
 
-		for (int j = 0; j < (int)nf; j++) {
-			for (int k = 0; k < (int)nf; k++) {
+		for (int j = 0; j < nf; j++) {
+			for (int k = 0; k < nf; k++) {
 				//wse(j, k) - 0.5 * dt2 * (h(j, k) * dux(j, k) + u(j, k) * dhx(j, k) + h(j, k) * dvy(j, k) + v(j, k) * dhy(j, k));
 				wsep[j][k] = wse[j][k] - 0.5 * dt2 * (h[j][k] * dux[j][k] + u[j][k] * dhx[j][k] + h[j][k] * dvy[j][k] + v[j][k] * dhy[j][k]);
 				hp[j][k] = wsep[j][k] - zc[j][k];
