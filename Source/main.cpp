@@ -135,7 +135,7 @@ int main(void)
 			v[i][j] = U[2][i][j] / (U[0][i][j] + fd.hextra);
 		}
 	}
-	
+		
 	limiter l;
 	slope s;
 	predictor p;
@@ -201,18 +201,14 @@ int main(void)
 			/****limiter******************************************/
 			l.flimiter(n, zc, dzcx, dzcy);
 			cout << endl << "Completed Limiter 1 Function" << endl;
-			//help.printArray(dzcx, n, "dzcx");
-			//help.printArray(dzcy, n, "dzcy");
 			l.flimiter(n, wse, dwsex, dwsey);
-			//help.printArray(dwsex, n, "dwsex");
-			//help.printArray(dwsey, n, "dwsey");
 			cout << endl << "Completed Limiter 2 Function" << endl;
 			l.flimiter(n, u, dux, duy);
 			cout << endl << "Completed Limiter 3 Function" << endl;
 			l.flimiter(n, v, dvx, dvy);
 			cout << endl << "Completed Limiter 4 Function" << endl;
 			
-
+			
 			
 			/************Slope calculation**********************************************/
 			s.fslope(h, u, v, ManN, hextra, dzcx, dzcy, cellsize, n, sox, soy, sfx, sfy);
@@ -310,6 +306,7 @@ int main(void)
 					}
 				}
 			}
+		
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
@@ -322,11 +319,10 @@ int main(void)
 					}
 				}
 			}
-			help.writeOutputFile(wse, n, "wse");
+			//help.writeOutputFile(wse, n, "wse");
 			
-			//help.printArray(h, n, "h");
 			cout << "Correct and re-assign values completed" << endl;
-			//help.printArray(u, n, "u");
+			
 			//time steps
 			t = t + dt;
 			cr = (amax * dt) / cellsize;

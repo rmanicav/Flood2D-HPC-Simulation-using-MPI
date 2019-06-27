@@ -67,8 +67,8 @@ public:
 			}
 		}
 
-		for (int j = 0; j < nf; j++) {
-			for (int k = 0; k < nf; k++) {
+		for (int j = 0; j < n; j++) {
+			for (int k = 0; k < n; k++) {
 				//wse(j, k) - 0.5 * dt2 * (h(j, k) * dux(j, k) + u(j, k) * dhx(j, k) + h(j, k) * dvy(j, k) + v(j, k) * dhy(j, k));
 				wsep[j][k] = wse[j][k] - 0.5 * dt2 * (h[j][k] * dux[j][k] + u[j][k] * dhx[j][k] + h[j][k] * dvy[j][k] + v[j][k] * dhy[j][k]);
 				hp[j][k] = wsep[j][k] - zc[j][k];

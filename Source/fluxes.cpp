@@ -86,32 +86,22 @@ public:
 		
 	/**************************Y Direction***********************/
 		//boundary south Y direction
-		/*amax = boundarySouthY(n,UP,G,amax,zc,hextra);
-		
-		//print3dArray(G, n, "G");
+		amax = boundarySouthY(n,UP,G,amax,zc,hextra);
 		//second column y
 		amax = secondColumnY(n, UP, G, amax, zc, hextra);
-		//write3dOutputFile(G, n, "G.txt");
 		//Y fluxes
 		amax = yDirectionFlux(zc, UP, amax, G, dwsex, hextra, n, duy, dwsey, dvy);
-	//	print3dArray(G, n, "G");
-		
 		//23 
 		amax =twentythreerowDownStream(zc, UP, amax, G, hextra, n);
-		//print3dArray(G, n, "G");
 		//24
 		amax = twentyfourDam(zc,UP,amax,G,hextra,n);
-		//print3dArray(G, n, "G");
 		//35
 		amax=thirtyFiveLeftDamn(zc,UP,amax,G,hextra,n);
-		//print3dArray(G, n, "G");
 		//left dam
 		amax = leftDamn(zc, UP, amax, G, hextra, n);
-		//print3dArray(G, n, "G");
 		//boundary North direction
 		amax = boundaryNorth(n, UP, G, amax, zc, hextra);
-	//	print3dArray(G, n, "G");
-		write3dOutputFile(G, n, "G.txt");*/
+		write3dOutputFile(G, n, "G.txt");
 	}
 	/// <summary>
 	/// 

@@ -256,8 +256,8 @@ public:
 		if (outStream.is_open())
 		{
 
-			//outStream << "*********************************************************************************************" << endl;
-			//outStream << " Arr 0 dim" << endl;
+			outStream << "*********************************************************************************************" << endl;
+			outStream << " Arr 0 dim" << endl;
 			for (int j = 0; j < n; j++)
 			{
 				for (int k = 0; k < n; k++)
@@ -267,7 +267,7 @@ public:
 				outStream << endl;
 			}
 			outStream << endl;
-			//outStream << " Arr 1 dim" << endl;
+			outStream << " Arr 1 dim" << endl;
 			for (int j = 0; j < n; j++)
 			{
 				for (int k = 0; k < n; k++)
@@ -277,7 +277,7 @@ public:
 				outStream << endl;
 			}
 			outStream << endl;
-		//	outStream << " Arr 2 dim" << endl;
+		   outStream << " Arr 2 dim" << endl;
 			for (int j = 0; j < n; j++)
 			{
 				for (int k = 0; k < n; k++)
@@ -288,7 +288,7 @@ public:
 			}
 			outStream << endl;
 
-			//outStream << "*********************************************************************************************" << endl;
+			outStream << "*********************************************************************************************" << endl;
 			outStream.close();
 		}
 		else
@@ -498,7 +498,7 @@ public:
 	//x flux
 	void fixup(double** up, int i, int j)
 	{
-		if (up[i][j] > 0 && i == 40)
+	if (up[i][j] > 0 && i == 40)
 		{
 			up[i][j] = 0.0;
 		}
