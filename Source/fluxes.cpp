@@ -60,41 +60,33 @@ public:
 		//  added
 		//  Enforce wall boundary on left side of box (west)
 		amax =boundaryWest(n,UP,F,amax,zc,hextra);
-		cout << endl;
 		
-	//	print3dArray(F, n, "F");
 		//  Enforce wall boundary on second rows along the X-axis
 		amax=boundaryX(amax, UP, hextra, zc, F, n);
-		//	print3dArray(F, n, "F");
-		
-		
+		//write3dOutputFile(F, n, "F.txt");
 		
 		// Compute the fluxe in the X-direction on the domain
 		amax = xDirectionFlux(zc, UP, amax, F, dwsex,hextra,n,dux,dvx);
-		//print3dArray(F, n, "F");
-		
 		
 		
 		// From 20th to 21st and 22nd rows
 		amax = middleX(zc, UP, amax, F, dwsex, hextra, n, dux, dvx);
-			//print3dArray(F, n, "F");
-		
-
-		write3dOutputFile(F, n, "F.txt");
+		//write3dOutputFile(F, n, "F.txt");
+	
 		//  % For the 23rd row
 		amax = twentythirdX(zc, UP, amax, F, dwsex, hextra, n, dux, dvx);
-		//print3dArray(F, n, "F");
+		//write3dOutputFile(F, n, "F.txt");
 		//boundary east
-		
-	  
 		amax = boundaryEast(n, UP, F, amax, zc,hextra);
 		
-		
-	//print3dArray(F, n, "F");
+		write3dOutputFile(F, n, "F.txt");
+
+
+
 		
 	/**************************Y Direction***********************/
 		//boundary south Y direction
-		amax = boundarySouthY(n,UP,G,amax,zc,hextra);
+		/*amax = boundarySouthY(n,UP,G,amax,zc,hextra);
 		
 		//print3dArray(G, n, "G");
 		//second column y
@@ -103,9 +95,9 @@ public:
 		//Y fluxes
 		amax = yDirectionFlux(zc, UP, amax, G, dwsex, hextra, n, duy, dwsey, dvy);
 	//	print3dArray(G, n, "G");
-		write3dOutputFile(G, n, "G.txt");
+		
 		//23 
-	/*	amax =twentythreerowDownStream(zc, UP, amax, G, hextra, n);
+		amax =twentythreerowDownStream(zc, UP, amax, G, hextra, n);
 		//print3dArray(G, n, "G");
 		//24
 		amax = twentyfourDam(zc,UP,amax,G,hextra,n);
@@ -119,7 +111,7 @@ public:
 		//boundary North direction
 		amax = boundaryNorth(n, UP, G, amax, zc, hextra);
 	//	print3dArray(G, n, "G");
-		//write3dOutputFile(G, n, "G.txt");*/
+		write3dOutputFile(G, n, "G.txt");*/
 	}
 	/// <summary>
 	/// 
@@ -195,6 +187,12 @@ public:
 						vl = 0.0;
 					}
 					else {
+						//Bug fix
+						/*if (j - 1 == 22)
+						{
+							UP[1][j - 1][k] = 0;
+						}*/
+
 						ul = (UP[1][j-1][k] / (hl + hextra)) + 0.5 * dux[j-1][k];
 						vl = (UP[2][j-1][k] / (hl + hextra)) + 0.5 * dvx[j-1][k];
 					}
@@ -291,7 +289,7 @@ public:
 			}
 
 			//columnx 35 - n-1
-			for (int j = 19; j < 21; j++)
+		/*	for (int j = 19; j < 20; j++)
 			{
 				for (int k = 34; k < n - 1; k++)//////////////////n-1
 				{
@@ -326,7 +324,7 @@ public:
 					}
 				}
 				
-			}
+			}*/
 
 		
 
@@ -893,7 +891,6 @@ public:
 				G[0][j][k] = dv0[0];
 				G[1][j][k] = dv0[1];
 				G[2][j][k] = dv0[2];
-				
 				
 							
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {

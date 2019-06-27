@@ -256,8 +256,8 @@ public:
 		if (outStream.is_open())
 		{
 
-			outStream << "*********************************************************************************************" << endl;
-			outStream << " Arr 0 dim" << endl;
+			//outStream << "*********************************************************************************************" << endl;
+			//outStream << " Arr 0 dim" << endl;
 			for (int j = 0; j < n; j++)
 			{
 				for (int k = 0; k < n; k++)
@@ -267,7 +267,7 @@ public:
 				outStream << endl;
 			}
 			outStream << endl;
-			outStream << " Arr 1 dim" << endl;
+			//outStream << " Arr 1 dim" << endl;
 			for (int j = 0; j < n; j++)
 			{
 				for (int k = 0; k < n; k++)
@@ -277,7 +277,7 @@ public:
 				outStream << endl;
 			}
 			outStream << endl;
-			outStream << " Arr 2 dim" << endl;
+		//	outStream << " Arr 2 dim" << endl;
 			for (int j = 0; j < n; j++)
 			{
 				for (int k = 0; k < n; k++)
@@ -288,7 +288,7 @@ public:
 			}
 			outStream << endl;
 
-			outStream << "*********************************************************************************************" << endl;
+			//outStream << "*********************************************************************************************" << endl;
 			outStream.close();
 		}
 		else
@@ -487,11 +487,30 @@ public:
 			freeMemory(hsens_2, 1);
 			freeMemory(hsens_3, 1);
 	}
-	void fixUP(double** vp, int i,int j)
+	//y flux
+	void fixvp(double** vp, int i,int j)
 	{
 		if (vp[i][j] > 0 && j == 40)
 		{
 			vp[i][j] = 0.0;
 		}
 	}
+	//x flux
+	void fixup(double** up, int i, int j)
+	{
+		if (up[i][j] > 0 && i == 40)
+		{
+			up[i][j] = 0.0;
+		}
+		if (i == 22 && j > 33)
+		{
+			up[i][j]= 0.0;
+		}
+		if (i == 19 && j > 33)
+		{
+			up[i][j] = 0.0;
+		}
+		
+	}
+
 };

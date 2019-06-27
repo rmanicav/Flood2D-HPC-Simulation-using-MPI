@@ -251,12 +251,15 @@ int main(void)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					help.fixUP(vp, i, j);
+					help.fixvp(vp, i, j);
+					help.fixup(up, i, j);
+					
 					UP[1][i][j] = up[i][j] * hp[i][j];
 					UP[2][i][j] = vp[i][j] * hp[i][j];
 					
 				}
 			}			
+
 			help.write3dOutputFile(UP, n, "UP");
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
@@ -337,7 +340,7 @@ int main(void)
 				help.writeOutputFile(h, n, "hOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(u, n, "uOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(v, n, "vOut_" + to_string(count) + ".txt");
-				//count++;
+				count++;
 			//}
 			//help.writeSensor(h, ntplot, simtime, dt);					
 		}		
