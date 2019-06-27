@@ -23,6 +23,7 @@ int main(void)
 	help.readFromFile(&fd);
 	int simtime;
 	int n;
+	
 	double grav = fd.gravity;
 	double ManN = fd.manN;
 	double hextra = fd.hextra;
@@ -127,8 +128,6 @@ int main(void)
 			U[2][i][j] = v[i][j] * h[i][j];
 		}
 	}
-	//help.print3dArray(U, n, "U");
-	//help.write3dOutputFile(U, n, "U.txt");
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 
@@ -222,6 +221,7 @@ int main(void)
 			/***********predictor step (estimate the values at half timestep)***********************************************/
 			p.fpredictor(n, fd.gravity, nf, wse, h, u, v, dwsex, dwsey, dux, duy, dvx, dvy, dt2, dzcx, dzcy, epsilon, zc, sox, sfx, dt, soy, sfy, wsep, up, vp);
 			cout << endl << "Completed Predictor Function" << endl;
+		    
 			
 			double*** UP = help.allocate3dMemory(n,n,n);
 			//assign 0 dim  with wsep value
@@ -232,7 +232,7 @@ int main(void)
 					UP[0][i][j] = wsep[i][j];
 				}
 			}
-			help.write3dOutputFile(UP, n, "UP.txt");
+			
 			//hp = wsep - zc
 			//assign 1 dim with up value, 2 - vp
 			for (int i = 0; i < n; i++)
@@ -251,12 +251,13 @@ int main(void)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					
+					help.fixUP(vp, i, j);
 					UP[1][i][j] = up[i][j] * hp[i][j];
 					UP[2][i][j] = vp[i][j] * hp[i][j];
+					
 				}
 			}			
-			
+			help.write3dOutputFile(UP, n, "UP");
 			//    Compute fluxes at the interfaces
 			f.ffluxes(UP, n, dwsex, dwsey, dux, duy, dvx, dvy, hextra, zc, F, G, amax);
 			
@@ -286,7 +287,7 @@ int main(void)
 					h[j][k] = uNew[0][j][k];
 				}
 			}	
-			help.writeOutputFile(h, n, "h.txt");
+			
 			//reassign values after correction
 			for (int i = 0; i < n; i++)
 			{
@@ -318,7 +319,8 @@ int main(void)
 					}
 				}
 			}
-			//help.writeOutputFile(wse, n, "wse");
+			help.writeOutputFile(wse, n, "wse");
+			
 			//help.printArray(h, n, "h");
 			cout << "Correct and re-assign values completed" << endl;
 			//help.printArray(u, n, "u");
@@ -330,15 +332,12 @@ int main(void)
 			//help.freeMemory3d(uNew, n);
 			//if (fmod(ctrs,ntplot) == 0)
 			//{
-				///print u h v arrays
-			//help.printArray(h, n, "h");
-			//help.printArray(u, n, "u");
-			//help.printArray(v, n, "v");
+			
 				//help.write3dOutputFile(U, n, "UOut" + to_string(count) + ".txt");
 				help.writeOutputFile(h, n, "hOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(u, n, "uOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(v, n, "vOut_" + to_string(count) + ".txt");
-				count++;
+				//count++;
 			//}
 			//help.writeSensor(h, ntplot, simtime, dt);					
 		}		

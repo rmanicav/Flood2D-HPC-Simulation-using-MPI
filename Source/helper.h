@@ -487,4 +487,11 @@ public:
 			freeMemory(hsens_2, 1);
 			freeMemory(hsens_3, 1);
 	}
+	void fixUP(double** vp, int i,int j)
+	{
+		if (vp[i][j] > 0 && j == 40)
+		{
+			vp[i][j] = 0.0;
+		}
+	}
 };

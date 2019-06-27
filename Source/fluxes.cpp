@@ -72,14 +72,15 @@ public:
 		// Compute the fluxe in the X-direction on the domain
 		amax = xDirectionFlux(zc, UP, amax, F, dwsex,hextra,n,dux,dvx);
 		//print3dArray(F, n, "F");
-		write3dOutputFile(F, n, "F.txt");
+		
+		
 		
 		// From 20th to 21st and 22nd rows
 		amax = middleX(zc, UP, amax, F, dwsex, hextra, n, dux, dvx);
 			//print3dArray(F, n, "F");
 		
 
-		
+		write3dOutputFile(F, n, "F.txt");
 		//  % For the 23rd row
 		amax = twentythirdX(zc, UP, amax, F, dwsex, hextra, n, dux, dvx);
 		//print3dArray(F, n, "F");
@@ -94,16 +95,17 @@ public:
 	/**************************Y Direction***********************/
 		//boundary south Y direction
 		amax = boundarySouthY(n,UP,G,amax,zc,hextra);
+		
 		//print3dArray(G, n, "G");
 		//second column y
 		amax = secondColumnY(n, UP, G, amax, zc, hextra);
-		
+		//write3dOutputFile(G, n, "G.txt");
 		//Y fluxes
 		amax = yDirectionFlux(zc, UP, amax, G, dwsex, hextra, n, duy, dwsey, dvy);
 	//	print3dArray(G, n, "G");
-		//write3dOutputFile(G, n, "G.txt");
+		write3dOutputFile(G, n, "G.txt");
 		//23 
-		amax =twentythreerowDownStream(zc, UP, amax, G, hextra, n);
+	/*	amax =twentythreerowDownStream(zc, UP, amax, G, hextra, n);
 		//print3dArray(G, n, "G");
 		//24
 		amax = twentyfourDam(zc,UP,amax,G,hextra,n);
@@ -117,7 +119,7 @@ public:
 		//boundary North direction
 		amax = boundaryNorth(n, UP, G, amax, zc, hextra);
 	//	print3dArray(G, n, "G");
-		write3dOutputFile(G, n, "G.txt");
+		//write3dOutputFile(G, n, "G.txt");*/
 	}
 	/// <summary>
 	/// 
@@ -146,9 +148,9 @@ public:
 		solver s;
 		clearArray(dv0);
 
-			for (int j = 2; j < n -1; j++)
+			for (int j = 2; j < n - 1; j++)
 			{
-				for (int k = 0; k < n -1; k++)
+				for (int k = 0; k < n ; k++)
 				{
 					zbc = minmax(zc[j - 1][k], zc[j][k]).second;
 
@@ -291,7 +293,7 @@ public:
 			//columnx 35 - n-1
 			for (int j = 19; j < 21; j++)
 			{
-				for (int k = 34; k < n-1; k++)
+				for (int k = 34; k < n - 1; k++)//////////////////n-1
 				{
 					zbc = minmax(zc[j][k], zc[j][k]).second;
 					if ((UP[0][j][k] - zbc) > 0)
@@ -359,7 +361,7 @@ public:
 		clearArray(dv0);
 		
 		int j = 22;
-				for (int k = 0; k < 22 ; k++)
+				for (int k = 0; k < 23 ; k++)
 				{
 					zbc = minmax(zc[j][k], zc[j][k]).second;
 					if ((UP[0][j][k] - zbc) > 0)
@@ -533,9 +535,9 @@ public:
 					}
 					s.fsolver(hl, hl, ul, -ul, vl, vl, 0.0, 1.0, hextra, dv0, &zbc);
 				
-					F[0][2][k] = dv0[0];
-					F[1][2][k] = dv0[1];
-					F[2][2][k] = dv0[2];
+					F[0][1][k] = dv0[0];
+					F[1][1][k] = dv0[1];
+					F[2][1][k] = dv0[2];
 					
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -708,6 +710,7 @@ public:
 		double ul = 0.0;
 		double vl = 0.0;
 		double dv0[3];
+		double hr = 0.0;
 		solver s;
 
 		clearArray(dv0);
@@ -725,8 +728,8 @@ public:
 					}
 					else
 					{
-						ul = (UP[1][j][0]) / (hl + hextra);
-						vl = (UP[2][j][0]) / (hl + hextra);
+						ul = (UP[1][j][0]) / (hr + hextra);
+						vl = (UP[2][j][0]) / (hr + hextra);
 					}
 					
 					s.fsolver(hl, hl, ul, ul, vl, -vl, 1.0, 0, hextra, dv0, &zbc);
@@ -828,7 +831,7 @@ public:
 		clearArray(dv0);
 			for (int k = 2; k < n-1; k++)
 			{
-				for (int j = 0; j < n; j++)
+				for (int j = 0; j < n ; j++)
 				{
 					zbc = minmax(zc[j][k - 1], zc[j][k]).second;
 				
@@ -867,9 +870,9 @@ public:
 					vl = 0.0;
 				}
 				else {
-					ul = UP[1][j][k-1] + 0.5 * (duy[j][k-1] /
+					ul = UP[1][j][k - 1] + 0.5 * (duy[j][k-1] /
 						(hl + hextra));
-					vl = UP[2][j][k -1] + 0.5 * (duy[j][k - 1] /
+					vl = UP[2][j][k -1] + 0.5 * (dvy[j][k - 1] /
 						(hl + hextra));
 				}
 
@@ -883,10 +886,15 @@ public:
 				}
 
 				s.fsolver(hl, hr, ul, ur, vl, vr, 1.0, 0.0, hextra, dv0, &zbc);				
+				/*if (dv0[0] > 0 && k == 40)
+				{
+					dv0[0] = 0;
+				}*/
 				G[0][j][k] = dv0[0];
 				G[1][j][k] = dv0[1];
 				G[2][j][k] = dv0[2];
-
+				
+				
 							
 					if ((zbc < amax) || (isnan(zbc) && (!isnan(amax)))) {
 					}
@@ -1189,7 +1197,7 @@ public:
 				}
 				outStream << endl;
 			}
-		  /*outStream << endl;
+		  outStream << endl;
 			outStream << " Arr 1 dim" << endl;
 			for (int j = 0; j < n; j++)
 			{
@@ -1209,9 +1217,9 @@ public:
 				}
 				outStream << endl;
 			}
-			outStream << endl;*/
+			outStream << endl;
 
-		//	outStream << "*********************************************************************************************" << endl;
+			outStream << "*********************************************************************************************" << endl;
 			outStream.close();
 		}
 		else
