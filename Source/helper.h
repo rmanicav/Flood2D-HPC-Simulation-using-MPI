@@ -200,7 +200,7 @@ public:
 		cout << "Z:" << fd->z << endl;
 		cout << "\n-------------------------------\n\n";
 		infile.close();
-		infile.open("Input/zc_dem.txt");
+		infile.open("Input/zC.txt");
 		fd->zc = allocateMemory(fd->x);
 		clearArray(fd->zc,fd->x);
 		for (int i = 0; i < fd->x; i++)
@@ -210,7 +210,7 @@ public:
 				infile >> fd->zc[i][j];
 			}
 		}
-	//	printArray(fd->zc, 42, "zc");
+	    printArray(fd->zc, 42, "zc");
 		infile.close();
 	}
 	/// <summary>
@@ -502,14 +502,7 @@ public:
 		{
 			up[i][j] = 0.0;
 		}
-		if (i == 22 && j > 33)
-		{
-			up[i][j]= 0.0;
-		}
-		if (i == 19 && j > 33)
-		{
-			up[i][j] = 0.0;
-		}
+	
 		
 	}
 

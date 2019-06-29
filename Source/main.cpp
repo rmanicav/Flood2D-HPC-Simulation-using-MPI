@@ -17,7 +17,7 @@ using namespace std;
 /// <returns></returns>
 int main(void)
 {
-	const int NUM_SECONDS = 10;
+	
 	helper help;
 	floodData fd;
 	help.readFromFile(&fd);
@@ -54,8 +54,9 @@ int main(void)
 	// Set up initial conditions
 	//  wse=1.01*ones(n,n);                           % Initial water surface elevation
 
+
 	//0-20 - assign 11
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < 21; i++) {
 		for (int j = 0; j < n; j++) {
 			wse[i][j] = fd.hWL;// 11 upstream
 		}
@@ -63,21 +64,21 @@ int main(void)
 	
 
 	//21,22 - assign 9999
-	for (int i = 20; i < 22; i++) {
+	/*for (int i = 20; i < 22; i++) {
 		for (int j = 0; j < n ; j++) {
 			wse[i][j] = fd.initV;// 9999
 		}
-	}
+	}*/
 	
 	//23 -42 rows - assign 6
-	for (int i = 22; i < n; i++) {
+	for (int i = 21; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			wse[i][j] = fd.initWSE;//6 downstream
 		}
 
 	}
 	//row 21 - columns(24-34) - assign 11
-			for (int j = 23; j < 34; j++)
+		/*	for (int j = 23; j < 34; j++)
 			{
 				wse[20][j] = fd.hWL;// 11 upstream
 			}
@@ -85,7 +86,7 @@ int main(void)
 	//row 22 columns(24-34)- assign 6
 		for (int j = 23; j < 34; j++) {
 			wse[21][j] = fd.initWSE;//6 downstream
-		}
+		}*/
 				
 //	help.printArray(wse, n, "wse");
 	help.writeOutputFile(wse, n, "wse.txt");
@@ -195,7 +196,7 @@ int main(void)
 		clock_t this_time = clock();
 		clock_t last_time = this_time;
 		
-		for (int j = 0; j < 2; j++) {
+		for (int j = 0; j < nt; j++) {
 			simtime = j;				
 			cout << endl << "Iteration number :" << j << endl;
 			/****limiter******************************************/
@@ -319,7 +320,7 @@ int main(void)
 					}
 				}
 			}
-			//help.writeOutputFile(wse, n, "wse");
+			help.writeOutputFile(wse, n, "wse");
 			
 			cout << "Correct and re-assign values completed" << endl;
 			
@@ -328,16 +329,19 @@ int main(void)
 			cr = (amax * dt) / cellsize;
 			double ctrs;
 			ctrs= simtime * dt;
+			cout << "Simtime: " << simtime << endl;
+			cout << "Ctrs: " << ctrs << endl;
+			cout << "dts: " << dt << endl;
 			//help.freeMemory3d(uNew, n);
-			//if (fmod(ctrs,ntplot) == 0)
-			//{
+		if (fmod(ctrs,1) == 0)
+		{
 			
 				//help.write3dOutputFile(U, n, "UOut" + to_string(count) + ".txt");
 				help.writeOutputFile(h, n, "hOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(u, n, "uOut_" + to_string(count) + ".txt");
 				help.writeOutputFile(v, n, "vOut_" + to_string(count) + ".txt");
 				count++;
-			//}
+		}
 			//help.writeSensor(h, ntplot, simtime, dt);					
 		}		
 		help.freeMemory(h, n);
