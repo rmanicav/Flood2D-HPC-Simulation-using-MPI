@@ -1,4 +1,8 @@
+#include<cmath>
+#include<iostream>
+#include "omp.h"
 using namespace std;
+
 /// <summary>
 /// 
 /// </summary>
@@ -24,20 +28,47 @@ public:
 	double*** fcorrector(double ***U, double ***F,  double ***G,double n, double dt2, double dt, double **sox, 
 		double **sfx, double **soy, double **sfy,double grav)
 	{
-		int j;
+         int nThreads =3;
+         double wtime = omp_get_wtime();
+         #pragma omp parallel num_threads(nThreads)
+          {
+      		int j;
 		int k;
-		for (j = 0; j < n - 1 ; j++) {
-			for (k = 0; k < n - 1 ; k++) {
-				U[0][j][k] = U[0][j][k] - dt2 * (F[0][j + 1][k] - F[0][j][k]) - dt2 * (G[0][j][k + 1] - G[0][j][k]);
-				if (U[0][j][k] < 0.0) {
-					U[0][j][k] = 0.0;
+                int tid = omp_get_thread_num();
+                printf("Thread number is %d\n",tid);
+                #pragma omp sections 
+				{
+                 #pragma omp section
+					for (j = 0; j < n - 1; j++) {
+						for (k = 0; k < n - 1; k++) {
+
+							U[0][j][k] = U[0][j][k] - dt2 * (F[0][j + 1][k] - F[0][j][k]) - dt2 * (G[0][j][k + 1] - G[0][j][k]);
+							if (U[0][j][k] < 0.0) {
+								U[0][j][k] = 0.0;
+							}
+						}
+					}
+
+                  #pragma omp section
+					for (j = 0; j < n - 1; j++) {
+						for (k = 0; k < n - 1; k++) {
+							U[1][j][k] = ((U[1][j][k] - dt2 * (F[1][j + 1][k] - F[1][j][k])) - dt2 * (G[1][j][k + 1] - G[1][j][k])) - (dt * grav * (sox[j][k] + sfx[j][k]));
+						}
+					}
+					
+                   #pragma omp section
+					for (j = 0; j < n - 1; j++) {
+						for (k = 0; k < n - 1; k++) {
+							U[2][j][k] = ((U[2][j][k] - dt2 * (F[2][j + 1][k] - F[2][j][k]) - dt2 * (G[2][j][k + 1] - G[2][j][k]))) - (dt * grav * (soy[j][k] + sfy[j][k]));
+						}
+					}
 				}
 
-				U[1][j][k] = ((U[1][j][k] - dt2 * (F[1][j + 1][k] - F[1][j][k])) - dt2 * (G[1][j][k + 1] - G[1][j][k])) - (dt * grav * (sox[j][k] + sfx[j][k]));
-				U[2][j][k] = ((U[2][j][k] - dt2 * (F[2][j+1][k] - F[2][j][k]) - dt2 * (G[2][j][k + 1] - G[2][j][k]))) - (dt * grav * (soy[j][k] + sfy[j][k]));
-			}
-		}
-		return U;
+	}
+        wtime = omp_get_wtime() - wtime;
+        printf( "Time taken for corrector is  %f\n",wtime);
+       	return U;
+         
 	}
 	
 };
