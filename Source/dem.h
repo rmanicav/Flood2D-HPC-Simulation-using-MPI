@@ -6,10 +6,6 @@ public:
 	double xllCorner, yllCorner, cellSize, xloc, yloc;
 	int nodata;
 	double** dm;
-	dem()
-	{
-
-	}
 	void readDemFile(string fileName);
 	void readLocData(string fileName, double& xloc, double& yloc);
 private:
@@ -46,15 +42,16 @@ void dem::readDemFile(string fileName)
 		infile >> nodata;
 
 			dm = allocateMemory(nrows,ncols);
-			for (int i = 0; i < nrows -1; i++)
+			for (int i = 0; i < nrows ; i++)
 			{
-				for (int j = 0; j < ncols - 1; j++)
+				for (int j = 0; j < ncols ; j++)
 				{
 					infile >> dm[i][j];
 					cout << dm[i][j] << "\t";
 				}
 				cout << endl;
 			}
+			infile.close();
 	}
 }
 
@@ -82,6 +79,7 @@ void dem::readLocData(string fileName, double& xloc, double& yloc)
 		yloc = stod(line);
 		std::cout << "xLocation:" << xloc << "\t" << "xLocation:" << yloc << endl;
 		std::cout << "************************************************" << endl;
+		infile.close();
 	}
 
 }
