@@ -1,0 +1,4 @@
+(1) - Prepare topography or Digital Elevation Model (DEM) reader. Unlike the previous data, this DEM has 6-lines for "headers".
+(2) - Prepare flow-hydrograph reader. We have two headers that should not be included. The first column of the hydrograph corresponds to time (hr) and the second column corresponds to flows in cubic-foot-per-second (cfs).
+(3) - Prepare inflow location text file reader. We have one header. The first column corresponds to the longitude and second column corresponds to the latitutude. 
+(4) - Calculating the source location. You can adopt the one from the previous code. 

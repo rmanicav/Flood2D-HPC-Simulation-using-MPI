@@ -1,14 +1,17 @@
-Gravity:9.806
-Manning:0.001
+Gravity:9.8060
+Manning:0.01
 hextra:0.1
 epsilon:0.1
 Cell size:5
 Box size:210
-Number of time steps:20000
-Plotting interval:2
+Number of time steps:40
+Plotting interval:20
 Time steps:0.05
 Initial value:99999.0
 WSE downstream value:6.0 
 WSE upstream value:11.0
-CR:0.05
+CR:0.1
 Dimension:3
+X:42
+Y:42
+Z:42
