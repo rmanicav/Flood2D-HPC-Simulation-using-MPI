@@ -25,7 +25,7 @@ void hydrograph::readHygData(hyg* hg, string fileName)
 {
 	ifstream infile(fileName.c_str());
 	int i = 0;
-	size_t lCount;
+	int lCount;
 	string line;
 
 	if (!infile.good())

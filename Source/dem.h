@@ -41,17 +41,17 @@ void dem::readDemFile(string fileName)
 		infile >> name;
 		infile >> nodata;
 
-			dm = allocateMemory(nrows,ncols);
-			for (int i = 0; i < nrows ; i++)
+		dm = allocateMemory(nrows, ncols);
+		for (int i = 0; i < nrows; i++)
+		{
+			for (int j = 0; j < ncols; j++)
 			{
-				for (int j = 0; j < ncols ; j++)
-				{
-					infile >> dm[i][j];
-					cout << dm[i][j] << "\t";
-				}
-				cout << endl;
+				infile >> dm[i][j];
+				cout << dm[i][j] << "\t";
 			}
-			infile.close();
+			cout << endl;
+		}
+		infile.close();
 	}
 }
 
@@ -73,7 +73,7 @@ void dem::readLocData(string fileName, double& xloc, double& yloc)
 		getline(infile, line);
 		std::cout << "************************************************" << endl;
 		std::cout << "Inflow Location" << endl;
-		getline(infile, line,',');
+		getline(infile, line, ',');
 		xloc = stod(line);
 		getline(infile, line, ',');
 		yloc = stod(line);

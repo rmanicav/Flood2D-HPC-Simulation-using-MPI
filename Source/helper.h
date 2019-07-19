@@ -30,32 +30,51 @@ public:
 	/// </summary>
 	/// <param name="arr"></param>
 	/// <param name="n"></param>
-	void clearArray(double** arr, int n)
+	void clearArray(double** arr, int n,int m)
 	{
 		for (int i = 0; i < n; i++)
 		{
-			for (int j = 0; j < n; j++)
+			for (int j = 0; j < m; j++)
 			{
 				arr[i][j] = 0.0;
 			}
 		}
 	}
+
+	
 	/// <summary>
 	/// 
 	/// </summary>
 	/// <param name="n"></param>
 	/// <returns></returns>
-	double** allocateMemory(int n)
+	double** allocateMemory(int n,int m)
 	{
 		double** arr;
-		arr = (double**)malloc(sizeof(double*) * (int)n);
+		arr = (double**)malloc(sizeof(double*) * n);
 		for (int i = 0; i < n; i++)
 		{
 
-			arr[i] = (double*)malloc(sizeof(double) * (int)n);
+			arr[i] = (double*)malloc(sizeof(double) * m);
 		}
 		return arr;
 	}	
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="n"></param>
+	/// <returns></returns>
+	double** allocateMemoryTest(int n,int m)
+	{
+		double** arr;
+		arr = (double**)malloc(sizeof(double*) * n);
+		for (int i = 0; i < n; i++)
+		{
+
+			arr[i] = (double*)malloc(sizeof(double) * m);
+		}
+		return arr;
+	}
 	/// <summary>
 	/// 
 	/// </summary>
@@ -75,11 +94,11 @@ public:
 	/// </summary>
 	/// <param name="arr"></param>
 	/// <param name="n"></param>
-	void freeMemory3d(double*** arr, int n)
+	void freeMemory3d(double*** arr, int n,int m)
 	{
 		for (int i = 0; i < n; i++)
 		{
-			for (int j = 0; j < n; j++)
+			for (int j = 0; j < m; j++)
 			{
 				free(arr[i][j]);
 			}
@@ -98,12 +117,12 @@ public:
 	{
 		double*** arr = new double** [a];
 		
-		for (int i = 0; i < b; i++)
+		for (int i = 0; i < a; i++)
 		{
 			arr[i] = new double* [b];
 			for (int j = 0; j < b; j++)
 			{
-				arr[i][j] = new double[b];
+				arr[i][j] = new double[c];
 			}			
 		}
 		for (int i = 0; i < b; i++)
@@ -130,80 +149,80 @@ public:
 		ifstream infile;
 		string name;
 		infile.open("Input/iv.txt");
-		cout << "----------------------------------\n";
+		std::cout << "----------------------------------\n";
 		getline(infile, name);
 		size_t pos = name.find(":");
 		fd->gravity = atof(name.substr(pos+1).c_str());
-		cout << "Gravity:" << fd->gravity << endl;
+		std::cout << "Gravity:" << fd->gravity << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->manN = atof(name.substr(pos + 1).c_str());
-		cout << "Manning:" << fd->manN << endl;
+		std::cout << "Manning:" << fd->manN << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->hextra = atof(name.substr(pos + 1).c_str());
-		cout << "hextra:" << fd->hextra << endl;
+		std::cout << "hextra:" << fd->hextra << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->epsilon = atof(name.substr(pos + 1).c_str());
-		cout << "epsilon:" << fd->epsilon << endl;
+		std::cout << "epsilon:" << fd->epsilon << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->cellSize = atoi(name.substr(pos + 1).c_str());
-		cout << "Cell size:" << fd->cellSize << endl;
+		std::cout << "Cell size:" << fd->cellSize << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->L = atoi(name.substr(pos + 1).c_str());
-		cout << "Box size:" << fd->L << endl;
+		std::cout << "Box size:" << fd->L << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->nt = atof(name.substr(pos + 1).c_str());
-		cout << "Number of time steps:" << fd->nt << endl;
+		std::cout << "Number of time steps:" << fd->nt << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->ntPlot = atof(name.substr(pos + 1).c_str());
-		cout << "Plotting interval:" << fd->ntPlot << endl;
+		std::cout << "Plotting interval:" << fd->ntPlot << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->dt = atof(name.substr(pos + 1).c_str());
-		cout << "Time steps:" << fd->dt << endl;		
+		std::cout << "Time steps:" << fd->dt << endl;		
 		getline(infile, name);
 		pos = name.find(":");
 		fd->initV = atof(name.substr(pos + 1).c_str());
-		cout << "Init value:" << fd->initV << endl;
+		std::cout << "Init value:" << fd->initV << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->initWSE= atof(name.substr(pos + 1).c_str());
-		cout << "WSE downstream value:" << fd->initWSE << endl;
+		std::cout << "WSE downstream value:" << fd->initWSE << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->hWL= atof(name.substr(pos + 1).c_str());
-		cout << "WSE upstream value:" << fd->hWL << endl;
+		std::cout << "WSE upstream value:" << fd->hWL << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->cr = atof(name.substr(pos + 1).c_str());
-		cout << "cr value:" << fd->cr << endl;
+		std::cout << "cr value:" << fd->cr << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->dim= atoi(name.substr(pos + 1).c_str());
-		cout << "Dimension:" << fd->dim << endl;
+		std::cout << "Dimension:" << fd->dim << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->x = atoi(name.substr(pos + 1).c_str());
-		cout << "X:" << fd->x<< endl;
+		std::cout << "X:" << fd->x<< endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->y = atoi(name.substr(pos + 1).c_str());
-		cout << "Y:" << fd->y << endl;
+		std::cout << "Y:" << fd->y << endl;
 		getline(infile, name);
 		pos = name.find(":");
 		fd->z = atoi(name.substr(pos + 1).c_str());
-		cout << "Z:" << fd->z << endl;
-		cout << "\n-------------------------------\n\n";
+		std::cout << "Z:" << fd->z << endl;
+		std::cout << "\n-------------------------------\n\n";
 		infile.close();
 		infile.open("Input/zc_dem.txt");
-		fd->zc = allocateMemory(fd->x);
-		clearArray(fd->zc,fd->x);
+		fd->zc = allocateMemory(fd->x,fd->y);
+		clearArray(fd->zc,fd->x,fd->y);
 		for (int i = 0; i < fd->x; i++)
 		{			
 	      for (int j = 0; j < fd->y; j++)
@@ -211,7 +230,7 @@ public:
 				infile >> fd->zc[i][j];
 			}
 		}
-	    printArray(fd->zc, 42, "zc");
+	    printArray(fd->zc, fd->x,fd->y, "zc");
 		infile.close();
 	}
 	/// <summary>
@@ -220,18 +239,16 @@ public:
 	/// <param name="h"></param>
 	/// <param name="n"></param>
 	/// <param name="fileName"></param>
-	void writeOutputFile(double **h,int n, string fileName)
+	void writeOutputFile(double **h,int n,int m, string fileName)
 	{
 		ofstream outStream;
 		outStream.open("Output/" + fileName,ios::out);
 		if (outStream.is_open())
 		{
-			
 			for (int i = 0; i < n; i++)
 			{
-				for (int j = 0; j < n; j++)
+				for (int j = 0; j < m; j++)
 				{
-					
 					outStream <<h[i][j] << "\t";
 				}
 				outStream << endl;
@@ -240,7 +257,7 @@ public:
 		}
 		else
 		{
-			cout << "Unable to open file" << endl;
+			std::cout << "Unable to open file" << endl;
 		}
 		
 	}
@@ -250,7 +267,7 @@ public:
 	/// <param name="arr"></param>
 	/// <param name="n"></param>
 	/// <param name="fileName"></param>
-	void write3dOutputFile(double*** arr, int n, string fileName)
+	void write3dOutputFile(double*** arr, int m,int v, string fileName)
 	{
 		ofstream outStream;
 		outStream.open("Output/" + fileName, ios::out);
@@ -259,9 +276,9 @@ public:
 
 			outStream << "*********************************************************************************************" << endl;
 			outStream << " Arr 0 dim" << endl;
-			for (int j = 0; j < n; j++)
+			for (int j = 0; j < m; j++)
 			{
-				for (int k = 0; k < n; k++)
+				for (int k = 0; k < v; k++)
 				{
 					outStream << arr[0][j][k] << "\t";
 				}
@@ -269,9 +286,9 @@ public:
 			}
 			outStream << endl;
 			outStream << " Arr 1 dim" << endl;
-			for (int j = 0; j < n; j++)
+			for (int j = 0; j < m; j++)
 			{
-				for (int k = 0; k < n; k++)
+				for (int k = 0; k < v; k++)
 				{
 					outStream << arr[1][j][k] << "\t";
 				}
@@ -279,9 +296,9 @@ public:
 			}
 			outStream << endl;
 		   outStream << " Arr 2 dim" << endl;
-			for (int j = 0; j < n; j++)
+			for (int j = 0; j < m; j++)
 			{
-				for (int k = 0; k < n; k++)
+				for (int k = 0; k < v; k++)
 				{
 					outStream << arr[2][j][k] << "\t";
 				}
@@ -294,7 +311,7 @@ public:
 		}
 		else
 		{
-			cout << "Unable to open file" << endl;
+			std::cout << "Unable to open file" << endl;
 		}
 
 	}
@@ -305,24 +322,24 @@ public:
 	/// <param name="arr"></param>
 	/// <param name="n"></param>
 	/// <param name="name"></param>
-	void printArray(double** arr, int n, string name)
+	void printArray(double** arr, int n,int m, string name)
 	{
-		cout << "*********************************************************************************************" << endl;
-		cout << "\t\t\t" << name << " Array"<<endl;
+		std::cout << "*********************************************************************************************" << endl;
+		std::cout << "\t\t\t" << name << " Array"<<endl;
 		for (int i = 0; i < n; i++)
 		{
-			cout <<i + 1 << "\t";
+			std::cout <<i + 1 << "\t";
 		}
-		cout << endl;
+		std::cout << endl;
 		for (int i = 0; i < n; i++)
 		{
-			for (int j = 0; j < n; j++)
+			for (int j = 0; j < m; j++)
 			{
-				cout <<setprecision(4)<< arr[i][j] << "\t";
+				std::cout <<arr[i][j] << "\t";
 			}
-			cout << endl;
+			std::cout << endl;
 		}
-		cout << "*********************************************************************************************" << endl;
+		std::cout << "*********************************************************************************************" << endl;
 	}
 	/// <summary>
 	/// 
@@ -330,41 +347,41 @@ public:
 	/// <param name="arr"></param>
 	/// <param name="n"></param>
 	/// <param name="name"></param>
-	void print3dArray(double*** arr, int n, string name)
+	void print3dArray(double*** arr, int m,int v, string name)
 	{
-		cout << "*********************************************************************************************" << endl;
-		cout << " Arr 0 dim" << endl;
-		for (int j = 0; j < n; j++)
+		std::cout << "*********************************************************************************************" << endl;
+		std::cout << " Arr 0 dim" << endl;
+		for (int j = 0; j < m; j++)
 		{
-			for (int k = 0; k < n; k++)
+			for (int k = 0; k < v; k++)
 			{
-				cout << arr[0][j][k] << "\t";
+				std::cout << arr[0][j][k] << "\t";
 			}
-			cout << endl;
+			std::cout << endl;
 		}
-		cout << endl;
-		cout << " Arr 1 dim" << endl;
-		for (int j = 0; j < n; j++)
+		std::cout << endl;
+		std::cout << " Arr 1 dim" << endl;
+		for (int j = 0; j < m; j++)
 		{
-			for (int k = 0; k < n; k++)
+			for (int k = 0; k < v; k++)
 			{
-				cout << arr[1][j][k] << "\t";
+				std::cout << arr[1][j][k] << "\t";
 			}
-			cout << endl;
+			std::cout << endl;
 		}
-		cout << endl;
-		cout << " Arr 2 dim" << endl;
-		for (int j = 0; j < n; j++)
+		std::cout << endl;
+		std::cout << " Arr 2 dim" << endl;
+		for (int j = 0; j < m; j++)
 		{
-			for (int k = 0; k < n; k++)
+			for (int k = 0; k < v; k++)
 			{
-				cout << arr[2][j][k] << "\t";
+				std::cout << arr[2][j][k] << "\t";
 			}
-			cout << endl;
+			std::cout << endl;
 		}
-		cout << endl;
-		cout << "*********************************************************************************************" << endl;
-		cout << "*********************************************************************************************" << endl;
+		std::cout << endl;
+		std::cout << "*********************************************************************************************" << endl;
+		std::cout << "*********************************************************************************************" << endl;
 	}
 	/// <summary>
 /// <summary>
@@ -380,39 +397,39 @@ public:
 	{
 		if (iterNum % 2 == 10)
 		{
-			cout << "*********************************************************************************************" << endl;
-			cout<<"**************************Iteration "<<iterNum<<" **********************************************"<<endl;
-			cout << "\t\t\t h Array" << endl;
+			std::cout << "*********************************************************************************************" << endl;
+			std::cout<<"**************************Iteration "<<iterNum<<" **********************************************"<<endl;
+			std::cout << "\t\t\t h Array" << endl;
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					cout << h[i][j] << "\t";
+					std::cout << h[i][j] << "\t";
 				}
-				cout << endl;
+				std::cout << endl;
 			}
-			cout << "*********************************************************************************************" << endl;
-			cout << "*********************************************************************************************" << endl;
-			cout << "\t\t\t u Array" << endl;
+			std::cout << "*********************************************************************************************" << endl;
+			std::cout << "*********************************************************************************************" << endl;
+			std::cout << "\t\t\t u Array" << endl;
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					cout << h[i][j] << "\t";
+					std::cout << h[i][j] << "\t";
 				}
-				cout << endl;
+				std::cout << endl;
 			}
-			cout << "*********************************************************************************************" << endl; cout << "*********************************************************************************************" << endl;
-			cout << "\t\t\t v Array" << endl;
+			std::cout << "*********************************************************************************************" << endl; std::cout << "*********************************************************************************************" << endl;
+			std::cout << "\t\t\t v Array" << endl;
 			for (int i = 0; i < n; i++)
 			{
 				for (int j = 0; j < n; j++)
 				{
-					cout << h[i][j] << "\t";
+					std::cout << h[i][j] << "\t";
 				}
-				cout << endl;
+				std::cout << endl;
 			}
-			cout << "*********************************************************************************************" << endl;
+			std::cout << "*********************************************************************************************" << endl;
 		}
 	}
 
@@ -439,55 +456,10 @@ public:
 		}
 		else
 		{
-			cout << "Unable to open file" << endl;
+			std::cout << "Unable to open file" << endl;
 		}
 	}
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="h"></param>
-	/// <param name="ntPlot"></param>
-	/// <param name="simTime"></param>
-	/// <param name="dt"></param>
-	void writeSensor(double **h,double ntPlot,int simTime, double dt)
-	{
-		ofstream outStream,outStream2,outStream3;
-		double ctrs, ctrs2, ctrs3;
-
-		
-		ctrs = simTime * dt;
-		double** hsens_1 = allocateMemory(1);
-		double** hsens_2 = allocateMemory(1);
-		double** hsens_3 = allocateMemory(1);
-		hsens_1[0][0] = h[24][28];
-		hsens_2[0][0] = h[29][28];
-		hsens_3[0][0] = h[36][28];
-
-			ctrs = simTime * dt;
-			if (fmod(ctrs, 0.5) == 0)
-			{
-				outStream.open("Output/hsensor1.txt", ios::out);
-				outStream << hsens_1[0][0] << endl;
-				outStream.close();
-			}
-			ctrs2 = simTime * dt;
-			if (fmod(ctrs2, 0.5) == 0)
-			{
-				outStream2.open("Output/hsensor2.txt", ios::out);
-				outStream2 << hsens_2[0][0] << endl;
-				outStream2.close();
-			}
-			ctrs3 = simTime * dt;
-			if (fmod(ctrs3, 0.5) == 0)
-			{
-				outStream3.open("Output/hsensor3.txt", ios::out);
-				outStream3 << hsens_2[0][0] << endl;
-				outStream3.close();
-			}
-			freeMemory(hsens_1,1);
-			freeMemory(hsens_2, 1);
-			freeMemory(hsens_3, 1);
-	}
+	
 	//y flux
 	/// <summary>
 	/// 
@@ -528,6 +500,26 @@ public:
 			val = 0.0;
 		}
 	}
-
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="dirName"></param>
+	/// <param name="zc"></param>
+	/// <param name="wse"></param>
+	/// <param name="h"></param>
+	/// <param name="u"></param>
+	/// <param name="v"></param>
+	/// <param name="n"></param>
+	/// <returns></returns>
+	int getFileCount(string dirName, double** zc, double** wse, double** h, double** u, double** v, int n,int m)	{		int hCnt=0;		/*		DIR* dirp = opendir(dirName.c_str());		struct dirent* dp;		int hCnt = 0, uCnt = 0, vCnt = 0, wseCnt = 0, zcCnt = 0;		while ((dp = readdir(dirp)) != NULL) {			if (dp->d_name[0] = 'h')			{				hCnt++;			}
+			if (dp->d_name[0] = 'u')			{			uCnt++;			}
+			if (dp->d_name[0] = 'v')			{				vCnt++;			}		}		cout << "Total Number of input files:" << hCnt << endl;		ifstream infile;		infile.open("hOut_" + hCnt);		for (int i = 0; i < n; i++)		{			for (int j = 0; j < m; j++)			{				infile >> h[i][j];			}		}		infile.close();		ifstream ufile;		ufile.open("uOut_" + uCnt);		for (int i = 0; i < n; i++)		{			for (int j = 0; j < m; j++)			{				ufile >> u[i][j];			}		}		ufile.close();		ifstream vfile;		infile.open("vOut_" + vCnt);		for (int i = 0; i < n; i++)		{			for (int j = 0; j < m; j++)			{				vfile >> v[i][j];			}		}		vfile.close();		ifstream zcfile;		infile.open("zc.txt");		for (int i = 0; i < n; i++)		{			for (int j = 0; j < m; j++)			{				zcfile >> zc[i][j];			}		}		zcfile.close();		ifstream wsefile;		infile.open("wse.txt");		for (int i = 0; i < n; i++)		{			for (int j = 0; j < m; j++)			{				wsefile >> wse[i][j];			}		}		wsefile.close();		closedir(dirp);*/		return hCnt;	}	/**	  Get source partition based on source row	  @TODO adapt this for block-cyclic partitions	*/    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="size"></param>
+    /// <param name="blockSize"></param>
+    /// <param name="source_row"></param>
+    /// <returns></returns>
+	int get_src_rank(int size, int blockSize, int source_row)	{		int src_rank = 0;		src_rank = source_row / blockSize;		if (src_rank > size - 1) src_rank = size - 1;		return src_rank;	}
 
 };
