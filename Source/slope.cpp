@@ -29,7 +29,7 @@ public:
 	void fslope(double** h, double** u, double** v,
 		double ManN, double hextra, double** dzcx, double**
 		dzcy, int cellsize, int n, double** sox, double** soy
-		, double **sfx, double** sfy)
+		, double** sfx, double** sfy)
 	{
 
 		for (int i = 0; i < n; i++) {
@@ -37,7 +37,7 @@ public:
 				sox[i][j] = dzcx[i][j] / cellsize;
 				soy[i][j] = dzcy[i][j] / cellsize;
 			}
-		}	
+		}
 
 		//  Intermediate frction slope values
 		for (int j = 0; j < n; j++) {
@@ -47,9 +47,8 @@ public:
 					sfy[j][k] = 0.0;
 				}
 				else {
-					sfx[j][k] = u[j][k] * (ManN * ManN) * hypot(u[j][k], v[j][k]) / pow(h[j][k] + hextra,
-							1.3333333333333333);
-					sfy[j][k] = v[j][k] * (ManN * ManN) * hypot(u[j][k], v[j][k]) / pow(h[j][k] + hextra,					1.3333333333333333);
+					sfx[j][k] = (u[j][k] * (ManN * ManN) * hypot(u[j][k], v[j][k])) / (pow((h[j][k] + hextra), 1.3333333333333333));
+					sfy[j][k] = (v[j][k] * (ManN * ManN) * hypot(u[j][k], v[j][k])) / (pow((h[j][k] + hextra), 1.3333333333333333));
 				}
 			}
 		}

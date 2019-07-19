@@ -1,14 +1,13 @@
 
-//#include<iostream>
-//#include<fstream>
-//#include<ostream>
+#include<iostream>
+#include<fstream>
+#include<ostream>
 #include<string>
 #include<iomanip>
 #include<ctime>
-#include<sys/types.h>
-#include<dirent.h>
 
 using namespace std;
+
 /// <summary>
 /// 
 /// </summary>
@@ -319,7 +318,7 @@ public:
 		{
 			for (int j = 0; j < n; j++)
 			{
-				cout << arr[i][j] << "\t";
+				cout <<setprecision(4)<< arr[i][j] << "\t";
 			}
 			cout << endl;
 		}
@@ -530,128 +529,5 @@ public:
 		}
 	}
 
-	int getFileCount(string dirName,double ** zc,double** wse,double** h,double** u,double** v,int n)
-	{
-           DIR* dirp = opendir(dirName.c_str());
-           struct dirent * dp;
-           int hCnt=0,uCnt=0,vCnt=0,wseCnt=0,zcCnt=0;
-           while ((dp = readdir(dirp)) != NULL) {
-                   if(dp->d_name[0] = 'h')
-                   {
-                    hCnt++;
-                   }
-                   if(dp->d_name[0] = 'u')
-                   {
-                    uCnt++;
-                   }
-                   if(dp->d_name[0] = 'v')
-                   {
-                    vCnt++;
-                   }
-            }
-            cout<<"Total Number of input files:"<<hCnt<<endl;          
-            ifstream infile;
-            infile.open("hOut_" + hCnt);            
-            for(int i =0;i<n;i++)
-            {
-             for(int j=0;j<n;j++)
-             {
-               infile>>h[i][j];              
-              }
-             }
-            infile.close();
-
-            ifstream ufile;
-            ufile.open("uOut_" + uCnt);            
-            for(int i =0;i<n;i++)
-            {
-             for(int j=0;j<n;j++)
-             {
-               ufile>>u[i][j];              
-              }
-             }
-
-            ufile.close();
-            
-            ifstream vfile;
-            infile.open("vOut_" + vCnt);            
-            for(int i =0;i<n;i++)
-            {
-             for(int j=0;j<n;j++)
-             {
-               vfile>>v[i][j];              
-              }
-             }
-             vfile.close();
-
-            ifstream zcfile;
-            infile.open("zc.txt");            
-            for(int i =0;i<n;i++)
-            {
-             for(int j=0;j<n;j++)
-             {
-               zcfile>>zc[i][j];              
-              }
-             }
-            zcfile.close();
-
-            ifstream wsefile;
-            infile.open("wse.txt");            
-            for(int i =0;i<n;i++)
-            {
-             for(int j=0;j<n;j++)
-             {
-               wsefile>>wse[i][j];              
-              }
-             }
-             wsefile.close();
-           closedir(dirp);
-         return hCnt;
- 	}
-
-/**
-  Get source partition based on source row
-  @TODO adapt this for block-cyclic partitions
-*/
-
-int get_src_rank(int size, int blockSize, int source_row)
-{
-	int src_rank = 0;
-  
-	src_rank = source_row/blockSize;
-  
-	if(src_rank>size-1) src_rank = size-1;
-
-	return src_rank;
-}
-
-
-/**
- *
- * convert x in (x,y) source location to col index in Matrix
- *
- * @param x
- * @param xllc
- * @param cellsz
- * @return
- */
-int calc_src_col(double x, double xllc, double cellsz) {
-	return (ceil(((x - xllc) / cellsz)) - 1) ;
-} 
-
-
-/**
- *
- * convert y in (x,y) source location to row index in Matrix
- *
- * @param src_Y
- * @param LLC_Y
- * @param cellsize
- * @param nrows
- * @return
- */
-int calc_src_row(double src_Y, double LLC_Y, double cellsize, int nrows) {
-	return ceil((nrows - ((src_Y - LLC_Y) / cellsize))) - 1 ;
-} // ------------------------------------------------------------------------
 
 };
