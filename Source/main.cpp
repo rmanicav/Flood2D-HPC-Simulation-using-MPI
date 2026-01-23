@@ -1,3 +1,6 @@
+// Main MPI-based flood simulation driver.
+// Each MPI rank operates on a subdomain of the 2D grid.
+
 #include<iostream>
 #include<fstream>
 #include<ostream>
@@ -213,7 +216,13 @@ int main(void)
 		double t = 0.0;
 		double time_counter = 0;
 		int startIter = 0;
-		/************************hot start - get last successfull number of iterations***************/		int numOfFiles = help.getFileCount("Output", zc, wse, h, u, v, nrows,ncols);		cout << "Total Number of files in Output:" << numOfFiles << endl;		if (numOfFiles <= nt)		{			startIter = numOfFiles;		}
+		/************************hot start - get last successfull number of iterations***************/
+		int numOfFiles = help.getFileCount("Output", zc, wse, h, u, v, nrows,ncols);
+		cout << "Total Number of files in Output:" << numOfFiles << endl;
+		if (numOfFiles <= nt)
+		{
+			startIter = numOfFiles;
+		}
 		for (int j = startIter; j < nt; j++) {
 			//start clock
 			start = clock();
@@ -413,3 +422,4 @@ int main(void)
 
 	return 0;
 }
+
