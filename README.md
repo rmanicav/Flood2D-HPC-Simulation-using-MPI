@@ -50,7 +50,17 @@ It serves as a reference example for Research Software Engineer and
 scientific computing roles where scalable computation and collaboration
 with domain scientists are essential.
 
-Author
+## Authorship & Contributions
+This project was developed in a collaborative research environment.
+The overall simulation framework and architectural design were created
+as part of a broader research effort, while I contributed to the
+implementation, MPI-based parallelization, integration, execution
+workflow, and research-oriented adaptation of the codebase.
+
+This repository is shared to demonstrate experience with scientific
+computing, MPI-based parallel programming, and research software
+engineering practices.
+
 
 Dr. Rajesh Manicavasagam
 Research Software Engineer | Scientific Computing | HPC & MPI
