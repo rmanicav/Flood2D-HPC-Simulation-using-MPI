@@ -1,4 +1,6 @@
-# Flood2D — Parallel 2D Flood Simulation using C++ and MPI
+## Overview
+Parallel C++ simulation of 2D flood propagation using MPI.
+
 
 ## Overview
 Flood2D is a research-oriented **scientific computing** project implementing a
