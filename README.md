@@ -33,9 +33,21 @@ assets/     -> figures / performance plots
 
 
 ## Example Execution
+Compile:
 mpic++ flood2d.cpp -o flood2d
+
+Run locally:
 mpirun -np 4 ./flood2d
 
+Example SLURM job script:
+#!/bin/bash
+#SBATCH --job-name=flood_sim
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=16
+#SBATCH --time=02:00:00
+
+module load mpi
+mpirun ./flood2d
 
 ## Research Software Engineering Context
 
@@ -66,6 +78,8 @@ engineering practices.
 
 
 
-Dr. Rajesh Manicavasagam
-Research Software Engineer | Scientific Computing | HPC & MPI
-GitHub: https://github.com/rmanicav
+**Dr. Rajesh Manicavasagam**  
+Research Software Engineer | Scientific Computing | HPC (MPI, CUDA, SLURM)
+
+GitHub: https://github.com/rmanicav  
+Google Scholar: https://scholar.google.com/citations?user=2XswkUcAAAAJ
